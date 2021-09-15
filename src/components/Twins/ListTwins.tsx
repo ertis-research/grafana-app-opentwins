@@ -4,7 +4,7 @@ import {List, ControlledCollapse} from '@grafana/ui';
 
 export function ListTwins(props:any) {
 
-    //const [selectedTwin, setSelectedTwin] = useState<SelectableValue<number>>();
+    /////const [selectedTwin, setSelectedTwin] = useState<SelectableValue<number>>();
 
     const twins = [
         {id:"dht22_1", especification:""}
