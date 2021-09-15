@@ -1,2 +1,4 @@
-export const APP_TITLE = 'Simple App Plugin';
-export const APP_SUBTITLE = 'Simple App Plugin subtitle';
+export const APP_TITLE = 'Digital Twins';
+export const APP_SUBTITLE = 'App plugin to manage digital twins';
+export const KUBERNETES_NAMESPACE = 'cloud2edge'
+

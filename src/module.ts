@@ -1,20 +1,25 @@
 import { ComponentClass } from 'react';
 import { ExampleConfigCtrl } from './legacy/config';
 import { AppPlugin, AppRootProps } from '@grafana/data';
-import { ExamplePage1 } from './config/ExamplePage1';
+import { GeneralPage } from './config/General';
 import { ExamplePage2 } from './config/ExamplePage2';
 import { ExampleRootPage } from './ExampleRootPage';
 import { ExampleAppSettings } from './types';
+import './css/bootstrap-grid.css';
+//import './css/bootstrap-utilities.css';
+//import './css/bootstrap.css';
+import './css/bootstrap-cards.css';
+import './css/bootstrap-basics.css';
 
 export { ExampleConfigCtrl as ConfigCtrl };
 
 export const plugin = new AppPlugin<ExampleAppSettings>()
   .setRootPage((ExampleRootPage as unknown) as ComponentClass<AppRootProps>)
   .addConfigPage({
-    title: 'Page 1',
+    title: 'General',
     icon: 'info-circle',
-    body: ExamplePage1,
-    id: 'page1',
+    body: GeneralPage,
+    id: 'general',
   })
   .addConfigPage({
     title: 'Page 2',

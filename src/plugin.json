@@ -1,13 +1,13 @@
 {
   "$schema": "https://raw.githubusercontent.com/grafana/grafana/master/docs/sources/developers/plugins/plugin.schema.json",
   "type": "app",
-  "name": "Simple App",
-  "id": "myorgid-simple-app",
+  "name": "Digital Twins",
+  "id": "ertis-digitaltwin-app",
 
   "info": {
-    "description": "Grafana App Plugin Template",
+    "description": "Grafana App Plugin For Digital Twins",
     "author": {
-      "name": "Your Name"
+      "name": "ERTIS"
     },
     "keywords": ["panel", "template"],
     "logos": {
@@ -26,23 +26,23 @@
   "includes": [
     {
       "type": "page",
-      "name": "Root Page (react)",
-      "path": "/a/myorgid-simple-app",
+      "name": "Twins",
+      "path": "/a/ertis-digitaltwin-app",
       "role": "Viewer",
       "addToNav": true,
       "defaultNav": true
     },
     {
       "type": "page",
-      "name": "Root Page (Tab B)",
-      "path": "/a/myorgid-simple-app/?tab=b",
+      "name": "Types",
+      "path": "/a/ertis-digitaltwin-app/?tab=types",
       "role": "Viewer",
       "addToNav": true
     },
     {
       "type": "page",
-      "name": "React Config",
-      "path": "/plugins/myorgid-simple-app/?page=page2",
+      "name": "Config",
+      "path": "/plugins/ertis-digitaltwin-app/?page=page2",
       "role": "Admin",
       "addToNav": true
     },

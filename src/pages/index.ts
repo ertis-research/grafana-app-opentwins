@@ -1,7 +1,7 @@
 import { AppRootProps } from '@grafana/data';
-import { A } from './A';
-import { B } from './B';
-import { C } from './C';
+import { TwinsPage } from './TwinsPage';
+import { PoliciesPage } from './PoliciesPage';
+import { TypesPage } from './TypesPage';
 
 export type PageDefinition = {
   component: React.FC<AppRootProps>;
@@ -12,21 +12,21 @@ export type PageDefinition = {
 
 export const pages: PageDefinition[] = [
   {
-    component: A,
+    component: TwinsPage,
     icon: 'file-alt',
-    id: 'a',
-    text: 'Tab A',
+    id: 'twins',
+    text: 'Twins',
   },
   {
-    component: B,
-    icon: 'file-alt',
-    id: 'b',
-    text: 'Tab B',
+    component: TypesPage,
+    icon: 'folder-plus',
+    id: 'types',
+    text: 'Types',
   },
   {
-    component: C,
-    icon: 'file-alt',
-    id: 'c',
-    text: 'Tab C',
+    component: PoliciesPage,
+    icon: 'shield',
+    id: 'policies',
+    text: 'Policies',
   },
 ];
