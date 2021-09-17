@@ -1,4 +1,4 @@
-import React, { Fragment, FormEvent, useState } from 'react';
+import React, { Fragment, FormEvent, useState, useEffect } from 'react';
 import {
   Button,
   Field,
@@ -14,6 +14,9 @@ import {
   //useTheme,
 } from '@grafana/ui';
 import {} from '@emotion/core'; //https://github.com/grafana/grafana/issues/26512
+//import { createTypeService } from 'services/types/createType';
+import { createTypeService } from 'services/types/createTypeService';
+import { TYPES_NAMESPACE_IN_DITTO } from 'utils/consts';
 
 export function CreateType() {
 
@@ -25,13 +28,27 @@ export function CreateType() {
     const [attributes, setAttributes] = useState<IAttributes[]>([])
     const [features, setFeatures] = useState<string[]>([])
     const [readOnly, setReadOnly] = useState(true)
+    const [text, setText] = useState("")
 
-   /*
+    const updateText = () => {
+      setText('{\n"policyId": "sensor:DHT22",\n' + '"attributes": {\n' + attributes.map((property) => '\t"' + property.key + '" : "' + property.value + '"').join(',\n') + '\n'
+      + '},\n"features": {\n' + features.map((property) => '\t"' + property + '" : {\n\t\t"properties": {\n\t\t\t"value": null\n\t\t}\n\t}').join(',\n') + "\n}}")
+    }
+   
     const handleFinalSubmit = (event:FormEvent<HTMLFormElement>) => {
       event.preventDefault();
-      alert("enviado\nAttributos: " + attributes + "\nFeatures: " + features);
-    }*/
+
+      const target = event.target as typeof event.target & {
+        typeName: { value: string };
+      };
+      console.log(target.typeName.value)
+
+      createTypeService(TYPES_NAMESPACE_IN_DITTO, target.typeName.value, JSON.parse(text)).then(res => console.log(res))
+    }
   
+    useEffect(() => {
+    }, [text])
+
     const handleSubmitAttributes = (event:FormEvent<HTMLFormElement>) => {
       event.preventDefault();
 
@@ -61,6 +78,7 @@ export function CreateType() {
           alert("change");
         }
       }
+      updateText()
       console.log(attributes)
     }
 
@@ -78,9 +96,11 @@ export function CreateType() {
           ...features,
           newKey
         ])
+        updateText()
       } else {
         alert("ya existe");
       }
+      
     }
 
     const editPreviewOnClick = () => {
@@ -94,9 +114,6 @@ export function CreateType() {
       })
     }*/
 
-    const text = "attributes: {\n" + attributes.map((property) => "\t" + property.key + " : " + property.value).join(',\n') + "\n"
-      + "},\nfeatures: {\n" + features.map((property) => "\t" + property + ' : {\n\t\tproperties: {\n\t\t\tvalue: null\n\t\t}\n\t}').join(',\n') + "\n}";
-
     return (
       <Fragment>
         <div className="row">
@@ -106,8 +123,9 @@ export function CreateType() {
           </div>
           <div className="col-8">
             <h2>Create new type</h2>
+            <form id="finalForm" onSubmit={handleFinalSubmit} />
             <Field label="Name:">
-              <Input name="name" type="text" placeholder="Name"/>
+              <Input name="typeName" type="text" placeholder="Name" form="finalForm"/>
             </Field>
             <form onSubmit={handleSubmitAttributes}>
               <h4 className="mt-3">Add a new attribute:</h4>
@@ -133,7 +151,7 @@ export function CreateType() {
               <Button type="submit" variant="secondary">Add feature</Button>
             </form>
             <div className="d-flex justify-content-center">
-              <Button className="mt-3">Create type</Button>
+              <Button className="mt-3" type="submit" form="finalForm">Create type</Button>
             </div>
           </div>
         </div>
