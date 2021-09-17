@@ -9,4 +9,4 @@ export const createTypeService = ( namespace:string, idTwin:string, data:JSON ) 
       },
       body: JSON.stringify(data)
     })
-  }
+}

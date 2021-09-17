@@ -8,7 +8,6 @@ export const TypesPage: FC<AppRootProps> = ({ query, path, meta }) => {
   switch (query["mode"]) {
     case "create":
       return (
-        //<div></div>
         <CreateType />
       );
     default:

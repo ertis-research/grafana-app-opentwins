@@ -5,3 +5,10 @@ export interface IDittoThing {
         attributes?: JSON,
         features?: JSON
 }
+
+export interface IMainObject {
+        id: string,
+        name: string,
+        image: string,
+        description: string
+}
