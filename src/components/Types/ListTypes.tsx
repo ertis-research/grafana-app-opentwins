@@ -1,4 +1,4 @@
-import { CheckBySelect } from 'components/General/CheckBySelect';
+import { CheckBySelect } from 'components/general/checkBySelect';
 import React, { useEffect, useState } from 'react';
 import { getTypesService } from 'services/types/getTypesService';
 import { TYPES_NAMESPACE_IN_DITTO } from 'utils/consts';

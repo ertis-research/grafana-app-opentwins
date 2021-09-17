@@ -1,6 +1,6 @@
 import React, { FC } from 'react';
-import { CreateType } from 'components/Types/CreateType';
-import { ListTypes } from 'components/Types/ListTypes';
+import { CreateType } from 'components/types/createType';
+import { ListTypes } from 'components/types/listTypes';
 import { AppRootProps } from '@grafana/data';
 
 export const TypesPage: FC<AppRootProps> = ({ query, path, meta }) => {

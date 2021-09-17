@@ -1,4 +1,4 @@
-import { CheckBySelect } from 'components/General/CheckBySelect';
+import { CheckBySelect } from 'components/general/checkBySelect';
 import React from 'react';
 //import { List } from '@grafana/ui';
 //import { ControlledCollapse } from '@grafana/ui';

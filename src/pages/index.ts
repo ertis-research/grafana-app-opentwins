@@ -1,7 +1,7 @@
 import { AppRootProps } from '@grafana/data';
-import { TwinsPage } from './TwinsPage';
-import { PoliciesPage } from './PoliciesPage';
-import { TypesPage } from './TypesPage';
+import { TwinsPage } from './twinsPage';
+import { PoliciesPage } from './policiesPage';
+import { TypesPage } from './typesPage';
 
 export type PageDefinition = {
   component: React.FC<AppRootProps>;

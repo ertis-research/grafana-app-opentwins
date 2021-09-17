@@ -1,7 +1,7 @@
 import React, { FC } from 'react';
 import { AppRootProps } from '@grafana/data';
-import { CreatePolicy } from 'components/Policies/CreatePolicy';
-import { ListPolicies } from 'components/Policies/ListPolicies';
+import { CreatePolicy } from 'components/policies/createPolicy';
+import { ListPolicies } from 'components/policies/listPolicies';
 
 export const PoliciesPage: FC<AppRootProps> = ({ query, path, meta }) => {
 

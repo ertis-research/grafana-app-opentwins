@@ -1,6 +1,7 @@
 import { AppRootProps } from '@grafana/data';
-import { ListMainObject } from 'components/MainObject/ListMainObject';
-import { ListTwins } from 'components/Twins/ListTwins';
+import { CreateMainObject } from 'components/mainObject/createMainObject';
+import { ListMainObject } from 'components/mainObject/listMainObject';
+import { ListTwins } from 'components/twins/listTwins';
 import React, { FC } from 'react';
 
 export const TwinsPage: FC<AppRootProps> = ({ query, path, meta }) => {
@@ -13,6 +14,10 @@ export const TwinsPage: FC<AppRootProps> = ({ query, path, meta }) => {
           <ListTwins path={path} id={id}/>
         );
       }
+    case "create":
+      return (
+        <CreateMainObject />
+      );
     default:
       return (
         <ListMainObject path={path}/>
