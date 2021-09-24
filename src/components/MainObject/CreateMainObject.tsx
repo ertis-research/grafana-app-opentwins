@@ -36,7 +36,7 @@ export function CreateMainObject() {
         <Field label="Description:">
           <Input name="description" type="text" placeholder="Description"/>
         </Field>
-        <Button>Create new main object</Button>
+        <Button variant="primary">Create new main object</Button>
       </form>
     );
 }

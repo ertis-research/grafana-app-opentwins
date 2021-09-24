@@ -1,20 +1,32 @@
-import { fetchService } from "services/fetchService"
-import { MAINOBJECTS_THING_IN_DITTO } from "utils/consts"
+import { fetchHonoService } from "services/general/fetchHonoService"
 
 export const createMainObjectService = ( id:string, name:string, image:string, description:string ) => {
-    return fetchService("/things/" + MAINOBJECTS_THING_IN_DITTO + "/attributes/list", {
-      method: 'PATCH',
-      headers: {
-        "Authorization": 'Basic '+btoa('ditto:ditto'),
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify(
-          '{ ' +
-          '"id" : "' + id + '",' +
-          '"name" : "' + name + '",' +
-          '"image" : "' + image + '",' +
-          '"description" : "' + description + '"' +
-          ' }'
-      )
-    })
+
+  const data = JSON.parse(
+    '{"defaults": { ' +
+    '"name" : "' + name + '",' +
+    '"image" : "' + image + '",' +
+    '"description" : "' + description + '"' +
+    '}}'
+  )
+
+  return fetchHonoService("/tenants/"+ id, {
+    method: 'POST'
+  }).then(res => {
+    if(res.ok){
+      return fetchHonoService("/tenants/"+ id, {
+        method: 'PUT',
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(data)
+      })
+    } else {
+      console.log("Error al crear el tenant")
+      return []
+    }
+    
+  })
+
 }
+

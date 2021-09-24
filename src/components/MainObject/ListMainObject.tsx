@@ -1,6 +1,7 @@
-import React, { Fragment, useState, useEffect } from 'react';
+import React, { useState, useEffect, Fragment } from 'react';
 import { getMainObjectsService } from 'services/mainObjects/getMainObjectsService';
 import { IMainObject } from 'utils/interfaces';
+import { Card, Button, IconButton, Legend } from '@grafana/ui'
 
 export function ListMainObject(props:any) {
     /*
@@ -14,13 +15,52 @@ export function ListMainObject(props:any) {
     const [mainObjects, setMainObjects] = useState<IMainObject[]>([])
 
     useEffect(() => { //https://www.smashingmagazine.com/2020/06/rest-api-react-fetch-axios/
-        getMainObjectsService().then(res => setMainObjects(res))
-        console.log(mainObjects)
+        getMainObjectsService().then(res => {setMainObjects(res)
+            console.log("hola")
+            console.log(mainObjects)})
+        
     }, [])
 
     const mainObjectsMapped = mainObjects.map((item) =>
+        <div className="col-12 col-sm-6 col-md-6 col-lg-4 mb-3" key={item.id}>
+            <div>
+            <img src={item.image} className="card-img-top" style={{height: "250px", objectFit: "cover"}} alt="..."/>
+            </div>
+            <Card heading={item.name} style={{height: "150px"}}>
+                <Card.Meta>
+                    {item.description}
+                </Card.Meta>
+                <Card.Actions>
+                    <Button key="seemore" variant="secondary">
+                        See more
+                    </Button>
+                    <div></div>
+                </Card.Actions>
+                <Card.SecondaryActions>
+                    <IconButton key="edit" name="pen" tooltip="Edit" />
+                    <IconButton key="delete" name="trash-alt" tooltip="Delete" />
+                </Card.SecondaryActions>
+            </Card>
+        </div>
+    );
+
+    
+    return (
+        <Fragment>
+            <div className="d-flex justify-content-center">
+                <a className="m-3 btn btn-primary" href={props.path + '?mode=create'}>Create new main object</a>
+            </div>
+            <Legend>Check existing main objects</Legend>
+            <div className="row">
+                {mainObjectsMapped}
+            </div>
+        </Fragment>
+    );
+
+/*
+    const mainObjectsMapped = mainObjects.map((item) =>
         <div className="col-4 mb-3 d-flex align-items-stretch" key={item.id}>
-            <div className="card" style={{borderColor: "#8b8b97"}}>
+            <div className="card t.colors.background.primary" >
                 <img src={item.image} className="card-img-top" style={{height: "250px", objectFit: "cover"}} alt="..."/>
                 <div className="card-body d-flex flex-column">
                     <h4 className="card-title">{item.name}</h4>
@@ -31,6 +71,7 @@ export function ListMainObject(props:any) {
         </div>
     );
 
+    
     return (
         <Fragment>
             <div className="d-flex justify-content-center">
@@ -42,5 +83,5 @@ export function ListMainObject(props:any) {
             </div>
         </Fragment>
     );
-
+*/
 }

@@ -1,7 +1,7 @@
 import { CheckBySelect } from 'components/general/checkBySelect';
 import React, { useEffect, useState } from 'react';
 import { getTypesService } from 'services/types/getTypesService';
-import { TYPES_NAMESPACE_IN_DITTO } from 'utils/consts';
+import { getNameFromDittoThing } from 'utils/aux_functions';
 import { IDittoThing } from 'utils/interfaces';
 //import { IDittoThing } from 'utils/interfaces';
 
@@ -21,7 +21,7 @@ export const ListTypes = (props:any) => {
             setTypes(
                 JSON.parse(
                     "[" + 
-                    res.items.map((item:IDittoThing) => '{"label": "' + item.thingId.substring(TYPES_NAMESPACE_IN_DITTO.length + 1) + '", "value": "' + item.thingId + 
+                    res.items.map((item:IDittoThing) => '{"label": "' + getNameFromDittoThing(item.thingId) + '", "value": "' + item.thingId + 
                     '", "text": "' + item.policyId + " " + JSON.stringify(item.attributes).replace(/"/g, '') + " " + JSON.stringify(item.features).replace(/"/g, '') + '"}').join(",") + 
                     "]"
                 )

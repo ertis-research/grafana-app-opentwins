@@ -1,7 +1,7 @@
 import { AppRootProps } from '@grafana/data';
+import { useNavModel } from 'hooks/useNavModel';
 import { pages } from 'pages';
 import React, { useEffect, useMemo } from 'react';
-import { useNavModel } from 'utils/hooks';
 
 export const ExampleRootPage = React.memo(function ExampleRootPage(props: AppRootProps) {
   const {

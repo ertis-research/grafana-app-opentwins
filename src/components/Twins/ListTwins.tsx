@@ -2,6 +2,7 @@ import React, { Fragment, useState, useEffect } from 'react';
 import { List, ControlledCollapse } from '@grafana/ui';
 import { getTwinsService } from 'services/twins/getTwinsService';
 import { IDittoThing } from 'utils/interfaces';
+import { getNameFromDittoThing } from 'utils/aux_functions';
 //import { SelectableValue } from '@grafana/data';
 
 export function ListTwins(props:any) {
@@ -26,7 +27,7 @@ export function ListTwins(props:any) {
                 getItemKey={item => item.thingId}
                 renderItem={item => (
                     <ControlledCollapse 
-                        label={item.thingId}
+                        label={getNameFromDittoThing(item.thingId)}
                         collapsible>
                         <p>{item.policyId}</p>
                         <p>{JSON.stringify(item.attributes, null, "\t")}</p>

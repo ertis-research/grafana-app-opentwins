@@ -116,17 +116,14 @@ export function CreateType() {
 
     return (
       <Fragment>
+        <h2>Create new type</h2>
         <div className="row">
-          <div className="col-4">
-            <TextArea value={text} rows={18} cols={5} readOnly={readOnly}/>
-            <Button variant="secondary" onClick={editPreviewOnClick}>Edit</Button>
-          </div>
           <div className="col-8">
-            <h2>Create new type</h2>
             <form id="finalForm" onSubmit={handleFinalSubmit} />
             <Field label="Name:">
               <Input name="typeName" type="text" placeholder="Name" form="finalForm"/>
             </Field>
+            <hr />
             <form onSubmit={handleSubmitAttributes}>
               <h4 className="mt-3">Add a new attribute:</h4>
               <div className="row">
@@ -143,6 +140,7 @@ export function CreateType() {
               </div>
               <Button type="submit" variant="secondary" >Add attribute</Button>
             </form>
+            <hr />
             <form onSubmit={handleSubmitFeatures}>
               <h4 className="mt-3">Add a new feature:</h4>
               <Field label="Name:">
@@ -153,6 +151,10 @@ export function CreateType() {
             <div className="d-flex justify-content-center">
               <Button className="mt-3" type="submit" form="finalForm">Create type</Button>
             </div>
+          </div>
+          <div className="col-4">
+            <TextArea value={text} className="w-100 h-100 mb-4" style={{boxSizing: "border-box"}} readOnly={readOnly}/>
+            <Button variant="secondary" onClick={editPreviewOnClick}>Edit</Button>
           </div>
         </div>
         

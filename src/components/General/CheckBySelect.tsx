@@ -19,7 +19,7 @@ export const CheckBySelect = (props:any) => {
                 value={value}
                 onChange={v => setValue(v)}
             />
-            <TextArea className="mt-3" value={value?.text === undefined ? "" : value.text.replaceAll('"', '')} readOnly rows={15} cols={5}/>
+            <TextArea className="w-100 h-100 mt-3" style={{boxSizing: "border-box"}} value={value?.text === undefined ? "" : value.text.replaceAll('"', '')} readOnly/>
             <div className="d-flex justify-content-center">
                 <Button className="m-3">Edit</Button>
                 <Button className="m-3" variant="destructive">Delete</Button>
