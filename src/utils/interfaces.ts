@@ -9,8 +9,8 @@ export interface IDittoThing {
 export interface IMainObject {
         id: string,
         name: string,
-        image: string,
-        description: string
+        image?: string,
+        description?: string
 }
 
 

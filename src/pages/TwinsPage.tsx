@@ -16,7 +16,7 @@ export const TwinsPage: FC<AppRootProps> = ({ query, path, meta }) => {
       }
     case "create":
       return (
-        <CreateMainObject />
+        <CreateMainObject path={path} />
       );
     default:
       return (

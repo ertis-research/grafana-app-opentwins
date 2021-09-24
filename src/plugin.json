@@ -30,35 +30,40 @@
       "path": "/a/ertis-digitaltwin-app",
       "role": "Viewer",
       "addToNav": true,
-      "defaultNav": true
+      "defaultNav": true,
+      "icon": "file-alt"
     },
     {
       "type": "page",
       "name": "Types",
       "path": "/a/ertis-digitaltwin-app/?tab=types",
       "role": "Viewer",
-      "addToNav": true
+      "addToNav": true,
+      "icon": "folder-plus"
     },
     {
       "type": "page",
       "name": "Policies",
       "path": "/a/ertis-digitaltwin-app/?tab=policies",
       "role": "Viewer",
-      "addToNav": true
+      "addToNav": true,
+      "icon": "shield"
     },
     {
       "type": "page",
       "name": "Connections",
       "path": "/a/ertis-digitaltwin-app/?tab=connections",
       "role": "Viewer",
-      "addToNav": true
+      "addToNav": true,
+      "icon": "plug"
     },
     {
       "type": "page",
       "name": "Config",
       "path": "/plugins/ertis-digitaltwin-app/?page=page2",
       "role": "Admin",
-      "addToNav": true
+      "addToNav": true,
+      "icon" : "sliders-v-alt"
     },
     {
       "type": "dashboard",

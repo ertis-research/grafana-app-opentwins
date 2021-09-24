@@ -1,7 +1,7 @@
 import React, { useState, useEffect, Fragment } from 'react';
 import { getMainObjectsService } from 'services/mainObjects/getMainObjectsService';
 import { IMainObject } from 'utils/interfaces';
-import { Card, Button, IconButton, Legend } from '@grafana/ui'
+import { Card, LinkButton, IconButton, Legend, HorizontalGroup } from '@grafana/ui'
 
 export function ListMainObject(props:any) {
     /*
@@ -31,9 +31,9 @@ export function ListMainObject(props:any) {
                     {item.description}
                 </Card.Meta>
                 <Card.Actions>
-                    <Button key="seemore" variant="secondary">
+                    <LinkButton icon="search" key="seemore" variant="secondary" href={props.path + "?mode=check&id=" + item.id}>
                         See more
-                    </Button>
+                    </LinkButton>
                     <div></div>
                 </Card.Actions>
                 <Card.SecondaryActions>
@@ -47,9 +47,11 @@ export function ListMainObject(props:any) {
     
     return (
         <Fragment>
-            <div className="d-flex justify-content-center">
-                <a className="m-3 btn btn-primary" href={props.path + '?mode=create'}>Create new main object</a>
-            </div>
+            <HorizontalGroup justify="center">
+                <LinkButton variant="primary" href={props.path + '?mode=create'}>
+                    Create new main object
+                </LinkButton>
+            </HorizontalGroup>
             <Legend>Check existing main objects</Legend>
             <div className="row">
                 {mainObjectsMapped}

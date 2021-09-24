@@ -1,42 +1,37 @@
-import React, { FormEvent } from 'react';
-import {
-    Button,
-    Field,
-    //TextArea,
-    Input
-  } from '@grafana/ui';
-import { createMainObjectService } from 'services/mainObjects/createMainObjectService';
+import React, { Fragment } from 'react'
+import { Button, Field, FieldSet, Input, FormAPI, Form } from '@grafana/ui'
+import { IMainObject } from 'utils/interfaces'
+import { createMainObjectService } from 'services/mainObjects/createMainObjectService'
 
-export function CreateMainObject() {
+export const CreateMainObject = (props:any) => {
 
-    const handleSubmit = (event:FormEvent<HTMLFormElement>) => {
-      event.preventDefault();
-
-      const target = event.target as typeof event.target & {
-        objectId: { value: string };
-        objectName: { value: string };
-        imageUrl: { value: string };
-        description: { value: string };
-      };
-
-      createMainObjectService(target.objectId.value, target.objectName.value, target.imageUrl.value, target.description.value)
+    const onSubmit = (data:IMainObject) => {
+      createMainObjectService(data)
     }
 
     return (
-      <form onSubmit={handleSubmit}>
-        <Field label="Id:">
-          <Input name="objectId" type="text" placeholder="Id"/>
-        </Field>
-        <Field label="Name:">
-          <Input name="objectName" type="text" placeholder="Name"/>
-        </Field>
-        <Field label="Image URL:">
-          <Input name="imageUrl" type="url" placeholder="URL"/>
-        </Field>
-        <Field label="Description:">
-          <Input name="description" type="text" placeholder="Description"/>
-        </Field>
-        <Button variant="primary">Create new main object</Button>
-      </form>
-    );
+      <Form onSubmit={onSubmit}>
+        {({register, errors}:FormAPI<IMainObject>) => {
+          return(
+            <Fragment>
+              <FieldSet label="Create new main object">
+                <Field label="Id:">
+                  <Input {...register("id", { required: true })}/>
+                </Field> 
+                <Field label="Name:">
+                  <Input {...register("name", { required: true })}/>
+                </Field>
+                <Field label="Image URL:">
+                  <Input {...register("image")} type="url"/>
+                </Field>
+                <Field label="Description:">
+                <Input {...register("description")}/>
+                </Field>
+              </FieldSet>
+              <Button variant="primary">Create</Button>
+            </Fragment>
+          )
+        }}
+      </Form>
+    )
 }

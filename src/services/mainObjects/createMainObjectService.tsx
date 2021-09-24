@@ -1,32 +1,23 @@
+import { fetchDittoService } from "services/general/fetchDittoService"
 import { fetchHonoService } from "services/general/fetchHonoService"
+import { MAINOBJECTS_THING_IN_DITTO } from "utils/consts"
+import { IMainObject } from "utils/interfaces"
+import { getMainObjectsService } from "./getMainObjectsService"
 
-export const createMainObjectService = ( id:string, name:string, image:string, description:string ) => {
-
-  const data = JSON.parse(
-    '{"defaults": { ' +
-    '"name" : "' + name + '",' +
-    '"image" : "' + image + '",' +
-    '"description" : "' + description + '"' +
-    '}}'
-  )
-
-  return fetchHonoService("/tenants/"+ id, {
+export const createMainObjectService = ( mainObject:IMainObject ) => {
+  return fetchHonoService("/tenants/"+ mainObject.id, {
     method: 'POST'
-  }).then(res => {
-    if(res.ok){
-      return fetchHonoService("/tenants/"+ id, {
-        method: 'PUT',
+  }).then((res:any) => {
+    return getMainObjectsService().then(res => {
+      res.push(mainObject)
+      return fetchDittoService("/things/" + MAINOBJECTS_THING_IN_DITTO + "/attributes/list", {
+        method: 'PATCH',
         headers: {
-          "Content-Type": "application/json"
+          "Authorization": 'Basic '+btoa('ditto:ditto'),
+          "Content-Type": "application/merge-patch+json; charset=UTF-8"
         },
-        body: JSON.stringify(data)
+        body: JSON.stringify(res)
       })
-    } else {
-      console.log("Error al crear el tenant")
-      return []
-    }
-    
+    })
   })
-
 }
-
