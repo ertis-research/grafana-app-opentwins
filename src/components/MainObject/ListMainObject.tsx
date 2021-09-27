@@ -2,6 +2,7 @@ import React, { useState, useEffect, Fragment } from 'react';
 import { getMainObjectsService } from 'services/mainObjects/getMainObjectsService';
 import { IMainObject } from 'utils/interfaces';
 import { Card, LinkButton, IconButton, Legend, HorizontalGroup } from '@grafana/ui'
+import { DEFAULT_IMAGE_MAINOBJECT } from 'utils/consts';
 
 export function ListMainObject(props:any) {
     /*
@@ -21,10 +22,14 @@ export function ListMainObject(props:any) {
         
     }, [])
 
+    const imageIsUndefined = (url:(string|undefined)) => {
+        return (url !== undefined && url !== '') ? url : DEFAULT_IMAGE_MAINOBJECT + ''
+    }
+
     const mainObjectsMapped = mainObjects.map((item) =>
         <div className="col-12 col-sm-6 col-md-6 col-lg-4 mb-3" key={item.id}>
             <div>
-            <img src={item.image} className="card-img-top" style={{height: "250px", objectFit: "cover"}} alt="..."/>
+            <img src={imageIsUndefined(item.image)} className="card-img-top" style={{height: "250px", objectFit: "cover"}} alt="..."/>
             </div>
             <Card heading={item.name} style={{height: "150px"}}>
                 <Card.Meta>

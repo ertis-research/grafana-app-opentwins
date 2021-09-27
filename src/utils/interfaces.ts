@@ -22,12 +22,14 @@ export interface IEntry {
 }
 
 export interface ISubject {
-        subjectIssuer: string;
-        subject: string;
+        subjectIssuer: string
+        subject: string
 }
 
 export interface IResource {
-        name: string | undefined;
-        read: boolean | undefined;
-        write: boolean | undefined;
+        name: string | undefined
+        description: string | undefined
+        read: boolean | undefined
+        write: boolean | undefined
+        erasable: boolean
 }

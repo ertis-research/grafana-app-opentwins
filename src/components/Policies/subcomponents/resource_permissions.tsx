@@ -1,13 +1,14 @@
-import React, { useState, FormEvent } from 'react';
-import { Checkbox, Container, Field, Input } from '@grafana/ui';
-import { IResource } from 'utils/interfaces';
+import React, { useState, FormEvent } from 'react'
+import { Checkbox, IconButton, useTheme2 } from '@grafana/ui'
+import { IResource } from 'utils/interfaces'
 
 interface parameters {
-    resource: IResource,
-    handleSubmit : any
+    resource: IResource
+    resources : any
+    setResources : any
 }
 
-export const Resource_permissions = ({resource, handleSubmit} : parameters) => {
+export const Resource_permissions = ({resource, resources, setResources} : parameters) => {
 
     const [read, setRead] = useState(resource.read)
     const [write, setWrite] = useState(resource.write)
@@ -16,27 +17,34 @@ export const Resource_permissions = ({resource, handleSubmit} : parameters) => {
         setFunction((variable === undefined) ? grant : (variable == grant) ? undefined : !variable)
     }
 
-    const nameInputOrText = () => {
-        if(resource.name === undefined){
-            return (
-                <Field label="Feature">
-                    <Input name="nameFeature" type="text"/>
-                </Field>
-            );
-        } else {
-            return (<h4 className="text-capitalize">{resource.name}</h4>);
-        }
+    const handleOnClickDelete = () => {
+        setResources(resources.filter((item:any) => item.name !== resource.name))
     }
 
+    const header = 
+        <div className="d-flex">
+            <h5 className="text-capitalize mb-0">{resource.name}</h5>
+            {() => {
+                if(resource.erasable) {
+                    return (
+                        <div className="justify-content-end">
+                            <IconButton name="trash-alt" onClick={handleOnClickDelete}></IconButton>
+                        </div>
+                    )
+                }
+                return;
+            }}
+        </div>
+
     return (
-        <Container>
-            <form id="resourcesForm" onSubmit={handleSubmit}>
-                {nameInputOrText}
-                <div className="row">
+        <div className="my-3 p-3" style={{backgroundColor:useTheme2().colors.background.canvas}}>
+                {header}
+                <p className="mt-0" style={{color:useTheme2().colors.text.secondary}}>{resource.description}</p>
+                <div className="row mt-0">
                     <div className="col-6">
                         <h6>Grant:</h6>
                         <div className="row">
-                            <div className="col-4">
+                            <div className="col-3">
                                 <Checkbox 
                                     name={resource.name + "_grant_read"} 
                                     label="READ" 
@@ -45,7 +53,7 @@ export const Resource_permissions = ({resource, handleSubmit} : parameters) => {
                                     onChange={(e) => handleOnChangeCheckbox(e, setRead, read, true)} 
                                 />
                             </div>
-                            <div className="col-8">
+                            <div className="col-9">
                                 <Checkbox 
                                     className="ml-3"
                                     name={resource.name + "_grant_write"} 
@@ -60,7 +68,7 @@ export const Resource_permissions = ({resource, handleSubmit} : parameters) => {
                     <div className="col-6">
                         <h6>Revoke:</h6>
                         <div className="row">
-                            <div className="col-4">
+                            <div className="col-3">
                                 <Checkbox 
                                     name={resource.name + "_revoke_read"} 
                                     label="READ" 
@@ -69,7 +77,7 @@ export const Resource_permissions = ({resource, handleSubmit} : parameters) => {
                                     onChange={(e) => handleOnChangeCheckbox(e, setRead, read, false)} 
                                 />
                             </div>
-                            <div className="col-8">
+                            <div className="col-9">
                                 <Checkbox 
                                     className="ml-3"
                                     name={resource.name + "_revoke_write"} 
@@ -82,7 +90,6 @@ export const Resource_permissions = ({resource, handleSubmit} : parameters) => {
                         </div>
                     </div>
                 </div>
-            </form>
-        </Container>
+        </div>
     )
 }
