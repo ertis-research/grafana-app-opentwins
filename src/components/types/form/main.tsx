@@ -6,7 +6,7 @@ import { TYPES_NAMESPACE_IN_DITTO } from 'utils/consts'
 import { IAttribute, IDittoThingSimple, IDittoThing, IFeature } from 'utils/interfaces/dittoThing'
 import { FormAttributes } from './subcomponents/formAttributes'
 import { FormFeatures } from './subcomponents/formFeatures'
-import { getPoliciesService } from 'services/policies/getPoliciesService'
+import { getAllPoliciesService } from 'services/policies/getAllPoliciesService'
 import { ISelect } from 'utils/interfaces/select'
 import { SelectableValue } from '@grafana/data/types/select'
 
@@ -17,12 +17,19 @@ export const FormType = () => {
     const [currentType, setCurrentType] = useState<IDittoThing>({thingId:"", policyId:""})
     const [readOnly, setReadOnly] = useState(true)
     const [policies, setPolicies] = useState<ISelect[]>([])
-    const [value, setValue] = useState<SelectableValue<number>>()
+    const [value, setValue] = useState<SelectableValue<string>>()
 
     const handleFinalSubmit = (data:IDittoThing) => {
         createTypeService(TYPES_NAMESPACE_IN_DITTO, data.thingId, data)
     }
   
+    useEffect(() => {
+        setCurrentType({
+          ...currentType,
+            policyId : ((value !== undefined && value.value !== undefined) ? value.value : "")
+        })
+    }, [value])
+
     useEffect(() => {
       var jsonAttributes:any = {}
       attributes.forEach((item:IAttribute) => jsonAttributes[(item.key)] = item.value)
@@ -46,8 +53,9 @@ export const FormType = () => {
     }, [features])
 
     useEffect(() => {
-      getPoliciesService().then(res => {setPolicies(res)
-      console.log(res)}).catch(() => console.log("error"))
+      getAllPoliciesService().then((res:string[]) => {
+        setPolicies(res.map(item => {return {label: item, value: item}}))
+      }).catch(() => console.log("error"))
     }, [])
 
     const editPreviewOnClick = () => {
@@ -70,10 +78,10 @@ export const FormType = () => {
               {({register, errors, control}:FormAPI<IDittoThingSimple>) => {
                 return (
                   <FieldSet>
-                    <Field label="ThingId:">
+                    <Field label="Name">
                       <Input {...register("thingId", {required:true})} type="text" onChange={handleOnChangeInputName}/>
                     </Field>
-                    <Field label="Policy:">
+                    <Field label="Policy">
                       <InputControl
                         render={({field}) => 
                           <Select {...field} 
@@ -100,7 +108,9 @@ export const FormType = () => {
             </div>
           </div>
           <div className="col-4">
-            <TextArea value={JSON.stringify(currentType, undefined, 4)} className="w-100 h-100 mb-4" style={{boxSizing: "border-box"}} readOnly={readOnly}/>
+            <Field label="Preview">
+              <TextArea value={JSON.stringify(currentType, undefined, 4)} rows={25} /*className="w-100 h-100 mb-4" style={{boxSizing: "border-box"}}*/ readOnly={readOnly}/>
+            </Field>
             <Button variant="secondary" onClick={editPreviewOnClick}>Edit</Button>
             </div>
         </div>

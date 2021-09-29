@@ -1,11 +1,12 @@
-import React, { useState, FormEvent, Fragment, useEffect, ChangeEvent } from 'react'
-import { TextArea, Input, Field, List, Legend, Button, Form, FormAPI } from '@grafana/ui'
+import React, { useState, Fragment, useEffect, ChangeEvent } from 'react'
+import { TextArea, Input, Field, List, Legend, Button, Form, FormAPI, FieldSet } from '@grafana/ui'
 import { IEntry, IPolicy, IResource, ISubject } from 'utils/interfaces/dittoPolicy'
 import { ListElement } from 'components/general/listElement'
 import { initResources } from 'utils/consts'
 import { FormSubjects } from './subcomponents/formSubjects'
 import { FormResources } from './subcomponents/formResources'
 import {} from '@emotion/core'
+import { createPolicyService } from 'services/policies/createPolicyService'
 
 export function CreatePolicy() {
 
@@ -82,8 +83,12 @@ export function CreatePolicy() {
         })
     }, [resources])
 
-    const handleOnSubmitFinal = (event:FormEvent<HTMLFormElement>) => {
-        event.preventDefault()
+    const handleOnSubmitFinal = (data:{name:string}) => {
+        setCurrentPolicy({
+            ...currentPolicy,
+            policyId : data.name
+        })
+        createPolicyService(currentPolicy)
     }
 
     const handleOnChangeInputName = (event:ChangeEvent<HTMLInputElement>) => {
@@ -97,11 +102,18 @@ export function CreatePolicy() {
         <Fragment>
             <h2>Create new policy</h2>
             <div className="row">
-                <form id="finalForm" onSubmit={handleOnSubmitFinal}/>
                 <div className="col-9">
-                    <Field label="Name of policy">
-                        <Input name="name" type="text" onChange={handleOnChangeInputName}/>
-                    </Field>
+                    <Form id="finalForm" onSubmit={handleOnSubmitFinal}>
+                    {({register, errors}:FormAPI<{name:string}>) => {
+                        return(
+                            <FieldSet>
+                                <Field label="Name">
+                                    <Input {...register("name", { required : true })} type="text" onChange={handleOnChangeInputName}/>
+                                </Field>
+                            </FieldSet>
+                        )
+                    }}
+                    </Form>
                     <hr />
                     <div className="row">
                         <div className="col-3">
@@ -131,12 +143,15 @@ export function CreatePolicy() {
                             <div className="d-flex justify-content-center">
                                 <Button variant="secondary" form="entryForm">Add entry</Button>
                             </div>
+                            <div className="d-flex justify-content-center">
+                                <Button variant="primary" form="finalForm">Create policy</Button>
+                            </div>
                         </div>
                     </div>
                 </div>
                 <div className="col-3">
                     <Field label="Preview" className="h-100">
-                        <TextArea value={JSON.stringify(currentPolicy, undefined, 4)} rows={20} readOnly/>
+                        <TextArea value={JSON.stringify(currentPolicy, undefined, 4)} rows={25} readOnly/>
                     </Field>
                 </div>
             </div>

@@ -1,5 +1,4 @@
 import { IDittoThing } from "./interfaces/dittoThing"
-import { ISelect } from "./interfaces/select"
 
 export const getNameFromDittoThing = (name:string) => {
     const i = name.indexOf(":")
@@ -11,17 +10,11 @@ export const getNameFromDittoThing = (name:string) => {
 }
 
 export const getSelectFromDittoThingArray = (data:IDittoThing[]) => {
-    var selectArray: ISelect[] = []
-    
-    data.map((item:IDittoThing) =>
-        selectArray.push(
-            {
+    return data.map((item:IDittoThing) => {
+        return {
                 label : getNameFromDittoThing(item.thingId),
                 value : item.thingId,
-                text : item.policyId + " " + JSON.stringify(item.attributes).replace(/"/g, '') + " " + JSON.stringify(item.features).replace(/"/g, '')
+                text : JSON.stringify(item, undefined, 4)
             }
-        )
-    )
-    
-    return selectArray
+    })
 }

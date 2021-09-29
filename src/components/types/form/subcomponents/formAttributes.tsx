@@ -45,13 +45,13 @@ export const FormAttributes = ({attributes, setAttributes} : parameters) => {
                 return (
                     <Fragment>
                         <FieldSet>
-                            <Field label="Name:">
+                            <Field label="Name">
                                 <Input {...register("key", { required : true })} type="text"/>
                             </Field>
-                            <Field label="Value:">
+                            <Field label="Value">
                                 <Input {...register("value", { required : true })} type="text"/>
                             </Field>
-                            <Button type="submit" variant="secondary">Add attribute</Button>
+                            <Button type="submit" variant="secondary">Add</Button>
                         </FieldSet>
                     </Fragment>
                 )

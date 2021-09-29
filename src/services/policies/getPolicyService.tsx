@@ -1,8 +1,7 @@
 import { fetchDittoService } from "services/general/fetchDittoService"
-import { POLICIES_THING_IN_DITTO } from "utils/consts"
 
-export const getPoliciesService = () => {
-  return fetchDittoService("/things/" + POLICIES_THING_IN_DITTO + "/attributes/list", {
+export const getPoliciesService = (policyId : string) => {
+  return fetchDittoService("/policies/" + policyId, {
     method: 'GET',
     headers: {
       "Authorization": 'Basic '+btoa('ditto:ditto'),
