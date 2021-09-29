@@ -1,7 +1,7 @@
 import { fetchDittoService } from "services/general/fetchDittoService"
 import { fetchHonoService } from "services/general/fetchHonoService"
 import { MAINOBJECTS_THING_IN_DITTO } from "utils/consts"
-import { IMainObject } from "utils/interfaces"
+import { IMainObject } from "utils/interfaces/dittoThing"
 import { getMainObjectsService } from "./getMainObjectsService"
 
 export const createMainObjectService = ( mainObject:IMainObject ) => {
@@ -18,6 +18,6 @@ export const createMainObjectService = ( mainObject:IMainObject ) => {
         },
         body: JSON.stringify(res)
       })
-    })
-  })
+    }).catch(() => console.log("error"))
+  }).catch(() => console.log("error"))
 }

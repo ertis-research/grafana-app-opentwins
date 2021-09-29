@@ -1,6 +1,6 @@
 import React, { useState, useEffect, Fragment } from 'react';
 import { getMainObjectsService } from 'services/mainObjects/getMainObjectsService';
-import { IMainObject } from 'utils/interfaces';
+import { IMainObject } from 'utils/interfaces/dittoThing';
 import { Card, LinkButton, IconButton, Legend, HorizontalGroup } from '@grafana/ui'
 import { DEFAULT_IMAGE_MAINOBJECT } from 'utils/consts';
 
@@ -18,7 +18,7 @@ export function ListMainObject(props:any) {
     useEffect(() => { //https://www.smashingmagazine.com/2020/06/rest-api-react-fetch-axios/
         getMainObjectsService().then(res => {setMainObjects(res)
             console.log("hola")
-            console.log(mainObjects)})
+            console.log(mainObjects)}).catch(() => console.log("error"))
         
     }, [])
 

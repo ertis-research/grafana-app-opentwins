@@ -1,8 +1,8 @@
 import { fetchDittoService } from "services/general/fetchDittoService"
-import { DITTO_ENDPOINT } from "utils/consts"
+import { IDittoThing } from "utils/interfaces/dittoThing"
 
-export const createTypeService = ( namespace:string, idTwin:string, data:JSON ) => {
-    return fetchDittoService(DITTO_ENDPOINT + "/things/"+ namespace + ":" + idTwin, {
+export const createTypeService = ( namespace:string, idTwin:string, data:IDittoThing ) => {
+    return fetchDittoService("/things/"+ namespace + ":" + idTwin, {
       method: 'PUT',
       headers: {
         "Authorization": 'Basic '+btoa('ditto:ditto'),

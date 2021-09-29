@@ -1,17 +1,19 @@
 import React, { useState, ChangeEvent, FormEvent, Fragment } from 'react'
-import { TextArea, Button, Input, Field, Checkbox, List, useTheme2, Legend } from '@grafana/ui'
-import { Resource_permissions } from './subcomponents/resource_permissions'
-import { IEntry, IResource } from 'utils/interfaces'
+
+import { TextArea, Input, Field, List, Legend, Button } from '@grafana/ui'
+import { IEntry, IResource, ISubject } from 'utils/interfaces/dittoPolicy'
 import { ListElement } from 'components/general/listElement'
 import { initResources } from 'utils/consts'
-import { FormToAddFeatureToResources } from './subcomponents/formToaddFeatureToResources'
+import { FormSubjects } from './subcomponents/formSubjects'
+import { FormResources } from './subcomponents/formResources'
+import {} from '@emotion/core'
 
 export function CreatePolicy() {
 
     const [text, setText] = useState("")
     const [entries, setEntries] = useState<IEntry[]>([])
     //const [currentEntry, setCurrentEntry] = useState<IEntry>()
-    //const [subjects, setSubjects] = useState<ISubject[]>([])
+    const [subjects, setSubjects] = useState<ISubject[]>([])
     const [resources, setResources] = useState<IResource[]>(initResources)
 
     const handleOnSubmitEntry = (event:FormEvent<HTMLFormElement>) => {
@@ -30,12 +32,6 @@ export function CreatePolicy() {
     const handleOnSubmitFinal = (event:FormEvent<HTMLFormElement>) => {
         event.preventDefault()
     }
-
-    const handleOnSubmitSubject = (event:FormEvent<HTMLFormElement>) => {
-        event.preventDefault()
-    }
-
-    
 
     const handleOnChangeText = (event:ChangeEvent<HTMLTextAreaElement>) => {
         setText(event.target.value)
@@ -67,28 +63,12 @@ export function CreatePolicy() {
                                 <Input name="name" type="text" form="entryForm"/>
                             </Field>
                             <hr />
-                            <h4 className="mb-0">Subjects</h4>
-                            <p className="mt-0" style={{color:useTheme2().colors.text.secondary}}>Who gets permissions granted/revoked on the resources of a policy entry</p>
-                            <form id="subjectForm" onSubmit={handleOnSubmitSubject}>
-                                <Checkbox className="mb-3" label="Add current user as subject"/>
-                                <Field label="Subject-issuer" description="Party who issued the authentication">
-                                    <Input name="subject-issuer" type="text"/>
-                                </Field>
-                                <Field label="Subject" description="Username or ID from an actual subject">
-                                    <Input name="subject" type="text"/>
-                                </Field>
-                                <Button variant="secondary">Add</Button>
-                            </form>
+                            <FormSubjects subjects={subjects} setSubjects={setSubjects}/>
                             <hr />
-                            <h4 className="mb-0">Resources</h4>
-                            <p className="mt-0" style={{color:useTheme2().colors.text.secondary}}>Assign the permissions that the subjects will have on each resource</p>
-                            {resources.map(item => 
-                                <Resource_permissions resource={item} resources={resources} setResources={setResources}/>
-                            )}
-                            <FormToAddFeatureToResources resources={resources} setResources={setResources}/>
+                            <FormResources resources={resources} setResources={setResources} />
                             <hr />
                             <div className="d-flex justify-content-center">
-                                <Button variant="secondary">Add entry</Button>
+                                <Button variant="secondary" form="entryForm">Add entry</Button>
                             </div>
                         </div>
                     </div>

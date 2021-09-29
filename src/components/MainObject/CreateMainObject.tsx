@@ -1,6 +1,6 @@
 import React, { Fragment } from 'react'
 import { Button, Field, FieldSet, Input, FormAPI, Form } from '@grafana/ui'
-import { IMainObject } from 'utils/interfaces'
+import { IMainObject } from 'utils/interfaces/dittoThing'
 import { createMainObjectService } from 'services/mainObjects/createMainObjectService'
 
 export const CreateMainObject = (props:any) => {

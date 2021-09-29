@@ -1,6 +1,6 @@
 import React, { Fragment } from 'react'
 import { Button, Input, Field, useTheme2, Form, FormAPI } from '@grafana/ui'
-import { IResource } from 'utils/interfaces'
+import { IResource } from 'utils/interfaces/dittoPolicy'
 
 interface parameters {
     resources : any
@@ -10,7 +10,6 @@ interface parameters {
 export const FormToAddFeatureToResources = ({resources, setResources} : parameters) => {
 
     const onSubmit = (data:IResource) => {
-        console.log(data)
         data.erasable = true
         setResources([...resources, data])
         console.log(resources)
@@ -22,7 +21,8 @@ export const FormToAddFeatureToResources = ({resources, setResources} : paramete
             {({register, errors}:FormAPI<IResource>) => {
                 return (
                     <Fragment>
-                        <h4 className="text-capitalize">Feature</h4>
+                        <h5 className="text-capitalize mb-0">Feature</h5>
+                        <p className="mt-0" style={{color:useTheme2().colors.text.secondary}}>Will be applied to all or certain features/properties of a thing<br/>Example: thing:/features/featureX/properties/location/city</p>
                         <Field label="Name of feature">
                             <Input {...register("name", { required: true })}/>
                         </Field>
