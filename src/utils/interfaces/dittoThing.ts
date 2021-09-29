@@ -2,8 +2,8 @@ export interface IDittoThing {
     thingId: string,
     policyId: string,
     definition?: string,
-    attributes?: IAttribute[],
-    features?: IFeature[]
+    attributes?: JSON,
+    features?: JSON
 }
 
 export interface IDittoThingSimple {

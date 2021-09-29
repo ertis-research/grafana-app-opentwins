@@ -41,6 +41,9 @@ export const FormSubjects = ({subjects, setSubjects} : parameters) => {
                                     <Field label="Subject" description="Username or ID from an actual subject">
                                         <Input {...register("subject", { required : true })} type="text"/>
                                     </Field>
+                                    <Field label="Type" description="The type of the (Authorization) Subject. Intended for documentational purposes">
+                                        <Input {...register("type", { required : true })} type="text"/>
+                                    </Field>
                                     <Button variant="secondary">Add</Button>
                                 </FieldSet>
                             </Fragment>

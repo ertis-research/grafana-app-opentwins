@@ -15,7 +15,7 @@ export const FormResources = ({resources, setResources} : parameters) => {
     return (
         <Fragment>
             <ElementHeader title="Resources" description={resourceDescription} isLegend={false}/>
-            {resources.map((item:any) => 
+            {resources.map((item:any) =>
                 <Resource_permissions resource={item} resources={resources} setResources={setResources}/>
             )}
             <FormToAddFeatureToResources resources={resources} setResources={setResources}/>

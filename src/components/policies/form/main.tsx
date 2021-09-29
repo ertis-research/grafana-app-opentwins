@@ -1,7 +1,6 @@
-import React, { useState, ChangeEvent, FormEvent, Fragment } from 'react'
-
-import { TextArea, Input, Field, List, Legend, Button } from '@grafana/ui'
-import { IEntry, IResource, ISubject } from 'utils/interfaces/dittoPolicy'
+import React, { useState, FormEvent, Fragment, useEffect, ChangeEvent } from 'react'
+import { TextArea, Input, Field, List, Legend, Button, Form, FormAPI } from '@grafana/ui'
+import { IEntry, IPolicy, IResource, ISubject } from 'utils/interfaces/dittoPolicy'
 import { ListElement } from 'components/general/listElement'
 import { initResources } from 'utils/consts'
 import { FormSubjects } from './subcomponents/formSubjects'
@@ -10,32 +9,89 @@ import {} from '@emotion/core'
 
 export function CreatePolicy() {
 
-    const [text, setText] = useState("")
     const [entries, setEntries] = useState<IEntry[]>([])
-    //const [currentEntry, setCurrentEntry] = useState<IEntry>()
+    const [entry, setEntry] = useState<IEntry>({ name: "" })
+    const [currentPolicy, setCurrentPolicy] = useState<IPolicy>({ policyId: "", entries: []})
     const [subjects, setSubjects] = useState<ISubject[]>([])
     const [resources, setResources] = useState<IResource[]>(initResources)
 
-    const handleOnSubmitEntry = (event:FormEvent<HTMLFormElement>) => {
-        event.preventDefault();
-
-        const target = event.target as typeof event.target & {
-            name: { value: string };
-        };
-
+    const handleOnSubmitEntry = (data:{name:string}) => {
         setEntries([
             ...entries,
-            {name: target.name.value}
+            {
+                name: data.name,
+                subjects: subjects,
+                resources: resources
+            }
         ])
     }
+
+    useEffect(() => {
+        var provEntries:any = {}
+        entries.forEach((item) => {
+
+            var provSubjects:any = {}
+            var provResources:any = {}
+            subjects.forEach((item) => provSubjects[item.subjectIssuer + ":" + item.subject]={type : item.type})
+            resources.forEach((item) => {
+                var grantList:any = []
+                var revokeList:any = []
+
+                if(item.read) {
+                    grantList.push("READ")
+                } else if (!item.read && item.read !== undefined) {
+                    revokeList.push("READ")
+                }
+
+                if(item.write) {
+                    grantList.push("WRITE")
+                } else if (!item.write && item.write !== undefined) {
+                    revokeList.push("WRITE")
+                }
+
+                provResources[item.name] = {
+                    grant : grantList,
+                    revoke : revokeList
+                }
+            })
+
+            provEntries[item.name]={
+                subjects : provSubjects,
+                resources : provResources
+            }
+        })
+
+        setCurrentPolicy({
+            ...currentPolicy,
+            entries : provEntries
+        })
+
+    }, [entries])
+
+    useEffect(() => {
+        setEntry({
+            ...entry,
+            subjects : subjects
+        })
+    }, [subjects])
+
+    useEffect(() => {
+        setEntry({
+            ...entry,
+            resources : resources
+        })
+    }, [resources])
 
     const handleOnSubmitFinal = (event:FormEvent<HTMLFormElement>) => {
         event.preventDefault()
     }
 
-    const handleOnChangeText = (event:ChangeEvent<HTMLTextAreaElement>) => {
-        setText(event.target.value)
-    }
+    const handleOnChangeInputName = (event:ChangeEvent<HTMLInputElement>) => {
+        setCurrentPolicy({
+          ...currentPolicy,
+          policyId : event.target.value
+        })
+      }
 
     return (
         <Fragment>
@@ -44,7 +100,7 @@ export function CreatePolicy() {
                 <form id="finalForm" onSubmit={handleOnSubmitFinal}/>
                 <div className="col-9">
                     <Field label="Name of policy">
-                        <Input name="name" type="text"/>
+                        <Input name="name" type="text" onChange={handleOnChangeInputName}/>
                     </Field>
                     <hr />
                     <div className="row">
@@ -58,10 +114,15 @@ export function CreatePolicy() {
                         </div>
                         <div className="col-9">
                             <Legend>Entry information</Legend>
-                            <form id="entryForm" onSubmit={handleOnSubmitEntry}/>
-                            <Field label="Name of entry">
-                                <Input name="name" type="text" form="entryForm"/>
-                            </Field>
+                            <Form id="entryForm" onSubmit={handleOnSubmitEntry}>
+                            {({register, errors}:FormAPI<{name:string}>) => {
+                                return (
+                                    <Field label="Name of entry">
+                                        <Input {...register("name", { required : true })} type="text" form="entryForm"/>
+                                    </Field>
+                                )    
+                            }}
+                            </Form>
                             <hr />
                             <FormSubjects subjects={subjects} setSubjects={setSubjects}/>
                             <hr />
@@ -74,8 +135,8 @@ export function CreatePolicy() {
                     </div>
                 </div>
                 <div className="col-3">
-                    <Field label="Preview" className="w-100 h-100" style={{boxSizing: "border-box"}}>
-                        <TextArea value={text} readOnly onChange={handleOnChangeText}/>
+                    <Field label="Preview" className="h-100">
+                        <TextArea value={JSON.stringify(currentPolicy, undefined, 4)} rows={20} readOnly/>
                     </Field>
                 </div>
             </div>

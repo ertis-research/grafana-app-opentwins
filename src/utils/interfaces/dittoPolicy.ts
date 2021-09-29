@@ -1,6 +1,6 @@
 export interface IPolicy {
     policyId : string,
-    entries : IEntry[]
+    entries? : JSON[]
 }
 
 export interface IEntry {
@@ -12,10 +12,11 @@ export interface IEntry {
 export interface ISubject {
     subjectIssuer: string
     subject: string
+    type: string
 }
 
 export interface IResource {
-    name: string | undefined
+    name: string
     description?: string | undefined
     read: boolean | undefined
     write: boolean | undefined

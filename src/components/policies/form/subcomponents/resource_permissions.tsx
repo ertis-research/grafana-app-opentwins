@@ -1,10 +1,10 @@
-import React, { useState, FormEvent } from 'react'
+import React, { useState, FormEvent, useEffect } from 'react'
 import { Checkbox, IconButton, useTheme2 } from '@grafana/ui'
 import { IResource } from 'utils/interfaces/dittoPolicy'
 
 interface parameters {
     resource: IResource
-    resources : any
+    resources : IResource[]
     setResources : any
 }
 
@@ -13,28 +13,37 @@ export const Resource_permissions = ({resource, resources, setResources} : param
     const [read, setRead] = useState(resource.read)
     const [write, setWrite] = useState(resource.write)
 
-    const handleOnChangeCheckbox = (event:FormEvent<HTMLInputElement>, setFunction:any, variable:any, grant:boolean, isRead:boolean) => {
+    const handleOnChangeCheckbox = (event:FormEvent<HTMLInputElement>, setFunction:any, variable:any, grant:boolean) => {
         setFunction((variable === undefined) ? grant : (variable == grant) ? undefined : !variable)
-        const newResources = resources.map((item:any) => {
-            if(item.name === resource.name){
-                var updatedItem = undefined
-                if(isRead){
-                    updatedItem = {
+    }
+
+    useEffect(() => {
+        setResources(
+            resources.map((item:IResource) => {
+                if(item.name === resource.name){
+                    return {
                         ...item,
-                        read : variable
-                    }
-                } else {
-                    updatedItem = {
-                        ...item,
-                        write : variable
+                        read : read
                     }
                 }
-                return updatedItem
-            }
-            return item
-        })
-        setResources(newResources)
-    }
+                return item
+            })
+        )
+    }, [read])
+
+    useEffect(() => {
+        setResources(
+            resources.map((item:IResource) => {
+                if(item.name === resource.name){
+                    return {
+                        ...item,
+                        write : write
+                    }
+                }
+                return item
+            })
+        )
+    }, [write])
 
     const handleOnClickDelete = () => {
         setResources(resources.filter((item:any) => item.name !== resource.name))
@@ -63,7 +72,7 @@ export const Resource_permissions = ({resource, resources, setResources} : param
                                 label="READ" 
                                 key={resource.name + "_grant_read"} 
                                 value={read} 
-                                onChange={(e) => handleOnChangeCheckbox(e, setRead, read, true, true)} 
+                                onChange={(e) => handleOnChangeCheckbox(e, setRead, read, true)} 
                             />
                         </div>
                         <div className="col-9">
@@ -73,7 +82,7 @@ export const Resource_permissions = ({resource, resources, setResources} : param
                                 label="WRITE" 
                                 key={resource.name + "_grant_write"} 
                                 value={write} 
-                                onChange={(e) => handleOnChangeCheckbox(e, setWrite, write, true, false)}
+                                onChange={(e) => handleOnChangeCheckbox(e, setWrite, write, true)}
                             />
                         </div>
                     </div>
@@ -87,7 +96,7 @@ export const Resource_permissions = ({resource, resources, setResources} : param
                                 label="READ" 
                                 key={resource.name + "_revoke_read"} 
                                 value={(read === undefined) ? undefined : !read} 
-                                onChange={(e) => handleOnChangeCheckbox(e, setRead, read, false, true)} 
+                                onChange={(e) => handleOnChangeCheckbox(e, setRead, read, false)} 
                             />
                         </div>
                         <div className="col-9">
@@ -97,7 +106,7 @@ export const Resource_permissions = ({resource, resources, setResources} : param
                                 label="WRITE" 
                                 key={resource.name + "_revoke_write"} 
                                 value={(write === undefined) ? undefined : !write} 
-                                onChange={(e) => handleOnChangeCheckbox(e, setWrite, write, false, false)}
+                                onChange={(e) => handleOnChangeCheckbox(e, setWrite, write, false)}
                             />
                         </div>
                     </div>

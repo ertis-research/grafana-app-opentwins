@@ -6,9 +6,9 @@ import { TYPES_NAMESPACE_IN_DITTO } from 'utils/consts'
 import { IAttribute, IDittoThingSimple, IDittoThing, IFeature } from 'utils/interfaces/dittoThing'
 import { FormAttributes } from './subcomponents/formAttributes'
 import { FormFeatures } from './subcomponents/formFeatures'
-import { getPoliciesService } from 'services/policies/getPoliciesService';
-import { ISelect } from 'utils/interfaces/select';
-import { SelectableValue } from '@grafana/data/types/select';
+import { getPoliciesService } from 'services/policies/getPoliciesService'
+import { ISelect } from 'utils/interfaces/select'
+import { SelectableValue } from '@grafana/data/types/select'
 
 export const FormType = () => {
 
@@ -24,16 +24,30 @@ export const FormType = () => {
     }
   
     useEffect(() => {
+      var jsonAttributes:any = {}
+      attributes.forEach((item:IAttribute) => jsonAttributes[(item.key)] = item.value)
+
       setCurrentType({
         ...currentType,
-          attributes : attributes,
-          features : features
+          attributes : jsonAttributes
         }
       )
-    }, [features, attributes])
+    }, [attributes])
 
     useEffect(() => {
-      getPoliciesService().then(res => setPolicies(res)).catch(() => console.log("error"))
+      var jsonFeatures:any = {}
+      features.forEach((item:IFeature) => jsonFeatures[(item.name)] = { properties : item.properties});
+
+      setCurrentType({
+        ...currentType,
+          features : jsonFeatures
+        }
+      )
+    }, [features])
+
+    useEffect(() => {
+      getPoliciesService().then(res => {setPolicies(res)
+      console.log(res)}).catch(() => console.log("error"))
     }, [])
 
     const editPreviewOnClick = () => {
