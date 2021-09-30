@@ -9,7 +9,11 @@ import { getAllPoliciesService } from 'services/policies/getAllPoliciesService'
 import { ISelect } from 'utils/interfaces/select'
 import { SelectableValue } from '@grafana/data/types/select'
 
-export const FormType = () => {
+interface parameters {
+  path : string
+}
+
+export const FormType = ({path} : parameters) => {
 
     const [attributes, setAttributes] = useState<IAttribute[]>([])
     const [features, setFeatures] = useState<IFeature[]>([])
@@ -21,10 +25,10 @@ export const FormType = () => {
     const handleFinalSubmit = (data:IDittoThing) => {
       setCurrentType({
         ...currentType,
-        thingId : data.thingId,
-        policyId : data.policyId
+        thingId : data.thingId
       })
       createTypeService(currentType)
+      window.location.replace(path + "?tab=types")
     }
   
     useEffect(() => {
@@ -117,7 +121,7 @@ export const FormType = () => {
             </Field>
             <Button variant="secondary" onClick={editPreviewOnClick}>Edit</Button>
           </div>
-      </div>
-    </Fragment>
-  )
+        </div>
+      </Fragment>
+    )
 }

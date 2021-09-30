@@ -1,5 +1,5 @@
-import React, { Fragment, ChangeEvent } from 'react'
-import {Button, Input, Field, FieldSet, Checkbox, Form, FormAPI, List } from '@grafana/ui'
+import React, { Fragment } from 'react'
+import {Button, Input, Field, FieldSet, Form, FormAPI, List } from '@grafana/ui'
 import { ISubject } from 'utils/interfaces/dittoPolicy'
 import { ListElement } from 'components/general/listElement'
 import { ElementHeader } from 'components/general/elementHeader'
@@ -20,16 +20,17 @@ export const FormSubjects = ({subjects, setSubjects} : parameters) => {
         ])
     }
 
+    /*
     const handleOnChangeCurrentUserCheckbox = (event:ChangeEvent<HTMLInputElement>) => {
         alert("cambio")
-    }
+    }*/
 
     return (
         <Fragment>
             <ElementHeader title="Subjects" description={subjectDescription} isLegend={false}/>
             <div className="row">
                 <div className="col-8">
-                    <Checkbox className="mb-3" label="Add current user as subject" onChange={handleOnChangeCurrentUserCheckbox}/>
+                    {/*<Checkbox className="mb-3" label="Add current user as subject" onChange={handleOnChangeCurrentUserCheckbox}/>*/}
                     <Form id="subjectForm" onSubmit={handleOnSubmitSubject}>
                     {({register, errors}:FormAPI<ISubject>) => {
                         return(

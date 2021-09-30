@@ -13,12 +13,17 @@ export const ListTypes = ( {path} : parameters ) => {
 
     const [types, setTypes] = useState<ISelect[]>([])
 
+    const updateTypes = () => {
+        getTypesService().then((res) => setTypes(getSelectFromDittoThingArray(res.items)))
+    }
+
     const handleDeleteType = (value:string) => {
         deleteTypeService(value)
+        updateTypes()
     }
 
     useEffect(() => { //https://www.smashingmagazine.com/2020/06/rest-api-react-fetch-axios/
-        getTypesService().then((res) => setTypes(getSelectFromDittoThingArray(res.items)))
+        updateTypes()
     }, [])
 
     return (

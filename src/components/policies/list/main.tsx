@@ -1,6 +1,7 @@
 import { CheckBySelect } from 'components/general/checkBySelect';
 import React, { useState, useEffect } from 'react';
 import { getAllPoliciesService } from 'services/policies/getAllPoliciesService';
+import { getPolicyByIdService } from 'services/policies/getPolicyByIdService';
 import { ISelect } from 'utils/interfaces/select';
 /*import { List } from '@grafana/ui';
 import { ControlledCollapse } from '@grafana/ui';
@@ -19,13 +20,23 @@ export const ListPolicies = ({path} : parameters) => {
         
     }
 
+
     useEffect(() => {
         getAllPoliciesService().then((res:string[]) => {
-            setPolicies(res.map(item => {return {label: item, value: item}}))
-        }).catch(() => console.log("error"))
+            var policiesList:ISelect[] = []
+            res.forEach(async item => {
+                const text = await getPolicyByIdService(item)
+                policiesList.push({
+                    label: item,
+                    value: item,
+                    text: JSON.stringify(text, undefined, 4)
+                })
+            })
+            setPolicies(policiesList)
+        })
     }, [])
     
     return (
-        <CheckBySelect path={path} tab="policies" name="policy" values={policies} deleteFunction={handleDeletePolicy}/>
+        <CheckBySelect path={path} tab="policies" name="policy" values={policies} deleteFunction={handleDeletePolicy} />
     )
 }

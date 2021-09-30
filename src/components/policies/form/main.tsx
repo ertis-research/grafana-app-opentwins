@@ -2,18 +2,22 @@ import React, { useState, Fragment, useEffect, ChangeEvent } from 'react'
 import { TextArea, Input, Field, List, Legend, Button, Form, FormAPI, FieldSet } from '@grafana/ui'
 import { IEntry, IPolicy, IResource, ISubject } from 'utils/interfaces/dittoPolicy'
 import { ListElement } from 'components/general/listElement'
-import { initResources } from 'utils/consts'
+import { initResources, initSubjects } from 'utils/consts'
 import { FormSubjects } from './subcomponents/formSubjects'
 import { FormResources } from './subcomponents/formResources'
 import {} from '@emotion/core'
 import { createPolicyService } from 'services/policies/createPolicyService'
 
-export function CreatePolicy() {
+interface parameters {
+    path : string
+}
+
+export function CreatePolicy( {path} : parameters ) {
 
     const [entries, setEntries] = useState<IEntry[]>([])
     const [entry, setEntry] = useState<IEntry>({ name: "" })
     const [currentPolicy, setCurrentPolicy] = useState<IPolicy>({ policyId: "", entries: []})
-    const [subjects, setSubjects] = useState<ISubject[]>([])
+    const [subjects, setSubjects] = useState<ISubject[]>(initSubjects)
     const [resources, setResources] = useState<IResource[]>(initResources)
 
     const handleOnSubmitEntry = (data:{name:string}) => {
@@ -89,6 +93,7 @@ export function CreatePolicy() {
             policyId : data.name
         })
         createPolicyService(currentPolicy)
+        window.location.replace(path + "?tab=policies")
     }
 
     const handleOnChangeInputName = (event:ChangeEvent<HTMLInputElement>) => {

@@ -1,7 +1,7 @@
 import { AppRootProps } from '@grafana/data';
-import { CreateTwin } from 'components/twins/createTwin';
-import { ListTwins } from 'components/twins/listTwins';
-import { ListThings } from 'components/things/listThings';
+import { CreateTwin } from 'components/twins/form/main';
+import { ListTwins } from 'components/twins/list/main';
+import { ListThings } from 'components/things/list/main';
 import React, { FC } from 'react';
 
 export const TwinsPage: FC<AppRootProps> = ({ query, path, meta }) => {

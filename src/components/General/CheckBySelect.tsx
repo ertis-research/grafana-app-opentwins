@@ -13,7 +13,7 @@ interface parameters {
 
 export const CheckBySelect = ({ path, tab, name, values, deleteFunction } : parameters) => {
 
-    const [value, setValue] = useState<SelectableValue<number>>()
+    const [value, setValue] = useState<SelectableValue<string>>()
     const [isOpen, setIsOpen] = useState(false)
 
     const handleOnClickDelete = () => {
@@ -23,18 +23,16 @@ export const CheckBySelect = ({ path, tab, name, values, deleteFunction } : para
     }
 
     const handleOnConfirmModal = () => {
-        if(value?.value !== undefined) deleteFunction(value.value)
+        if(value?.value !== undefined){
+            deleteFunction(value.value)
+            setValue(undefined)
+        } 
         setIsOpen(false)
     }
 
     const handleOnDismissModal = () => {
         setIsOpen(false)
     }
-
-    //Para hacer el get de policy: hacer un useEffect que ejecute una funcion que pasamos como parametro. A esta
-    //funcion le pasamos value y setValue para que pueda hacer sus cosas. En el caso de no necesitas funcion dejar
-    //parametro como undefined y si lo es no se tendrá en cuenta
-
 
     const tabPath = (tab !== undefined) ? "tab=" + tab + "&" : "" 
 

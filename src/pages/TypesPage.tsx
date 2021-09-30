@@ -1,6 +1,6 @@
 import React, { FC } from 'react';
 import { FormType } from 'components/types/form/main';
-import { ListTypes } from 'components/types/list/listTypes';
+import { ListTypes } from 'components/types/list/main';
 import { AppRootProps } from '@grafana/data'
 
 export const TypesPage: FC<AppRootProps> = ({ query, path, meta }) => {
@@ -8,7 +8,7 @@ export const TypesPage: FC<AppRootProps> = ({ query, path, meta }) => {
   switch (query["mode"]) {
     case "create":
       return (
-        <FormType />
+        <FormType path={path} />
       );
     default:
       return (

@@ -4,13 +4,14 @@ import { IPolicy } from "utils/interfaces/dittoPolicy"
 import { getAllPoliciesService } from "./getAllPoliciesService"
 
 export const createPolicyService = (data:IPolicy) => {
+  console.log(JSON.stringify({ entries : data.entries}))
   return fetchDittoService("/policies/"+ data.policyId, {
     method: 'PUT',
     headers: {
       "Authorization": 'Basic '+btoa('ditto:ditto'),
-      "Content-Type": "application/merge-patch+json; charset=UTF-8"
+      "Content-Type": "application/json; charset=UTF-8"
     },
-    body: JSON.stringify(data.entries)
+    body: JSON.stringify({ entries : data.entries})
   }).then((res:any) => {
     return getAllPoliciesService().then(res => {
       res.push(data.policyId)
