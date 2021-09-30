@@ -23,7 +23,7 @@ export interface IAttribute {
     value: string
 }
 
-export interface IMainObject {
+export interface ITwin {
     id: string,
     name: string,
     image?: string,

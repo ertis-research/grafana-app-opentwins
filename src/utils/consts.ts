@@ -4,10 +4,10 @@ export const KUBERNETES_NAMESPACE = 'cloud2edge'
 export const DITTO_ENDPOINT = 'http://research.adabyron.uma.es:8054/api/2'
 export const HONO_ENDPOINT = 'http://research.adabyron.uma.es:8046/v1'
 export const TYPES_NAMESPACE_IN_DITTO = 'types'
-export const MAINOBJECTS_THING_IN_DITTO = 'namespaces:namespaces'
+export const TWINS_THING_IN_DITTO = 'namespaces:namespaces'
 export const POLICIES_THING_IN_DITTO = 'default:policies'
 
-export const DEFAULT_IMAGE_MAINOBJECT = 'https://cdn.pixabay.com/photo/2020/10/31/19/25/robot-5702074_960_720.png'
+export const DEFAULT_IMAGE_TWIN = 'https://cdn.pixabay.com/photo/2020/10/31/19/25/robot-5702074_960_720.png'
 
 export const initResources = [
     {name: "policy", read: undefined, write: undefined, erasable: false, description: "Will be applied to the policy itself"},

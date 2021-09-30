@@ -2,7 +2,6 @@ import React, { Fragment, useState, useEffect, ChangeEvent} from 'react'
 import { Button, Field, TextArea, Input, Form, FormAPI, Select, Icon, FieldSet, InputControl } from '@grafana/ui'
 import {} from '@emotion/core'; //https://github.com/grafana/grafana/issues/26512
 import { createTypeService } from 'services/types/createTypeService'
-import { TYPES_NAMESPACE_IN_DITTO } from 'utils/consts'
 import { IAttribute, IDittoThingSimple, IDittoThing, IFeature } from 'utils/interfaces/dittoThing'
 import { FormAttributes } from './subcomponents/formAttributes'
 import { FormFeatures } from './subcomponents/formFeatures'
@@ -20,14 +19,19 @@ export const FormType = () => {
     const [value, setValue] = useState<SelectableValue<string>>()
 
     const handleFinalSubmit = (data:IDittoThing) => {
-        createTypeService(TYPES_NAMESPACE_IN_DITTO, data.thingId, data)
+      setCurrentType({
+        ...currentType,
+        thingId : data.thingId,
+        policyId : data.policyId
+      })
+      createTypeService(currentType)
     }
   
     useEffect(() => {
-        setCurrentType({
-          ...currentType,
-            policyId : ((value !== undefined && value.value !== undefined) ? value.value : "")
-        })
+      setCurrentType({
+        ...currentType,
+          policyId : ((value !== undefined && value.value !== undefined) ? value.value : "")
+      })
     }, [value])
 
     useEffect(() => {
@@ -74,7 +78,7 @@ export const FormType = () => {
         <h2>Create new type</h2>
         <div className="row">
           <div className="col-8">
-            <Form onSubmit={handleFinalSubmit}>
+            <Form id="formTypeFinal" onSubmit={handleFinalSubmit}>
               {({register, errors, control}:FormAPI<IDittoThingSimple>) => {
                 return (
                   <FieldSet>
@@ -112,8 +116,8 @@ export const FormType = () => {
               <TextArea value={JSON.stringify(currentType, undefined, 4)} rows={25} /*className="w-100 h-100 mb-4" style={{boxSizing: "border-box"}}*/ readOnly={readOnly}/>
             </Field>
             <Button variant="secondary" onClick={editPreviewOnClick}>Edit</Button>
-            </div>
-        </div>
-      </Fragment>
-    )
-  }
+          </div>
+      </div>
+    </Fragment>
+  )
+}

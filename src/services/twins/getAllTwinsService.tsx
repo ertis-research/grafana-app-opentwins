@@ -1,7 +1,8 @@
 import { fetchDittoService } from "services/general/fetchDittoService"
+import { TWINS_THING_IN_DITTO } from "utils/consts"
 
-export const getTwinsService = ( namespace:string ) => {
-    return fetchDittoService("/search/things?namespaces=" + namespace, {
+export const getAllTwinsService = () => {
+    return fetchDittoService("/things/" + TWINS_THING_IN_DITTO + "/attributes/list", {
       method: 'GET',
       headers: {
         "Authorization": 'Basic '+btoa('ditto:ditto'),

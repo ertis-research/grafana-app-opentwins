@@ -1,7 +1,7 @@
 import { AppRootProps } from '@grafana/data';
-import { CreateMainObject } from 'components/mainObject/createMainObject';
-import { ListMainObject } from 'components/mainObject/listMainObject';
+import { CreateTwin } from 'components/twins/createTwin';
 import { ListTwins } from 'components/twins/listTwins';
+import { ListThings } from 'components/things/listThings';
 import React, { FC } from 'react';
 
 export const TwinsPage: FC<AppRootProps> = ({ query, path, meta }) => {
@@ -11,16 +11,16 @@ export const TwinsPage: FC<AppRootProps> = ({ query, path, meta }) => {
       const id = query["id"]
       if(id !== undefined){
         return (
-          <ListTwins path={path} id={id}/>
+          <ListThings path={path} id={id}/>
         );
       }
     case "create":
       return (
-        <CreateMainObject path={path} />
+        <CreateTwin path={path} />
       );
     default:
       return (
-        <ListMainObject path={path}/>
+        <ListTwins path={path}/>
       );
   }
 

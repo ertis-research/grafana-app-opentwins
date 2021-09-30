@@ -1,5 +1,5 @@
-import { getTwinsService } from "services/twins/getTwinsService"
+import { getThingsByTwinService } from "services/things/getThingsByTwinService"
 
 export const getTypesService = () => {
-    return getTwinsService("types")
+    return getThingsByTwinService("types")
 }

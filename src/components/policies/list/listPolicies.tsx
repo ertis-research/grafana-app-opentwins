@@ -15,6 +15,10 @@ export const ListPolicies = ({path} : parameters) => {
 
     const [policies, setPolicies] = useState<ISelect[]>([])
 
+    const handleDeletePolicy = () => {
+        
+    }
+
     useEffect(() => {
         getAllPoliciesService().then((res:string[]) => {
             setPolicies(res.map(item => {return {label: item, value: item}}))
@@ -22,6 +26,6 @@ export const ListPolicies = ({path} : parameters) => {
     }, [])
     
     return (
-        <CheckBySelect path={path} tab="policies" name="policy" values={policies}/>
+        <CheckBySelect path={path} tab="policies" name="policy" values={policies} deleteFunction={handleDeletePolicy}/>
     )
 }
