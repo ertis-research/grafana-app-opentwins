@@ -9,9 +9,10 @@ interface parameters {
     name : string
     values : ISelect[]
     deleteFunction : any
+    buttonHref ?: string
 }
 
-export const CheckBySelect = ({ path, tab, name, values, deleteFunction } : parameters) => {
+export const CheckBySelect = ({ path, tab, name, values, deleteFunction, buttonHref } : parameters) => {
 
     const [value, setValue] = useState<SelectableValue<string>>()
     const [isOpen, setIsOpen] = useState(false)
@@ -34,12 +35,12 @@ export const CheckBySelect = ({ path, tab, name, values, deleteFunction } : para
         setIsOpen(false)
     }
 
-    const tabPath = (tab !== undefined) ? "tab=" + tab + "&" : "" 
+    const href = (buttonHref !== undefined) ? buttonHref : '?' + ((tab !== undefined) ? "tab=" + tab + "&" : "" ) + 'mode=create'
 
     return (
         <Fragment>
             <HorizontalGroup justify="center">
-                <LinkButton variant="primary" href={path + '?' + tabPath + 'mode=create'}>
+                <LinkButton variant="primary" href={path + href}>
                     Create new {name}
                 </LinkButton>
             </HorizontalGroup>

@@ -1,7 +1,8 @@
 import React, { Fragment } from 'react'
 import { IAttribute } from 'utils/interfaces/dittoThing'
-import { Button, Field, Input, Form, FormAPI, FieldSet } from '@grafana/ui'
+import { Button, Field, Input, Form, FormAPI, FieldSet, List } from '@grafana/ui'
 import { ElementHeader } from 'components/general/elementHeader'
+import { ListElement } from 'components/general/listElement'
 
 interface parameters {
     attributes : IAttribute[]
@@ -40,23 +41,34 @@ export const FormAttributes = ({attributes, setAttributes} : parameters) => {
     return (
         <Fragment>
             <ElementHeader title="Attributes" description={attributeDescription} isLegend={true}/>
-            <Form onSubmit={handleSubmitAttributes}>
-            {({register, errors}:FormAPI<IAttribute>) => {
-                return (
-                    <Fragment>
-                        <FieldSet>
-                            <Field label="Name">
-                                <Input {...register("key", { required : true })} type="text"/>
-                            </Field>
-                            <Field label="Value">
-                                <Input {...register("value", { required : true })} type="text"/>
-                            </Field>
-                            <Button type="submit" variant="secondary">Add</Button>
-                        </FieldSet>
-                    </Fragment>
-                )
-            }}
-            </Form>
+            <div className="row">
+                <div className="col-8">
+                    <Form onSubmit={handleSubmitAttributes}>
+                    {({register, errors}:FormAPI<IAttribute>) => {
+                        return (
+                            <Fragment>
+                                <FieldSet>
+                                    <Field label="Name">
+                                        <Input {...register("key", { required : true })} type="text"/>
+                                    </Field>
+                                    <Field label="Value">
+                                        <Input {...register("value", { required : true })} type="text"/>
+                                    </Field>
+                                    <Button type="submit" variant="secondary">Add</Button>
+                                </FieldSet>
+                            </Fragment>
+                        )
+                    }}
+                    </Form>
+                </div>
+                <div className="col-4">
+                    <List 
+                        items={attributes}
+                        getItemKey={item => (item.key)}
+                        renderItem={item => ListElement((item.key + ":" + item.value), attributes, setAttributes, [{key: "key", value: item.key}, {key:"value", value: item.value}])}
+                    />
+                </div>
+            </div>
         </Fragment>
     )
 }

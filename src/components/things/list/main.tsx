@@ -1,27 +1,39 @@
-import React, { Fragment, useState, useEffect } from 'react';
-import { List, ControlledCollapse } from '@grafana/ui';
+import React, { useState, useEffect } from 'react';
 import { getThingsByTwinService } from 'services/things/getThingsByTwinService';
-import { IDittoThing } from 'utils/interfaces/dittoThing';
-import { getNameFromDittoThing } from 'utils/aux_functions';
+import { CheckBySelect } from 'components/general/checkBySelect';
+import { ISelect } from 'utils/interfaces/select';
+import { getSelectFromDittoThingArray } from 'utils/aux_functions';
 //import { SelectableValue } from '@grafana/data';
 
-export function ListThings(props:any) {
+interface parameters {
+    path : string,
+    id : string
+}
+
+export function ListThings({ path, id } : parameters) {
 
     //const [selectedTwin, setSelectedTwin] = useState<SelectableValue<number>>();
 
-    const [things, setThings] = useState<IDittoThing[]>([])
+    const [things, setThings] = useState<ISelect[]>([])
     
+    const handleDeleteThing = () => {
+        
+    }
+
     useEffect(() => { //https://www.smashingmagazine.com/2020/06/rest-api-react-fetch-axios/
-        getThingsByTwinService(props.id).then(res => setThings(res.items)).catch(() => console.log("error"))
-        console.log(things)
+        getThingsByTwinService(id).then((res) => setThings(getSelectFromDittoThingArray(res.items)))
     }, [])
 
     return (
+        <CheckBySelect path={path} tab="things" name="thing" values={things} deleteFunction={handleDeleteThing} buttonHref={'?mode=create&id=' + id}/>
+
+        /*
         <Fragment>
             <div className="d-flex justify-content-center">
-                <a className="m-3 btn btn-primary" href={props.path + '?mode=create'}>Create new thing</a>
+                <a className="m-3 btn btn-primary" href={path + '?mode=create&id=' + id}>Create new thing</a>
             </div>
             <h2>Check existing things</h2>
+
             <List
                 items={things}
                 getItemKey={item => item.thingId}
@@ -35,6 +47,6 @@ export function ListThings(props:any) {
                     </ControlledCollapse>
                 )}
             />
-        </Fragment>
+        </Fragment>*/
     );
 }

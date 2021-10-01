@@ -1,7 +1,7 @@
 import { CheckBySelect } from 'components/general/checkBySelect'
 import React, { useEffect, useState } from 'react'
 import { deleteTypeService } from 'services/types/deleteTypeService'
-import { getTypesService } from 'services/types/getTypesService'
+import { getAllTypesService } from 'services/types/getAllTypesService'
 import { getSelectFromDittoThingArray } from 'utils/aux_functions'
 import { ISelect } from 'utils/interfaces/select'
 
@@ -14,7 +14,7 @@ export const ListTypes = ( {path} : parameters ) => {
     const [types, setTypes] = useState<ISelect[]>([])
 
     const updateTypes = () => {
-        getTypesService().then((res) => setTypes(getSelectFromDittoThingArray(res.items)))
+        getAllTypesService().then((res) => setTypes(getSelectFromDittoThingArray(res.items)))
     }
 
     const handleDeleteType = (value:string) => {

@@ -92,8 +92,9 @@ export function CreatePolicy( {path} : parameters ) {
             ...currentPolicy,
             policyId : data.name
         })
-        createPolicyService(currentPolicy)
-        window.location.replace(path + "?tab=policies")
+        createPolicyService(currentPolicy).then(() => 
+            window.location.replace(path + "?tab=policies")
+        )
     }
 
     const handleOnChangeInputName = (event:ChangeEvent<HTMLInputElement>) => {
@@ -101,7 +102,7 @@ export function CreatePolicy( {path} : parameters ) {
           ...currentPolicy,
           policyId : event.target.value
         })
-      }
+    }
 
     return (
         <Fragment>
@@ -126,7 +127,7 @@ export function CreatePolicy( {path} : parameters ) {
                             <List 
                                 items={entries}
                                 getItemKey={item => item.name}
-                                renderItem={item => ListElement(item.name, entries, setEntries)}
+                                renderItem={item => ListElement(item.name, entries, setEntries, [{key: "name", value: item.name}])}
                             />
                         </div>
                         <div className="col-9">

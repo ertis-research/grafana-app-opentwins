@@ -56,7 +56,7 @@ export const FormSubjects = ({subjects, setSubjects} : parameters) => {
                     <List 
                         items={subjects}
                         getItemKey={item => (item.subjectIssuer + ":" + item.subject)}
-                        renderItem={item => ListElement((item.subjectIssuer + ":" + item.subject), subjects, setSubjects)}
+                        renderItem={item => ListElement((item.subjectIssuer + ":" + item.subject), subjects, setSubjects, [{key: "subjectIssuer", value: item.subjectIssuer}, {key:"subject", value: item.subject}])}
                     />
                 </div>
             </div>

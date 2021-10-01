@@ -1,8 +1,9 @@
 import React, { Fragment } from 'react'
-import { Button, Field, Input, Form, FormAPI } from '@grafana/ui'
+import { Button, Field, Input, Form, FormAPI, List } from '@grafana/ui'
 import { IFeature } from 'utils/interfaces/dittoThing';
 import {} from '@emotion/core';
 import { ElementHeader } from 'components/general/elementHeader';
+import { ListElement } from 'components/general/listElement';
 
 interface parameters {
     features : IFeature[]
@@ -34,18 +35,29 @@ export const FormFeatures = ({features, setFeatures} : parameters) => {
     return (
         <Fragment>
             <ElementHeader title="Features" description={featuresDescription} isLegend={true}/>
-            <Form onSubmit={handleSubmitFeatures}>
-            {({register, errors}:FormAPI<{name:string}>) => {
-                return (
-                    <Fragment>
-                        <Field label="Name of feature">
-                            <Input {...register("name", { required : true })} type="text"/>
-                        </Field>
-                        <Button type="submit" variant="secondary">Add</Button>
-                    </Fragment>
-                )
-            }}
-            </Form>
+            <div className="row">
+                <div className="col-8">
+                    <Form onSubmit={handleSubmitFeatures}>
+                    {({register, errors}:FormAPI<{name:string}>) => {
+                        return (
+                            <Fragment>
+                                <Field label="Name of feature">
+                                    <Input {...register("name", { required : true })} type="text"/>
+                                </Field>
+                                <Button type="submit" variant="secondary">Add</Button>
+                            </Fragment>
+                        )
+                    }}
+                    </Form>
+                </div>
+                <div className="col-4">
+                    <List 
+                        items={features}
+                        getItemKey={item => (item.name)}
+                        renderItem={item => ListElement(item.name, features, setFeatures, [{key: "name", value: item.name}])}
+                    />
+                </div>
+            </div>
         </Fragment>
     )
 }

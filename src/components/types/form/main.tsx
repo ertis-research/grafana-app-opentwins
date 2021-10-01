@@ -27,8 +27,9 @@ export const FormType = ({path} : parameters) => {
         ...currentType,
         thingId : data.thingId
       })
-      createTypeService(currentType)
-      window.location.replace(path + "?tab=types")
+      createTypeService(currentType).then(() => 
+        window.location.replace(path + "?tab=types")
+      )
     }
   
     useEffect(() => {

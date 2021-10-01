@@ -18,3 +18,12 @@ export const getSelectFromDittoThingArray = (data:IDittoThing[]) => {
             }
     })
 }
+
+export const getSelectWithObjectsFromDittoThingArray = (data:IDittoThing[]) => {
+    return data.map((item:IDittoThing) => {
+        return {
+                label : getNameFromDittoThing(item.thingId),
+                value : item
+            }
+    })
+}
