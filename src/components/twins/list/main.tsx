@@ -27,7 +27,7 @@ export function ListTwins(props:any) {
     }
 
     const twinsMapped = twins.map((item) =>
-        <div className="col-12 col-sm-6 col-md-6 col-lg-4 mb-3" key={item.id}>
+        <div className="col-12 col-sm-6 col-md-6 col-lg-4 mb-3" key={item.twinId}>
             <div>
             <img src={imageIsUndefined(item.image)} className="card-img-top" style={{height: "250px", objectFit: "cover"}} alt="..."/>
             </div>
@@ -36,7 +36,7 @@ export function ListTwins(props:any) {
                     {item.description}
                 </Card.Meta>
                 <Card.Actions>
-                    <LinkButton icon="search" key="seemore" variant="secondary" href={props.path + "?mode=check&id=" + item.id}>
+                    <LinkButton icon="search" key="seemore" variant="secondary" href={props.path + "?mode=check&id=" + item.twinId}>
                         See more
                     </LinkButton>
                     <div></div>

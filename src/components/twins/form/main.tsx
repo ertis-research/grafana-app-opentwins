@@ -3,10 +3,16 @@ import { Button, Field, FieldSet, Input, FormAPI, Form } from '@grafana/ui'
 import { ITwin } from 'utils/interfaces/dittoThing'
 import { createTwinService } from 'services/twins/createTwinService'
 
-export const CreateTwin = (props:any) => {
+interface parameters {
+  path : string
+}
+
+export const CreateTwin = ({path}:parameters) => {
 
     const onSubmit = (data:ITwin) => {
-      createTwinService(data)
+      createTwinService(data).then(() =>
+        window.location.replace(path)
+      )
     }
 
     return (
@@ -16,7 +22,7 @@ export const CreateTwin = (props:any) => {
             <Fragment>
               <FieldSet label="Create new twin">
                 <Field label="Id:">
-                  <Input {...register("id", { required: true })}/>
+                  <Input {...register("twinId", { required: true })}/>
                 </Field> 
                 <Field label="Name:">
                   <Input {...register("name", { required: true })}/>

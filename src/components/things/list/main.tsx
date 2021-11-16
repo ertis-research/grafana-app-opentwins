@@ -3,6 +3,7 @@ import { getThingsByTwinService } from 'services/things/getThingsByTwinService';
 import { CheckBySelect } from 'components/general/checkBySelect';
 import { ISelect } from 'utils/interfaces/select';
 import { getSelectFromDittoThingArray } from 'utils/aux_functions';
+import { deleteThingService } from 'services/things/deleteThingService';
 //import { SelectableValue } from '@grafana/data';
 
 interface parameters {
@@ -16,12 +17,17 @@ export function ListThings({ path, id } : parameters) {
 
     const [things, setThings] = useState<ISelect[]>([])
     
-    const handleDeleteThing = () => {
-        
+    const updateThings = () => {
+        getThingsByTwinService(id).then((res) => setThings(getSelectFromDittoThingArray(res.items)))
+    }
+
+    const handleDeleteThing = (value:string) => {
+        deleteThingService(value)
+        updateThings()
     }
 
     useEffect(() => { //https://www.smashingmagazine.com/2020/06/rest-api-react-fetch-axios/
-        getThingsByTwinService(id).then((res) => setThings(getSelectFromDittoThingArray(res.items)))
+        updateThings()
     }, [])
 
     return (

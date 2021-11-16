@@ -3,9 +3,10 @@ import { IDittoThing } from 'utils/interfaces/dittoThing'
 import { Form, FormAPI, FieldSet, Field, Input, InputControl, Select, Icon, TextArea, Button } from '@grafana/ui'
 import { SelectableValue } from '@grafana/data/types/select'
 import { ISelect } from 'utils/interfaces/select'
-import { getAllTypesService } from 'services/types/getAllTypesService'
-import { getSelectWithObjectsFromDittoThingArray } from 'utils/aux_functions'
+import { getAllThingTypesService } from 'services/thingTypes/getAllThingTypesService'
+import { getSelectWithObjectsFromThingTypesArray } from 'utils/aux_functions'
 import { ElementHeader } from 'components/general/elementHeader'
+import { createThingService } from 'services/things/createThingService'
 
 interface parameters {
     path : string
@@ -20,8 +21,14 @@ export const ThingForm = ({ path, id } : parameters) => {
     const [types, setTypes] = useState<ISelect[]>([])
 
     const descriptionCredentials = "Identity associated with the authentication credentials"
+    const descriptionInformation = "Basic information for creating the Ditto thing"
 
-    const handleOnSubmitFinal = () => {
+    const handleOnSubmitFinal = (data:{thingId:string, type:IDittoThing, authid:string, password:string}) => {
+        currentThing.thingId = data.thingId
+        createThingService(currentThing, id, data.authid, data.password).then(() => 
+            alert("CREADO")
+            //window.location.replace(path + "?mode=check&id=" + id)
+        )
 
     }
 
@@ -46,18 +53,19 @@ export const ThingForm = ({ path, id } : parameters) => {
     }, [value])
 
     useEffect(() => {
-        getAllTypesService().then((res) => setTypes(getSelectWithObjectsFromDittoThingArray(res.items)))
+        getAllThingTypesService().then((res) => setTypes(getSelectWithObjectsFromThingTypesArray(res.items)))
     }, [])
 
     return (
         <Fragment>
             <h2>Create new thing</h2>
             <div className="row">
-                <div className="col-8">
+                <div className="col-6">
                     <Form id="finalForm" onSubmit={handleOnSubmitFinal}>
                     {({register, errors, control}:FormAPI<{thingId:string, type:IDittoThing, authid:string, password:string}>) => {
                         return(
                             <Fragment>
+                                <ElementHeader title="Thing information" description={descriptionInformation} isLegend={true}/>
                                 <FieldSet>
                                     <Field label="ID">
                                         <Input {...register("thingId", { required : true })} type="text" onChange={handleOnChangeThingId}/>
@@ -77,6 +85,7 @@ export const ThingForm = ({ path, id } : parameters) => {
                                         />
                                     </Field>
                                 </FieldSet>
+                                <hr />
                                 <ElementHeader title="Credentials for connection" description={descriptionCredentials} isLegend={true}/>
                                 <FieldSet>
                                     <Field label="Auth-id">
@@ -86,13 +95,14 @@ export const ThingForm = ({ path, id } : parameters) => {
                                         <Input {...register("password", { required : true })} type="password"/>
                                     </Field>
                                 </FieldSet>
+                                <hr />
                                 <Button variant="primary">Create thing</Button>
                             </Fragment>
                         )
                     }}
                     </Form>
                 </div>
-                <div className="col-4">
+                <div className="col-6">
                     <Field label="Preview" className="h-100">
                         <TextArea value={JSON.stringify(currentThing, undefined, 4)} rows={25} readOnly/>
                     </Field>

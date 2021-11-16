@@ -24,8 +24,9 @@ export interface IAttribute {
 }
 
 export interface ITwin {
-    id: string,
+    twinId: string,
     name: string,
+    type?: string,
     image?: string,
     description?: string
 }

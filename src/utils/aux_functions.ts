@@ -1,4 +1,5 @@
 import { IDittoThing } from "./interfaces/dittoThing"
+import { IThingType } from "./interfaces/types"
 
 export const getNameFromDittoThing = (name:string) => {
     const i = name.indexOf(":")
@@ -19,10 +20,29 @@ export const getSelectFromDittoThingArray = (data:IDittoThing[]) => {
     })
 }
 
+export const getSelectFromThingTypeArray = (data:IThingType[]) => {
+    return data.map((item:IThingType) => {
+        return {
+                label : item.thingTypeId,
+                value : item.thingTypeId,
+                text : JSON.stringify(item, undefined, 4)
+            }
+    })
+}
+
 export const getSelectWithObjectsFromDittoThingArray = (data:IDittoThing[]) => {
     return data.map((item:IDittoThing) => {
         return {
                 label : getNameFromDittoThing(item.thingId),
+                value : item
+            }
+    })
+}
+
+export const getSelectWithObjectsFromThingTypesArray = (data:IThingType[]) => {
+    return data.map((item:IThingType) => {
+        return {
+                label : item.thingTypeId,
                 value : item
             }
     })

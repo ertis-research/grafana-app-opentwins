@@ -1,8 +1,8 @@
-import { CheckBySelect } from 'components/general/checkBySelect';
-import React, { useState, useEffect } from 'react';
-import { getAllPoliciesService } from 'services/policies/getAllPoliciesService';
-import { getPolicyByIdService } from 'services/policies/getPolicyByIdService';
-import { ISelect } from 'utils/interfaces/select';
+import { CheckBySelect } from 'components/general/checkBySelect'
+import React, { useState, useEffect } from 'react'
+import { getAllPoliciesService } from 'services/policies/getAllPoliciesService'
+import { IPolicy } from 'utils/interfaces/dittoPolicy'
+import { ISelect } from 'utils/interfaces/select'
 /*import { List } from '@grafana/ui';
 import { ControlledCollapse } from '@grafana/ui';
 import { Select, TextArea, Button } from '@grafana/ui';
@@ -22,17 +22,14 @@ export const ListPolicies = ({path} : parameters) => {
 
 
     useEffect(() => {
-        getAllPoliciesService().then((res:string[]) => {
-            var policiesList:ISelect[] = []
-            res.forEach(async item => {
-                const text = await getPolicyByIdService(item)
-                policiesList.push({
-                    label: item,
-                    value: item,
-                    text: JSON.stringify(text, undefined, 4)
-                })
-            })
-            setPolicies(policiesList)
+        getAllPoliciesService().then((res:IPolicy[]) => {
+            setPolicies(res.map((item:IPolicy) => {
+                return {
+                    label : item.policyId,
+                    value : item,
+                    text: JSON.stringify(item, undefined, 4)
+                }
+            }))
         })
     }, [])
     

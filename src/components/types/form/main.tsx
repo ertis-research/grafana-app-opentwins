@@ -1,13 +1,15 @@
 import React, { Fragment, useState, useEffect, ChangeEvent} from 'react'
 import { Button, Field, TextArea, Input, Form, FormAPI, Select, Icon, FieldSet, InputControl } from '@grafana/ui'
 import {} from '@emotion/core'; //https://github.com/grafana/grafana/issues/26512
-import { createTypeService } from 'services/types/createTypeService'
-import { IAttribute, IDittoThingSimple, IDittoThing, IFeature } from 'utils/interfaces/dittoThing'
+import { createThingTypeService } from 'services/thingTypes/createThingTypeService'
+import { IAttribute, IFeature } from 'utils/interfaces/dittoThing'
 import { FormAttributes } from './subcomponents/formAttributes'
 import { FormFeatures } from './subcomponents/formFeatures'
 import { getAllPoliciesService } from 'services/policies/getAllPoliciesService'
 import { ISelect } from 'utils/interfaces/select'
 import { SelectableValue } from '@grafana/data/types/select'
+import { IThingType, IThingTypeSimple } from 'utils/interfaces/types';
+import { IPolicy } from 'utils/interfaces/dittoPolicy';
 
 interface parameters {
   path : string
@@ -17,17 +19,17 @@ export const FormType = ({path} : parameters) => {
 
     const [attributes, setAttributes] = useState<IAttribute[]>([])
     const [features, setFeatures] = useState<IFeature[]>([])
-    const [currentType, setCurrentType] = useState<IDittoThing>({thingId:"", policyId:""})
+    const [currentType, setCurrentType] = useState<IThingType>({thingTypeId:"", policyId:""})
     const [readOnly, setReadOnly] = useState(true)
     const [policies, setPolicies] = useState<ISelect[]>([])
     const [value, setValue] = useState<SelectableValue<string>>()
 
-    const handleFinalSubmit = (data:IDittoThing) => {
+    const handleFinalSubmit = (data:IThingType) => {
       setCurrentType({
         ...currentType,
-        thingId : data.thingId
+        thingTypeId : data.thingTypeId
       })
-      createTypeService(currentType).then(() => 
+      createThingTypeService(currentType).then(() => 
         window.location.replace(path + "?tab=types")
       )
     }
@@ -62,8 +64,13 @@ export const FormType = ({path} : parameters) => {
     }, [features])
 
     useEffect(() => {
-      getAllPoliciesService().then((res:string[]) => {
-        setPolicies(res.map(item => {return {label: item, value: item}}))
+      getAllPoliciesService().then((res:IPolicy[]) => {
+        setPolicies(res.map((item:IPolicy) => {
+          return {
+              label : item.policyId,
+              value : item.policyId
+          }
+      }))
       }).catch(() => console.log("error"))
     }, [])
 
@@ -74,7 +81,7 @@ export const FormType = ({path} : parameters) => {
     const handleOnChangeInputName = (event:ChangeEvent<HTMLInputElement>) => {
       setCurrentType({
         ...currentType,
-        thingId : event.target.value
+        thingTypeId : event.target.value
       })
     }
 
@@ -84,11 +91,11 @@ export const FormType = ({path} : parameters) => {
         <div className="row">
           <div className="col-8">
             <Form id="formTypeFinal" onSubmit={handleFinalSubmit}>
-              {({register, errors, control}:FormAPI<IDittoThingSimple>) => {
+              {({register, errors, control}:FormAPI<IThingTypeSimple>) => {
                 return (
                   <FieldSet>
                     <Field label="Name">
-                      <Input {...register("thingId", {required:true})} type="text" onChange={handleOnChangeInputName}/>
+                      <Input {...register("thingTypeId", {required:true})} type="text" onChange={handleOnChangeInputName}/>
                     </Field>
                     <Field label="Policy">
                       <InputControl

@@ -1,23 +1,14 @@
-import { fetchDittoService } from "services/general/fetchDittoService"
-import { fetchHonoService } from "services/general/fetchHonoService"
-import { TWINS_THING_IN_DITTO } from "utils/consts"
 import { ITwin } from "utils/interfaces/dittoThing"
-import { getAllTwinsService } from "./getAllTwinsService"
+import { fetchService } from "services/general/fetchService"
+import { DITTO_EXTENDED_API_ENDPOINT } from "utils/consts"
 
 export const createTwinService = ( twin:ITwin ) => {
-  return fetchHonoService("/tenants/"+ twin.id, {
-    method: 'POST'
-  }).then((res:any) => {
-    return getAllTwinsService().then(res => {
-      res.push(twin)
-      return fetchDittoService("/things/" + TWINS_THING_IN_DITTO + "/attributes/list", {
-        method: 'PATCH',
-        headers: {
-          "Authorization": 'Basic '+btoa('ditto:ditto'),
-          "Content-Type": "application/merge-patch+json; charset=UTF-8"
-        },
-        body: JSON.stringify(res)
-      })
-    }).catch(() => console.log("error"))
+  return fetchService(DITTO_EXTENDED_API_ENDPOINT + "/twins/" + twin.twinId, {
+    method: 'POST',
+    headers: {
+      "Authorization": 'Basic '+btoa('ditto:ditto'),
+      "Accept": "application/json"
+    },
+    body: JSON.stringify(twin)
   }).catch(() => console.log("error"))
 }
