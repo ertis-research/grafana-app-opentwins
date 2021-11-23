@@ -3,6 +3,7 @@ import { getAllTwinsService } from 'services/twins/getAllTwinsService';
 import { ITwin } from 'utils/interfaces/dittoThing';
 import { Card, LinkButton, IconButton, Legend, HorizontalGroup } from '@grafana/ui'
 import { DEFAULT_IMAGE_TWIN } from 'utils/consts';
+import { deleteTwinService } from 'services/twins/deleteTwinService';
 
 export function ListTwins(props:any) {
     /*
@@ -15,15 +16,22 @@ export function ListTwins(props:any) {
 
     const [twins, setTwins] = useState<ITwin[]>([])
 
-    useEffect(() => { //https://www.smashingmagazine.com/2020/06/rest-api-react-fetch-axios/
+    const updateTwins = () => {
         getAllTwinsService().then(res => {setTwins(res)
-            console.log("hola")
             console.log(twins)}).catch(() => console.log("error"))
-        
+    }
+
+    useEffect(() => { //https://www.smashingmagazine.com/2020/06/rest-api-react-fetch-axios/
+        updateTwins()
     }, [])
 
     const imageIsUndefined = (url:(string|undefined)) => {
         return (url !== undefined && url !== '') ? url : DEFAULT_IMAGE_TWIN + ''
+    }
+
+    const handleOnClickDelete = (twinId:string) => {
+        deleteTwinService(twinId)
+        updateTwins()
     }
 
     const twinsMapped = twins.map((item) =>
@@ -43,7 +51,7 @@ export function ListTwins(props:any) {
                 </Card.Actions>
                 <Card.SecondaryActions>
                     <IconButton key="edit" name="pen" tooltip="Edit" />
-                    <IconButton key="delete" name="trash-alt" tooltip="Delete" />
+                    <IconButton key="delete" name="trash-alt" tooltip="Delete" onClick={() => handleOnClickDelete(item.twinId)}/>
                 </Card.SecondaryActions>
             </Card>
         </div>
@@ -57,7 +65,7 @@ export function ListTwins(props:any) {
                     Create new twin
                 </LinkButton>
             </HorizontalGroup>
-            <Legend>Check existing twins</Legend>
+            <Legend>My twins</Legend>
             <div className="row">
                 {twinsMapped}
             </div>

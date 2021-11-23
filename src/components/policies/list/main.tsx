@@ -1,5 +1,6 @@
-import { CheckBySelect } from 'components/general/checkBySelect'
+import { SelectWithTextArea } from 'components/general/selectWithTextArea'
 import React, { useState, useEffect } from 'react'
+import { deletePolicyService } from 'services/policies/deletePolicy'
 import { getAllPoliciesService } from 'services/policies/getAllPoliciesService'
 import { IPolicy } from 'utils/interfaces/dittoPolicy'
 import { ISelect } from 'utils/interfaces/select'
@@ -16,24 +17,28 @@ export const ListPolicies = ({path} : parameters) => {
 
     const [policies, setPolicies] = useState<ISelect[]>([])
 
-    const handleDeletePolicy = () => {
-        
+    const handleDeletePolicy = (value:string) => {
+        deletePolicyService(value)
+        updatePolicy()
     }
 
-
-    useEffect(() => {
+    const updatePolicy = () => {
         getAllPoliciesService().then((res:IPolicy[]) => {
             setPolicies(res.map((item:IPolicy) => {
                 return {
                     label : item.policyId,
-                    value : item,
+                    value : item.policyId,
                     text: JSON.stringify(item, undefined, 4)
                 }
             }))
         })
+    }
+
+    useEffect(() => {
+        updatePolicy()
     }, [])
     
     return (
-        <CheckBySelect path={path} tab="policies" name="policy" values={policies} deleteFunction={handleDeletePolicy} />
+        <SelectWithTextArea path={path} tab="policies" name="policy" values={policies} deleteFunction={handleDeletePolicy} />
     )
 }

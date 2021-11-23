@@ -6,7 +6,8 @@ import { ISelect } from 'utils/interfaces/select'
 import { getAllThingTypesService } from 'services/thingTypes/getAllThingTypesService'
 import { getSelectWithObjectsFromThingTypesArray } from 'utils/aux_functions'
 import { ElementHeader } from 'components/general/elementHeader'
-import { createThingService } from 'services/things/createThingService'
+import { IThingType } from 'utils/interfaces/types'
+import { createThingByTypeService } from 'services/things/createThingByTypeService'
 
 interface parameters {
     path : string
@@ -16,19 +17,26 @@ interface parameters {
 export const ThingForm = ({ path, id } : parameters) => {
     
     const [currentThing, setCurrentThing] = useState<IDittoThing>({ thingId: "", policyId: ""})
-    const [value, setValue] = useState<SelectableValue<IDittoThing>>()
+    const [value, setValue] = useState<SelectableValue<IThingType>>()
     //const [policies, setPolicies] = useState<ISelect[]>([])
-    const [types, setTypes] = useState<ISelect[]>([])
+    const [thingTypes, setThingTypes] = useState<ISelect[]>([])
 
     const descriptionCredentials = "Identity associated with the authentication credentials"
     const descriptionInformation = "Basic information for creating the Ditto thing"
 
-    const handleOnSubmitFinal = (data:{thingId:string, type:IDittoThing, authid:string, password:string}) => {
+    const handleOnSubmitFinal = (data:{thingId:string, type:IThingType, authid:string, password:string}) => {
         currentThing.thingId = data.thingId
-        createThingService(currentThing, id, data.authid, data.password).then(() => 
+        /*createThingService(currentThing, id, data.authid, data.password).then(() => 
             alert("CREADO")
             //window.location.replace(path + "?mode=check&id=" + id)
+        )*/
+        if(value?.value !== undefined){
+            createThingByTypeService(data.thingId, value.value.thingTypeId, id, data.authid, data.password).then(() => 
+            alert("CREADO")
+        //window.location.replace(path + "?mode=check&id=" + id)
         )
+        }
+        
 
     }
 
@@ -53,7 +61,7 @@ export const ThingForm = ({ path, id } : parameters) => {
     }, [value])
 
     useEffect(() => {
-        getAllThingTypesService().then((res) => setTypes(getSelectWithObjectsFromThingTypesArray(res.items)))
+        getAllThingTypesService().then((res) => setThingTypes(getSelectWithObjectsFromThingTypesArray(res)))
     }, [])
 
     return (
@@ -62,7 +70,7 @@ export const ThingForm = ({ path, id } : parameters) => {
             <div className="row">
                 <div className="col-6">
                     <Form id="finalForm" onSubmit={handleOnSubmitFinal}>
-                    {({register, errors, control}:FormAPI<{thingId:string, type:IDittoThing, authid:string, password:string}>) => {
+                    {({register, errors, control}:FormAPI<{thingId:string, type:IThingType, authid:string, password:string}>) => {
                         return(
                             <Fragment>
                                 <ElementHeader title="Thing information" description={descriptionInformation} isLegend={true}/>
@@ -74,7 +82,7 @@ export const ThingForm = ({ path, id } : parameters) => {
                                         <InputControl
                                             render={({field}) => 
                                             <Select {...field} 
-                                                options={types}
+                                                options={thingTypes}
                                                 value={value}
                                                 onChange={v => setValue(v)}
                                                 prefix={<Icon name="arrow-down"/>} 

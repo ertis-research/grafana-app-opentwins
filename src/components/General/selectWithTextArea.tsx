@@ -1,5 +1,5 @@
 import React, { useState, Fragment } from 'react'
-import { Select, TextArea, Button, HorizontalGroup, LinkButton, Legend, Icon, ConfirmModal } from '@grafana/ui'
+import { Select, TextArea, Button, Icon, ConfirmModal, LinkButton } from '@grafana/ui'
 import { SelectableValue } from '@grafana/data'
 import { ISelect } from 'utils/interfaces/select'
 
@@ -12,7 +12,7 @@ interface parameters {
     buttonHref ?: string
 }
 
-export const CheckBySelect = ({ path, tab, name, values, deleteFunction, buttonHref } : parameters) => {
+export const SelectWithTextArea = ({ path, tab, name, values, deleteFunction, buttonHref } : parameters) => {
 
     const [value, setValue] = useState<SelectableValue<string>>()
     const [isOpen, setIsOpen] = useState(false)
@@ -39,18 +39,21 @@ export const CheckBySelect = ({ path, tab, name, values, deleteFunction, buttonH
 
     return (
         <Fragment>
-            <HorizontalGroup justify="center">
-                <LinkButton variant="primary" href={path + href}>
-                    Create new {name}
-                </LinkButton>
-            </HorizontalGroup>
-            <Legend>Check an existing {name}</Legend>
-            <Select
-                options={values}
-                value={value}
-                onChange={v => setValue(v)}
-                prefix={<Icon name="arrow-down"/>}
-            />
+            <div className="row">
+                <div className="col-md-8 col-12">
+                    <Select
+                        options={values}
+                        value={value}
+                        onChange={v => setValue(v)}
+                        prefix={<Icon name="search"/>}
+                    />
+                </div>
+                <div className="col-md-4 text-end col-12">
+                    <LinkButton variant="primary" href={path + href}>
+                        Create new {name}
+                    </LinkButton>
+                </div>
+            </div>
             <TextArea className="mt-3" rows={25} value={value?.text === undefined ? "" : value.text} readOnly/>
             <div className="d-flex justify-content-center">
                 <Button className="m-3">Edit</Button>

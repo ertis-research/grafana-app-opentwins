@@ -1,9 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Fragment } from 'react';
 import { getThingsByTwinService } from 'services/things/getThingsByTwinService';
-import { CheckBySelect } from 'components/general/checkBySelect';
+import { SelectWithTextArea } from 'components/general/selectWithTextArea';
 import { ISelect } from 'utils/interfaces/select';
 import { getSelectFromDittoThingArray } from 'utils/aux_functions';
 import { deleteThingService } from 'services/things/deleteThingService';
+import { Legend } from '@grafana/ui';
 //import { SelectableValue } from '@grafana/data';
 
 interface parameters {
@@ -31,8 +32,11 @@ export function ListThings({ path, id } : parameters) {
     }, [])
 
     return (
-        <CheckBySelect path={path} tab="things" name="thing" values={things} deleteFunction={handleDeleteThing} buttonHref={'?mode=create&id=' + id}/>
-
+        <Fragment>
+            <Legend>Things of twin {id}</Legend>
+            <SelectWithTextArea path={path} tab="things" name="thing" values={things} deleteFunction={handleDeleteThing} buttonHref={'?mode=create&id=' + id}/>
+        </Fragment>
+      
         /*
         <Fragment>
             <div className="d-flex justify-content-center">

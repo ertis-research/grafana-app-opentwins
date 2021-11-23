@@ -93,7 +93,8 @@ export function CreatePolicy( {path} : parameters ) {
             policyId : data.name
         })
         createPolicyService(currentPolicy).then(() => 
-            window.location.replace(path + "?tab=policies")
+            //window.location.replace(path + "?tab=policies")
+            console.log("Listo")
         )
     }
 

@@ -1,9 +1,16 @@
 export interface ITwinType {
     twinTypeId: string,
     name: string,
-    description: string,
-    image: string,
-    things: IThingList[]
+    description?: string,
+    image?: string,
+    things?: IThingList[]
+}
+
+export interface ITwinTypeSimple {
+    twinTypeId: string,
+    name: string,
+    description?: string,
+    image?: string
 }
 
 export interface IThingList {
@@ -14,7 +21,7 @@ export interface IThingList {
 export interface IThingType {
     thingTypeId: string,
     policyId: string,
-    description?: string,
+    definition?: string,
     attributes?: JSON,
     features?: JSON
 }

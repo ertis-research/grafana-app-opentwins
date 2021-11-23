@@ -15,7 +15,7 @@ interface parameters {
   path : string
 }
 
-export const FormType = ({path} : parameters) => {
+export const FormThingType = ({path} : parameters) => {
 
     const [attributes, setAttributes] = useState<IAttribute[]>([])
     const [features, setFeatures] = useState<IFeature[]>([])
