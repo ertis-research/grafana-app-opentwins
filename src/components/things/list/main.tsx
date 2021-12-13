@@ -1,15 +1,18 @@
-import React, { useState, useEffect, Fragment } from 'react';
+import React, { useState, useEffect, useContext, Fragment } from 'react';
 import { getThingsByTwinService } from 'services/things/getThingsByTwinService';
 import { SelectWithTextArea } from 'components/general/selectWithTextArea';
 import { ISelect } from 'utils/interfaces/select';
 import { getSelectFromDittoThingArray } from 'utils/aux_functions';
 import { deleteThingService } from 'services/things/deleteThingService';
 import { Legend } from '@grafana/ui';
+import { AppPluginMeta, KeyValue } from '@grafana/data';
+import { StaticContext } from 'utils/context/staticContext';
 //import { SelectableValue } from '@grafana/data';
 
 interface parameters {
     path : string,
-    id : string
+    id : string,
+    meta : AppPluginMeta<KeyValue<any>>
 }
 
 export function ListThings({ path, id } : parameters) {
@@ -17,13 +20,15 @@ export function ListThings({ path, id } : parameters) {
     //const [selectedTwin, setSelectedTwin] = useState<SelectableValue<number>>();
 
     const [things, setThings] = useState<ISelect[]>([])
+
+    const context = useContext(StaticContext)
     
     const updateThings = () => {
-        getThingsByTwinService(id).then((res) => setThings(getSelectFromDittoThingArray(res.items)))
+        getThingsByTwinService(context, id).then((res) => setThings(getSelectFromDittoThingArray(res.items)))
     }
 
     const handleDeleteThing = (value:string) => {
-        deleteThingService(value)
+        deleteThingService(context, value)
         updateThings()
     }
 

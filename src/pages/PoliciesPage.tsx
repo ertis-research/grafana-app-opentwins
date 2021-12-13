@@ -2,18 +2,23 @@ import React, { FC } from 'react'
 import { AppRootProps } from '@grafana/data'
 import { CreatePolicy } from 'components/policies/form/main'
 import { ListPolicies } from 'components/policies/list/main'
+import { StaticContext } from 'utils/context/staticContext';
+import { fromMetaToValues } from 'utils/aux_functions';
 
 export const PoliciesPage: FC<AppRootProps> = ({ query, path, meta }) => {
 
+  const valueMeta = fromMetaToValues(meta)
+
+  var component = <ListPolicies path={path} />
   switch (query["mode"]) {
     case "create":
-      return (
-        <CreatePolicy path={path}/>
-      )
-      
-    default:
-      return (
-        <ListPolicies path={path} />
-      )
+      component = <CreatePolicy path={path}/>
+      break
   }
+
+  return (
+    <StaticContext.Provider value={valueMeta}>
+      {component}
+    </StaticContext.Provider>
+  )
 };

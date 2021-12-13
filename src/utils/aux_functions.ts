@@ -1,3 +1,4 @@
+import { AppPluginMeta, KeyValue } from "@grafana/data"
 import { IDittoThing } from "./interfaces/dittoThing"
 import { IThingType } from "./interfaces/types"
 
@@ -46,4 +47,28 @@ export const getSelectWithObjectsFromThingTypesArray = (data:IThingType[]) => {
                 value : item
             }
     })
+}
+
+export const JSONtoIAttributes = (data:any) => {
+    return (Object.keys(data) as string[]).map((key) => (
+        {key: key, value:data[key]}
+    ))
+}
+
+export const JSONtoIFeatures = (data:any) => {
+    return (Object.keys(data) as string[]).map((key) => (
+        {name: key, properties: data[key].properties}
+    ))
+}
+
+export const fromMetaToValues = (meta:AppPluginMeta<KeyValue<any>>) => {
+    var res:any = {}
+    if(meta.jsonData !== undefined){
+        const data = meta.jsonData
+        if(data.ditto_endpoint !== undefined) res['ditto_endpoint'] = data.ditto_endpoint + "/api/2"
+        if(data.ditto_extended_endpoint !== undefined) res['ditto_extended_endpoint'] = data.ditto_extended_endpoint + "/api"
+        if(data.hono_endpoint !== undefined) res['hono_endpoint'] = data.hono_endpoint + "/v1"
+        if(data.hono_tenant !== undefined) res['hono_tenant'] = data.hono_tenant
+    }
+    return res
 }

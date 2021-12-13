@@ -1,8 +1,8 @@
-import { fetchService } from "services/general/fetchService"
-import { DITTO_EXTENDED_API_ENDPOINT } from "utils/consts"
+import { fetchDittoExtendedService } from "services/general/fetchDittoExtendedService"
+import { IStaticContext } from "utils/context/staticContext"
 
-export const deleteTwinService = ( twinId : string ) => {
-  return fetchService(DITTO_EXTENDED_API_ENDPOINT + "/twins/" + twinId, {
+export const deleteTwinService = (context:IStaticContext, twinId : string ) => {
+  return fetchDittoExtendedService(context, "/twins/" + twinId, {
     method: 'DELETE',
     headers: {
       "Authorization": 'Basic '+btoa('ditto:ditto'),

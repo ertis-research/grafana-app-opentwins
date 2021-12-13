@@ -1,4 +1,4 @@
-import React, { Fragment, useState, useEffect, ChangeEvent } from 'react'
+import React, { Fragment, useState, useEffect, useContext, ChangeEvent } from 'react'
 import { Button, Field, FieldSet, Input, FormAPI, Form, TextArea, InputControl, Select, Icon, Switch, RadioButtonGroup, HorizontalGroup } from '@grafana/ui'
 import { ITwin } from 'utils/interfaces/dittoThing'
 import { createTwinService } from 'services/twins/createTwinService'
@@ -8,15 +8,14 @@ import { ISelect } from 'utils/interfaces/select'
 import { getAllTwinTypesService } from 'services/twinTypes/getAllTwinTypes'
 import { Control } from 'react-hook-form'
 import { createTwinFromTypeService } from 'services/twins/createTwinFromTypeService'
+import { enumOptions, options } from 'utils/data/consts'
+import { AppPluginMeta, KeyValue } from '@grafana/data'
+import { StaticContext } from 'utils/context/staticContext'
 //import { switchValueToBoolean } from 'utils/aux_functions'
 
 interface parameters {
   path : string
-}
-
-const enumOptions = {
-  FROM_TYPE: 0,
-  FROM_ZERO: 1
+  meta : AppPluginMeta<KeyValue<any>>
 }
 
 export const CreateTwin = ({path}:parameters) => {
@@ -28,10 +27,7 @@ export const CreateTwin = ({path}:parameters) => {
     const [selected, setSelected] = useState(enumOptions.FROM_TYPE)
     const [customizeType, setCustomizeType] = useState(false)
 
-    const options = [
-      {label: 'From existing type', value: enumOptions.FROM_TYPE},
-      {label: 'From scratch', value: enumOptions.FROM_ZERO}
-    ]
+    const context = useContext(StaticContext)
 
     const handleOnChangeInput = (event:ChangeEvent<HTMLInputElement>) => {
       setCurrentTwin({
@@ -53,24 +49,24 @@ export const CreateTwin = ({path}:parameters) => {
     const onSubmit = (data:ITwin) => {
       if(selected === enumOptions.FROM_TYPE && value?.value !== undefined){
         if(customizeType){
-          createTwinFromTypeService(data.twinId, value.value, data).then(() =>
+          createTwinFromTypeService(context, data.twinId, value.value, data).then(() =>
             window.location.replace(path)
           )
         } else {
-          createTwinFromTypeService(data.twinId, value.value).then(() =>
+          createTwinFromTypeService(context, data.twinId, value.value).then(() =>
             window.location.replace(path)
           )
         }
         
       } else {
-        createTwinService(data).then(() =>
+        createTwinService(context, data).then(() =>
           window.location.replace(path)
         )
       }
     }
 
     useEffect(() => {
-      getAllTwinTypesService().then((res) => 
+      getAllTwinTypesService(context).then((res) => 
         setTwinTypes(
           res.map((item:ITwinType) => {
             return {
@@ -94,7 +90,7 @@ export const CreateTwin = ({path}:parameters) => {
             description : type.description,
             image : type.image
         })
-    }
+      }
     }, [value, customizeType])
 
     const typeForm = (control:Control<ITwin>) => {
@@ -151,6 +147,7 @@ export const CreateTwin = ({path}:parameters) => {
                     <Field label="Description:" disabled={!customizeType && selected === enumOptions.FROM_TYPE}>
                       <Input {...register("description")} value={currentTwin.description} onChange={handleOnChangeInput} disabled={!customizeType && selected === enumOptions.FROM_TYPE}/>
                     </Field>
+
                     <HorizontalGroup justify='center'>
                       <Button variant="primary" type="submit">Create</Button>
                     </HorizontalGroup>

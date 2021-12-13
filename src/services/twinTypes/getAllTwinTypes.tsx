@@ -1,8 +1,8 @@
-import { fetchService } from "services/general/fetchService"
-import { DITTO_EXTENDED_API_ENDPOINT } from "utils/consts"
+import { fetchDittoExtendedService } from "services/general/fetchDittoExtendedService"
+import { IStaticContext } from "utils/context/staticContext"
 
-export const getAllTwinTypesService = () => {
-    return fetchService(DITTO_EXTENDED_API_ENDPOINT + "/twintypes", {
+export const getAllTwinTypesService = (context:IStaticContext) => {
+    return fetchDittoExtendedService(context, "/twintypes", {
         method: 'GET',
         headers: {
           "Authorization": 'Basic '+btoa('ditto:ditto'),

@@ -1,6 +1,10 @@
+import { IStaticContext } from "utils/context/staticContext"
 import { fetchService } from "./fetchService"
-import { HONO_ENDPOINT } from "utils/consts"
 
-export function fetchHonoService( url:string, init:RequestInit ) {
-    return fetchService(HONO_ENDPOINT + url, init)
+export const fetchHonoService = ( context:IStaticContext, url:string, init:RequestInit ) => {
+    if(context.hono_endpoint !== ''){
+        return fetchService(context.hono_endpoint + url, init)
+    } else {
+        throw new Error("Ditto extended API endpoint not defined")
+    }
 }

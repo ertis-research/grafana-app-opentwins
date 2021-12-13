@@ -1,5 +1,5 @@
 import { SelectWithTextArea } from 'components/general/selectWithTextArea'
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useContext } from 'react'
 import { deleteThingTypeService } from 'services/thingTypes/deleteThingTypeService'
 import { getAllThingTypesService } from 'services/thingTypes/getAllThingTypesService'
 import { deleteTwinTypeService } from 'services/twinTypes/deleteTwinTypeService'
@@ -8,6 +8,7 @@ import { ISelect } from 'utils/interfaces/select'
 import { IThingType, ITwinType } from 'utils/interfaces/types'
 import { Legend } from '@grafana/ui'
 import { getAllTwinTypesService } from 'services/twinTypes/getAllTwinTypes'
+import { StaticContext } from 'utils/context/staticContext'
 
 interface parameters {
     path : string
@@ -17,13 +18,15 @@ export const ListTypes = ( {path} : parameters ) => {
 
     const [thingTypes, setThingTypes] = useState<ISelect[]>([])
     const [twinTypes, setTwinTypes] = useState<ISelect[]>([])
+    
+    const context = useContext(StaticContext)
 
     const updateThingTypes = () => {
-        getAllThingTypesService().then((res:IThingType[]) => setThingTypes(getSelectFromThingTypeArray(res)))
+        getAllThingTypesService(context).then((res:IThingType[]) => setThingTypes(getSelectFromThingTypeArray(res)))
     }
 
     const updateTwinTypes = () => {
-        getAllTwinTypesService().then((res:ITwinType[]) => setTwinTypes(
+        getAllTwinTypesService(context).then((res:ITwinType[]) => setTwinTypes(
             res.map((item:ITwinType) => {
                 return {
                         label : item.twinTypeId,
@@ -35,12 +38,12 @@ export const ListTypes = ( {path} : parameters ) => {
     }
 
     const handleDeleteThingType = (value:string) => {
-        deleteThingTypeService(value)
+        deleteThingTypeService(context, value)
         updateThingTypes()
     }
 
     const handleDeleteTwinType = (value:string) => {
-        deleteTwinTypeService(value)
+        deleteTwinTypeService(context, value)
         updateTwinTypes()
     }
 

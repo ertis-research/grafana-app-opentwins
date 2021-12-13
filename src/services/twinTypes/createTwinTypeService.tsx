@@ -1,9 +1,9 @@
-import { fetchService } from "services/general/fetchService"
-import { DITTO_EXTENDED_API_ENDPOINT } from "utils/consts"
+import { fetchDittoExtendedService } from "services/general/fetchDittoExtendedService"
+import { IStaticContext } from "utils/context/staticContext"
 import { ITwinType } from "utils/interfaces/types"
 
-export const createTwinTypeService = ( twinType : ITwinType ) => {
-    return fetchService(DITTO_EXTENDED_API_ENDPOINT + "/twintypes", {
+export const createTwinTypeService = (context:IStaticContext, twinType : ITwinType ) => {
+    return fetchDittoExtendedService(context, "/twintypes", {
       method: 'POST',
       headers: {
         "Authorization": 'Basic '+btoa('ditto:ditto'),

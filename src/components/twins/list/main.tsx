@@ -1,27 +1,31 @@
-import React, { useState, useEffect, Fragment } from 'react';
+import React, { useState, useEffect, useContext, Fragment } from 'react';
 import { getAllTwinsService } from 'services/twins/getAllTwinsService';
 import { ITwin } from 'utils/interfaces/dittoThing';
 import { Card, LinkButton, IconButton, Legend, HorizontalGroup } from '@grafana/ui'
-import { DEFAULT_IMAGE_TWIN } from 'utils/consts';
+import { DEFAULT_IMAGE_TWIN } from 'utils/data/consts';
 import { deleteTwinService } from 'services/twins/deleteTwinService';
+import { AppPluginMeta, KeyValue } from '@grafana/data';
+import { StaticContext } from 'utils/context/staticContext';
 
-export function ListTwins(props:any) {
-    /*
-    const mainObjects = [
-        {id: 'sensor', name: 'Raspberry', description: 'Dispositivo raspberry pi compuesto de un sensor DHT22', image: 'https://hardzone.es/app/uploads-hardzone.es/2020/06/Proyectos-Raspberry-Pi.jpg'},
-        {id: 2, name: 'Robot de riego', description: 'Robot ubicado en Córdoba cuya principal función es el riego. Compuesto de X sensores y...', image: 'https://agriculturers.com/wp-content/uploads/2018/09/El-robot-de-los-vinedos-modernos.jpg'},
-        {id: 3, name: 'Telescopio', description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas quis erat eros. Curabitur scelerisque mi id blandit pharetra. Phasellus blandit.', image: 'https://www.dhresource.com/0x0/f2/albu/g7/M01/DB/49/rBVaSluWVFiAXEhrAARdFPIxPnM586.jpg/monocular-space-astronomical-telescope-outdoor.jpg'},
-        {id: 4, name: 'Puente', description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse ornare massa leo, sit amet euismod arcu consectetur et. Nunc ex.', image: 'https://sfo2.digitaloceanspaces.com/elpaiscr/2019/05/puente_virilla_ruta_32.jpg'}
-    ]*/
+interface parameters {
+    path : string
+    meta : AppPluginMeta<KeyValue<any>>
+}
+
+export function ListTwins({path, meta} : parameters) {
 
     const [twins, setTwins] = useState<ITwin[]>([])
 
+    const context = useContext(StaticContext)
+
     const updateTwins = () => {
-        getAllTwinsService().then(res => {setTwins(res)
+        getAllTwinsService(context).then(res => {setTwins(res)
             console.log(twins)}).catch(() => console.log("error"))
     }
 
     useEffect(() => { //https://www.smashingmagazine.com/2020/06/rest-api-react-fetch-axios/
+        console.log("HOLA")
+        console.log(context)
         updateTwins()
     }, [])
 
@@ -30,7 +34,7 @@ export function ListTwins(props:any) {
     }
 
     const handleOnClickDelete = (twinId:string) => {
-        deleteTwinService(twinId)
+        deleteTwinService(context, twinId)
         updateTwins()
     }
 
@@ -44,7 +48,7 @@ export function ListTwins(props:any) {
                     {item.description}
                 </Card.Meta>
                 <Card.Actions>
-                    <LinkButton icon="search" key="seemore" variant="secondary" href={props.path + "?mode=check&id=" + item.twinId}>
+                    <LinkButton icon="search" key="seemore" variant="secondary" href={path + "?mode=check&id=" + item.twinId}>
                         See more
                     </LinkButton>
                     <div></div>
@@ -61,7 +65,7 @@ export function ListTwins(props:any) {
     return (
         <Fragment>
             <HorizontalGroup justify="center">
-                <LinkButton variant="primary" href={props.path + '?mode=create'}>
+                <LinkButton variant="primary" href={path + '?mode=create'}>
                     Create new twin
                 </LinkButton>
             </HorizontalGroup>

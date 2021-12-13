@@ -1,14 +1,23 @@
+import { IThingType } from "./types";
+
 export interface IDittoThing {
     thingId: string,
     policyId: string,
     definition?: string,
-    attributes?: JSON,
-    features?: JSON
+    attributes?: any,
+    features?: any
 }
 
 export interface IDittoThingSimple {
     thingId: string,
     policyId: string
+}
+
+export interface IDittoThingWithCredentials {
+    thingId: string,
+    policyId: string,
+    password: string,
+    type?: IThingType
 }
 
 export interface IFeature {
@@ -20,7 +29,7 @@ export interface IFeature {
 
 export interface IAttribute {
     key: string
-    value: string
+    value: string | any
 }
 
 export interface ITwin {

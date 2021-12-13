@@ -1,0 +1,52 @@
+<div>
+    <div ng-if="ctrl.appModel.enabled">
+        <div class="gf-form-group">
+            <h3 class="page-heading">Eclipse Ditto</h3>
+            <div class="gf-form">
+                <span class="gf-form-label width-10">Endpoint</span>
+                <input 
+                    type="text" 
+                    ng-model="ctrl.appModel.jsonData.ditto_endpoint" 
+                    class="gf-form-input width-20" 
+                    placeholder="Example: http://localhost:8054/api/2"
+                    required
+                />
+            </div>
+        </div>
+        <div class="gf-form-group">
+            <h3 class="page-heading">Ditto extended API</h3>
+            <div class="gf-form">
+                <span class="gf-form-label width-10">Endpoint</span>
+                <input 
+                    type="text" 
+                    ng-model="ctrl.appModel.jsonData.ditto_extended_endpoint" 
+                    class="gf-form-input width-20" 
+                    placeholder="Example: http://localhost:8056/api"
+                    required
+                />
+            </div>
+        </div>
+        <div class="gf-form-group">
+            <h3 class="page-heading">Eclipse Hono</h3>
+            <div class="gf-form">
+                <span class="gf-form-label width-10">Endpoint</span>
+                <input 
+                    type="text" 
+                    ng-model="ctrl.appModel.jsonData.hono_endpoint" 
+                    class="gf-form-input width-20" 
+                    placeholder="Example: http://localhost:8046/v1"
+                />
+            </div>
+            <div class="gf-form">
+                <span class="gf-form-label width-10">Tenant</span>
+                <input 
+                    type="text" 
+                    ng-model="ctrl.appModel.jsonData.hono_tenant" 
+                    class="gf-form-input width-20" 
+                    placeholder="hono"
+                />
+            </div>
+        </div>
+    </div>
+</div>
+

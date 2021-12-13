@@ -16,7 +16,7 @@ export { ExampleConfigCtrl as ConfigCtrl };
 export const plugin = new AppPlugin<ExampleAppSettings>()
   .setRootPage((ExampleRootPage as unknown) as ComponentClass<AppRootProps>)
   .addConfigPage({
-    title: 'General',
+    title: 'Connections',
     icon: 'info-circle',
     body: GeneralPage,
     id: 'general',

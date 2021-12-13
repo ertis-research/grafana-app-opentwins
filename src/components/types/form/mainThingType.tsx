@@ -1,4 +1,4 @@
-import React, { Fragment, useState, useEffect, ChangeEvent} from 'react'
+import React, { Fragment, useState, useEffect, useContext, ChangeEvent} from 'react'
 import { Button, Field, TextArea, Input, Form, FormAPI, Select, Icon, FieldSet, InputControl } from '@grafana/ui'
 import {} from '@emotion/core'; //https://github.com/grafana/grafana/issues/26512
 import { createThingTypeService } from 'services/thingTypes/createThingTypeService'
@@ -10,6 +10,7 @@ import { ISelect } from 'utils/interfaces/select'
 import { SelectableValue } from '@grafana/data/types/select'
 import { IThingType, IThingTypeSimple } from 'utils/interfaces/types';
 import { IPolicy } from 'utils/interfaces/dittoPolicy';
+import { StaticContext } from 'utils/context/staticContext';
 
 interface parameters {
   path : string
@@ -24,12 +25,14 @@ export const FormThingType = ({path} : parameters) => {
     const [policies, setPolicies] = useState<ISelect[]>([])
     const [value, setValue] = useState<SelectableValue<string>>()
 
+    const context = useContext(StaticContext)
+
     const handleFinalSubmit = (data:IThingType) => {
       setCurrentType({
         ...currentType,
         thingTypeId : data.thingTypeId
       })
-      createThingTypeService(currentType).then(() => 
+      createThingTypeService(context, currentType).then(() => 
         window.location.replace(path + "?tab=types")
       )
     }
@@ -64,7 +67,7 @@ export const FormThingType = ({path} : parameters) => {
     }, [features])
 
     useEffect(() => {
-      getAllPoliciesService().then((res:IPolicy[]) => {
+      getAllPoliciesService(context).then((res:IPolicy[]) => {
         setPolicies(res.map((item:IPolicy) => {
           return {
               label : item.policyId,
@@ -116,9 +119,9 @@ export const FormThingType = ({path} : parameters) => {
               }}
             </Form>
             <hr />
-            <FormAttributes attributes={attributes} setAttributes={setAttributes}/>
+            <FormAttributes attributes={attributes} setAttributes={setAttributes} disabled={false}/>
             <hr />
-            <FormFeatures features={features} setFeatures={setFeatures}/>
+            <FormFeatures features={features} setFeatures={setFeatures} disabled={false}/>
             <div className="d-flex justify-content-center">
               <Button className="mt-3" type="submit" form="formTypeFinal">Create type</Button>
             </div>

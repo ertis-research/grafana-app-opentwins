@@ -1,12 +1,12 @@
+import { fetchDittoExtendedService } from "services/general/fetchDittoExtendedService"
 import { fetchHonoService } from "services/general/fetchHonoService"
-import { fetchService } from "services/general/fetchService"
-import { DITTO_EXTENDED_API_ENDPOINT, NAMESPACE_HONO } from "utils/consts"
+import { IStaticContext } from "utils/context/staticContext"
 
-export const createThingByTypeService = ( thingId : string, thingTypeId : string, namespace : string, user : string, password : string ) => {
-    return fetchHonoService("/devices/" + NAMESPACE_HONO + "/" + namespace + ":" + thingId, {
+export const createThingByTypeService = ( context:IStaticContext, thingId : string, thingTypeId : string, namespace : string, user : string, password : string ) => {
+    return fetchHonoService(context, "/devices/" + context.hono_tenant + "/" + namespace + ":" + thingId, {
         method: 'POST'
     }).then(() => {
-        fetchHonoService("/credentials/" + NAMESPACE_HONO + "/" + namespace + ":" + thingId, {
+        fetchHonoService(context, "/credentials/" + context.hono_tenant + "/" + namespace + ":" + thingId, {
             method: 'PUT',
             headers: {
               "Content-Type": "application/json"
@@ -22,7 +22,7 @@ export const createThingByTypeService = ( thingId : string, thingTypeId : string
             )
         })
     }).then(() => {
-        fetchService(DITTO_EXTENDED_API_ENDPOINT + "/thingtypes/"+ thingTypeId + "/twin/" + namespace + "/thing/" + thingId, {
+        fetchDittoExtendedService(context, "/thingtypes/"+ thingTypeId + "/twin/" + namespace + "/thing/" + thingId, {
             method: 'POST',
             headers: {
               "Authorization": 'Basic '+btoa('ditto:ditto'),

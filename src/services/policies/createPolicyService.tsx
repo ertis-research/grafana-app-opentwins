@@ -1,9 +1,9 @@
 import { fetchDittoService } from "services/general/fetchDittoService"
+import { IStaticContext } from "utils/context/staticContext"
 import { IPolicy } from "utils/interfaces/dittoPolicy"
 
-export const createPolicyService = (data:IPolicy) => {
-  console.log(JSON.stringify({ entries : data.entries}))
-  return fetchDittoService("/policies/"+ data.policyId, {
+export const createPolicyService = (context:IStaticContext, data:IPolicy) => {
+  return fetchDittoService(context, "/policies/"+ data.policyId, {
     method: 'PUT',
     headers: {
       "Authorization": 'Basic '+btoa('ditto:ditto'),

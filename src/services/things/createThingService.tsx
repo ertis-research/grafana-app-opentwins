@@ -1,13 +1,13 @@
 import { fetchDittoService } from "services/general/fetchDittoService"
 import { fetchHonoService } from "services/general/fetchHonoService"
-import { NAMESPACE_HONO } from "utils/consts"
+import { IStaticContext } from "utils/context/staticContext"
 import { IDittoThing } from "utils/interfaces/dittoThing"
 
-export const createThingService = ( {thingId, ...newObj} : IDittoThing, namespace : string, user : string, password : string ) => {
-    return fetchHonoService("/devices/" + NAMESPACE_HONO + "/" + namespace + ":" + thingId, {
+export const createThingService = ( context:IStaticContext, {thingId, ...newObj} : IDittoThing, namespace : string, user : string, password : string ) => {
+    return fetchHonoService(context, "/devices/" + context.hono_tenant + "/" + namespace + ":" + thingId, {
         method: 'POST'
     }).then(() => {
-        fetchHonoService("/credentials/" + NAMESPACE_HONO + "/" + namespace + ":" + thingId, {
+        fetchHonoService(context, "/credentials/" + context.hono_tenant + "/" + namespace + ":" + thingId, {
             method: 'PUT',
             headers: {
               "Content-Type": "application/json"
@@ -23,7 +23,7 @@ export const createThingService = ( {thingId, ...newObj} : IDittoThing, namespac
             )
         })
     }).then(() => {
-        fetchDittoService("/things/"+ namespace + ":" + thingId, {
+        fetchDittoService(context, "/things/"+ namespace + ":" + thingId, {
             method: 'PUT',
             headers: {
               "Authorization": 'Basic '+btoa('ditto:ditto'),

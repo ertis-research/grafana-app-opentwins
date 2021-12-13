@@ -1,24 +1,27 @@
-import React, { useState, Fragment, useEffect, ChangeEvent } from 'react'
+import React, { useState, Fragment, useEffect, useContext, ChangeEvent } from 'react'
 import { TextArea, Input, Field, List, Legend, Button, Form, FormAPI, FieldSet } from '@grafana/ui'
 import { IEntry, IPolicy, IResource, ISubject } from 'utils/interfaces/dittoPolicy'
 import { ListElement } from 'components/general/listElement'
-import { initResources, initSubjects } from 'utils/consts'
+import { initResources, initSubjects } from 'utils/data/consts'
 import { FormSubjects } from './subcomponents/formSubjects'
 import { FormResources } from './subcomponents/formResources'
 import {} from '@emotion/core'
 import { createPolicyService } from 'services/policies/createPolicyService'
+import { StaticContext } from 'utils/context/staticContext'
 
 interface parameters {
     path : string
 }
 
-export function CreatePolicy( {path} : parameters ) {
+export const CreatePolicy = ({path} : parameters ) => {
 
     const [entries, setEntries] = useState<IEntry[]>([])
     const [entry, setEntry] = useState<IEntry>({ name: "" })
     const [currentPolicy, setCurrentPolicy] = useState<IPolicy>({ policyId: "", entries: []})
     const [subjects, setSubjects] = useState<ISubject[]>(initSubjects)
     const [resources, setResources] = useState<IResource[]>(initResources)
+
+    const context = useContext(StaticContext)
 
     const handleOnSubmitEntry = (data:{name:string}) => {
         setEntries([
@@ -92,7 +95,7 @@ export function CreatePolicy( {path} : parameters ) {
             ...currentPolicy,
             policyId : data.name
         })
-        createPolicyService(currentPolicy).then(() => 
+        createPolicyService(context, currentPolicy).then(() => 
             //window.location.replace(path + "?tab=policies")
             console.log("Listo")
         )
@@ -128,7 +131,7 @@ export function CreatePolicy( {path} : parameters ) {
                             <List 
                                 items={entries}
                                 getItemKey={item => item.name}
-                                renderItem={item => ListElement(item.name, entries, setEntries, [{key: "name", value: item.name}])}
+                                renderItem={item => ListElement(item.name, entries, setEntries, [{key: "name", value: item.name}], false)}
                             />
                         </div>
                         <div className="col-9">

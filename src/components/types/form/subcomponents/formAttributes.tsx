@@ -7,9 +7,10 @@ import { ListElement } from 'components/general/listElement'
 interface parameters {
     attributes : IAttribute[]
     setAttributes : any
+    disabled : boolean
 }
 
-export const FormAttributes = ({attributes, setAttributes} : parameters) => {
+export const FormAttributes = ({attributes, setAttributes, disabled} : parameters) => {
 
     const attributeDescription = "Attributes describe the Thing in more detail and can be of any type. They are typically used to model rather static properties at the Thing level."
 
@@ -40,21 +41,21 @@ export const FormAttributes = ({attributes, setAttributes} : parameters) => {
 
     return (
         <Fragment>
-            <ElementHeader title="Attributes" description={attributeDescription} isLegend={true}/>
+            <ElementHeader title="Attributes" description={attributeDescription} isLegend={false}/>
             <div className="row">
                 <div className="col-8">
-                    <Form onSubmit={handleSubmitAttributes}>
+                    <Form id="formAttributes" onSubmit={handleSubmitAttributes}>
                     {({register, errors}:FormAPI<IAttribute>) => {
                         return (
                             <Fragment>
                                 <FieldSet>
-                                    <Field label="Name">
-                                        <Input {...register("key", { required : true })} type="text"/>
+                                    <Field label="Name" disabled={disabled}>
+                                        <Input {...register("key", { required : true })} type="text" disabled={disabled}/>
                                     </Field>
-                                    <Field label="Value">
-                                        <Input {...register("value", { required : true })} type="text"/>
+                                    <Field label="Value" disabled={disabled}>
+                                        <Input {...register("value", { required : true })} type="text" disabled={disabled}/>
                                     </Field>
-                                    <Button type="submit" variant="secondary">Add</Button>
+                                    <Button type="submit" variant="secondary" form="formAttributes" disabled={disabled}>Add</Button>
                                 </FieldSet>
                             </Fragment>
                         )
@@ -65,7 +66,7 @@ export const FormAttributes = ({attributes, setAttributes} : parameters) => {
                     <List 
                         items={attributes}
                         getItemKey={item => (item.key)}
-                        renderItem={item => ListElement((item.key + ":" + item.value), attributes, setAttributes, [{key: "key", value: item.key}, {key:"value", value: item.value}])}
+                        renderItem={item => ListElement((item.key + ":" + item.value), attributes, setAttributes, [{key: "key", value: item.key}, {key:"value", value: item.value}], disabled)}
                     />
                 </div>
             </div>
