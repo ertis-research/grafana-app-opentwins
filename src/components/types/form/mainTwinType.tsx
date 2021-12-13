@@ -63,7 +63,9 @@ export const FormTwinType = ({path}:parameters) => {
             }}
           </Form>
           <FormThings things={(currentTwinType.things !== undefined) ? currentTwinType.things : []} setThings={setThings} disabled={false}/>
-          <Button variant="primary" form="formtwintype">Create twinType</Button>
+          <div className="d-flex justify-content-center">
+            <Button variant="primary" form="formtwintype">Create</Button>
+          </div>
         </div>
         <div className="col-4">
           <Field label="Preview" className="h-100">

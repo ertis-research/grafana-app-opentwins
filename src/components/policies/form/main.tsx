@@ -154,7 +154,7 @@ export const CreatePolicy = ({path} : parameters ) => {
                                 <Button variant="secondary" form="entryForm">Add entry</Button>
                             </div>
                             <div className="d-flex justify-content-center">
-                                <Button variant="primary" form="finalForm">Create policy</Button>
+                                <Button variant="primary" form="finalForm">Create</Button>
                             </div>
                         </div>
                     </div>

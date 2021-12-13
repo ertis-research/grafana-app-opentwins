@@ -1,7 +1,7 @@
 import { ComponentClass } from 'react';
 import { ExampleConfigCtrl } from './legacy/config';
 import { AppPlugin, AppRootProps } from '@grafana/data';
-import { GeneralPage } from './config/General';
+import { ConnectionsPage } from './config/connectionPage';
 import { ExamplePage2 } from './config/ExamplePage2';
 import { ExampleRootPage } from './ExampleRootPage';
 import { ExampleAppSettings } from './types';
@@ -17,9 +17,9 @@ export const plugin = new AppPlugin<ExampleAppSettings>()
   .setRootPage((ExampleRootPage as unknown) as ComponentClass<AppRootProps>)
   .addConfigPage({
     title: 'Connections',
-    icon: 'info-circle',
-    body: GeneralPage,
-    id: 'general',
+    icon: 'plug',
+    body: ConnectionsPage,
+    id: 'connections',
   })
   .addConfigPage({
     title: 'Page 2',

@@ -1,5 +1,6 @@
+import { Legend } from '@grafana/ui'
 import { SelectWithTextArea } from 'components/general/selectWithTextArea'
-import React, { useState, useEffect, useContext } from 'react'
+import React, { useState, useEffect, useContext, Fragment } from 'react'
 import { deletePolicyService } from 'services/policies/deletePolicy'
 import { getAllPoliciesService } from 'services/policies/getAllPoliciesService'
 import { StaticContext } from 'utils/context/staticContext'
@@ -42,6 +43,9 @@ export const ListPolicies = ({path} : parameters) => {
     }, [])
     
     return (
-        <SelectWithTextArea path={path} tab="policies" name="policy" values={policies} deleteFunction={handleDeletePolicy} />
+        <Fragment>
+            <Legend>Policies</Legend>
+            <SelectWithTextArea path={path} tab="policies" name="policy" values={policies} deleteFunction={handleDeletePolicy} />
+        </Fragment>
     )
 }

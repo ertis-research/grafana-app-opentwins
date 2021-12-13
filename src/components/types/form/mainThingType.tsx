@@ -21,7 +21,6 @@ export const FormThingType = ({path} : parameters) => {
     const [attributes, setAttributes] = useState<IAttribute[]>([])
     const [features, setFeatures] = useState<IFeature[]>([])
     const [currentType, setCurrentType] = useState<IThingType>({thingTypeId:"", policyId:""})
-    const [readOnly, setReadOnly] = useState(true)
     const [policies, setPolicies] = useState<ISelect[]>([])
     const [value, setValue] = useState<SelectableValue<string>>()
 
@@ -77,10 +76,6 @@ export const FormThingType = ({path} : parameters) => {
       }).catch(() => console.log("error"))
     }, [])
 
-    const editPreviewOnClick = () => {
-      setReadOnly(!readOnly)
-    }
-
     const handleOnChangeInputName = (event:ChangeEvent<HTMLInputElement>) => {
       setCurrentType({
         ...currentType,
@@ -90,7 +85,7 @@ export const FormThingType = ({path} : parameters) => {
 
     return (
       <Fragment>
-        <h2>Create new type</h2>
+        <h2>Create new type of thing</h2>
         <div className="row">
           <div className="col-8">
             <Form id="formTypeFinal" onSubmit={handleFinalSubmit}>
@@ -123,14 +118,13 @@ export const FormThingType = ({path} : parameters) => {
             <hr />
             <FormFeatures features={features} setFeatures={setFeatures} disabled={false}/>
             <div className="d-flex justify-content-center">
-              <Button className="mt-3" type="submit" form="formTypeFinal">Create type</Button>
+              <Button className="mt-3" type="submit" form="formTypeFinal">Create</Button>
             </div>
           </div>
           <div className="col-4">
             <Field label="Preview">
-              <TextArea value={JSON.stringify(currentType, undefined, 4)} rows={25} /*className="w-100 h-100 mb-4" style={{boxSizing: "border-box"}}*/ readOnly={readOnly}/>
+              <TextArea value={JSON.stringify(currentType, undefined, 4)} rows={25} /*className="w-100 h-100 mb-4" style={{boxSizing: "border-box"}}*/ readOnly/>
             </Field>
-            <Button variant="secondary" onClick={editPreviewOnClick}>Edit</Button>
           </div>
         </div>
       </Fragment>
