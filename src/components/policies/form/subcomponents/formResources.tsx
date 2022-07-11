@@ -1,7 +1,7 @@
 import React, { Fragment } from 'react'
 import { Resource_permissions } from './resource_permissions'
 import { FormToAddFeatureToResources } from './formToAddFeatureToResources'
-import { ElementHeader } from 'components/general/elementHeader'
+import { ElementHeader } from 'components/auxiliary/general/elementHeader'
 
 interface parameters {
     resources : any

@@ -1,8 +1,8 @@
 import React, { Fragment } from 'react'
 import { IAttribute } from 'utils/interfaces/dittoThing'
 import { Button, Field, Input, Form, FormAPI, FieldSet, List } from '@grafana/ui'
-import { ElementHeader } from 'components/general/elementHeader'
-import { ListElement } from 'components/general/listElement'
+import { ElementHeader } from 'components/auxiliary/general/elementHeader'
+import { ListElement } from 'components/auxiliary/general/listElement'
 
 interface parameters {
     attributes : IAttribute[]

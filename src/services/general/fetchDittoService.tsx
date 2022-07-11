@@ -5,6 +5,6 @@ export function fetchDittoService( context:IStaticContext, url:string, init:Requ
     if(context.ditto_endpoint !== ''){
         return fetchService(context.ditto_endpoint + url, init)
     } else {
-        throw new Error("Ditto extended API endpoint not defined")
+        throw new Error("Eclipse Ditto endpoint not defined")
     }
 }

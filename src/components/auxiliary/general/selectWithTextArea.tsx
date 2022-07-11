@@ -12,7 +12,7 @@ interface parameters {
     buttonHref ?: string
 }
 
-export const SelectWithTextArea = ({ path, tab, name, values, deleteFunction, buttonHref } : parameters) => {
+export const SelectWithTextArea = ({ path, tab, name, values, deleteFunction } : parameters) => {
 
     const [value, setValue] = useState<SelectableValue<string>>()
     const [isOpen, setIsOpen] = useState(false)
@@ -35,8 +35,6 @@ export const SelectWithTextArea = ({ path, tab, name, values, deleteFunction, bu
         setIsOpen(false)
     }
 
-    const href = (buttonHref !== undefined) ? buttonHref : '?' + ((tab !== undefined) ? "tab=" + tab + "&" : "" ) + 'mode=create'
-
     return (
         <Fragment>
             <div className="row">
@@ -49,7 +47,7 @@ export const SelectWithTextArea = ({ path, tab, name, values, deleteFunction, bu
                     />
                 </div>
                 <div className="col-md-4 text-end col-12">
-                    <LinkButton variant="primary" href={path + href}>
+                    <LinkButton variant="primary" href={path + "&mode=create"}>
                         Create new {name}
                     </LinkButton>
                 </div>

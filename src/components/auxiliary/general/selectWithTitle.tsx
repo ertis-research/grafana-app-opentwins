@@ -13,18 +13,16 @@ interface parameters {
 }
 
 export const selectWithTitle = ({ path, tab, name, values, deleteFunction, buttonHref } : parameters) => {
-
-    const href = (buttonHref !== undefined) ? buttonHref : '?' + ((tab !== undefined) ? "tab=" + tab + "&" : "" ) + 'mode=create'
     
     return (
         <Fragment>
             <HorizontalGroup justify="center">
-                <LinkButton variant="primary" href={path + href}>
+                <LinkButton variant="primary" href={path + "&mode=create"}>
                     Create new {name}
                 </LinkButton>
             </HorizontalGroup>
             <Legend>Check an existing {name}</Legend>
-            <SelectWithTextArea path={path} tab={tab} name={name} values={values} deleteFunction={deleteFunction} buttonHref={buttonHref} />
+            <SelectWithTextArea path={path} tab={tab} name={name} values={values} deleteFunction={deleteFunction}/>
         </Fragment>
     )
 }

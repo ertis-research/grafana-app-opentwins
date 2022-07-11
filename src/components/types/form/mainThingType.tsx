@@ -1,7 +1,7 @@
-import React, { Fragment, useState, useEffect, useContext, ChangeEvent} from 'react'
+/*import React, { Fragment, useState, useEffect, useContext, ChangeEvent} from 'react'
 import { Button, Field, TextArea, Input, Form, FormAPI, Select, Icon, FieldSet, InputControl } from '@grafana/ui'
 import {} from '@emotion/core'; //https://github.com/grafana/grafana/issues/26512
-import { createThingTypeService } from 'services/thingTypes/createThingTypeService'
+import { createThingTypeService } from 'services/(DEPRECATED)thingTypes/createThingTypeService'
 import { IAttribute, IFeature } from 'utils/interfaces/dittoThing'
 import { FormAttributes } from './subcomponents/formAttributes'
 import { FormFeatures } from './subcomponents/formFeatures'
@@ -123,10 +123,10 @@ export const FormThingType = ({path} : parameters) => {
           </div>
           <div className="col-4">
             <Field label="Preview">
-              <TextArea value={JSON.stringify(currentType, undefined, 4)} rows={25} /*className="w-100 h-100 mb-4" style={{boxSizing: "border-box"}}*/ readOnly/>
+              <TextArea value={JSON.stringify(currentType, undefined, 4)} rows={25} readOnly/>
             </Field>
           </div>
         </div>
       </Fragment>
     )
-}
+}*/

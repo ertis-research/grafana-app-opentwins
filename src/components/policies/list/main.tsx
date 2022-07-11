@@ -1,5 +1,4 @@
-import { Legend } from '@grafana/ui'
-import { SelectWithTextArea } from 'components/general/selectWithTextArea'
+import { SelectWithTextArea } from 'components/auxiliary/general/selectWithTextArea'
 import React, { useState, useEffect, useContext, Fragment } from 'react'
 import { deletePolicyService } from 'services/policies/deletePolicy'
 import { getAllPoliciesService } from 'services/policies/getAllPoliciesService'
@@ -35,7 +34,7 @@ export const ListPolicies = ({path} : parameters) => {
                     text: JSON.stringify(item, undefined, 4)
                 }
             }))
-        })
+        }).catch(() => console.log("error"))
     }
 
     useEffect(() => {
@@ -44,7 +43,6 @@ export const ListPolicies = ({path} : parameters) => {
     
     return (
         <Fragment>
-            <Legend>Policies</Legend>
             <SelectWithTextArea path={path} tab="policies" name="policy" values={policies} deleteFunction={handleDeletePolicy} />
         </Fragment>
     )

@@ -1,67 +1,43 @@
-import { SelectWithTextArea } from 'components/general/selectWithTextArea'
-import React, { useEffect, useState, useContext } from 'react'
-import { deleteThingTypeService } from 'services/thingTypes/deleteThingTypeService'
-import { getAllThingTypesService } from 'services/thingTypes/getAllThingTypesService'
-import { deleteTwinTypeService } from 'services/twinTypes/deleteTwinTypeService'
-import { getSelectFromThingTypeArray } from 'utils/aux_functions'
-import { ISelect } from 'utils/interfaces/select'
-import { IThingType, ITwinType } from 'utils/interfaces/types'
-import { Legend } from '@grafana/ui'
-import { getAllTwinTypesService } from 'services/twinTypes/getAllTwinTypes'
+import React, { useState, useContext } from 'react'
+import { AppPluginMeta, KeyValue } from "@grafana/data"
+import { IDittoThing } from "utils/interfaces/dittoThing"
+import { ISelect } from "utils/interfaces/select"
+import { MainList } from 'components/auxiliary/general/mainList'
 import { StaticContext } from 'utils/context/staticContext'
+import { getAllRootTypesService } from 'services/types/getAllRootTypesService'
 
 interface parameters {
     path : string
+    meta : AppPluginMeta<KeyValue<any>>
 }
 
-export const ListTypes = ( {path} : parameters ) => {
-
-    const [thingTypes, setThingTypes] = useState<ISelect[]>([])
-    const [twinTypes, setTwinTypes] = useState<ISelect[]>([])
+export function ListTypes({ path, meta } : parameters) {
     
+    const [types, setTypes] = useState<IDittoThing[]>([])
+    const [values, setValues] = useState<ISelect[]>([])
+
     const context = useContext(StaticContext)
 
-    const updateThingTypes = () => {
-        getAllThingTypesService(context).then((res:IThingType[]) => setThingTypes(getSelectFromThingTypeArray(res)))
-    }
-
-    const updateTwinTypes = () => {
-        getAllTwinTypesService(context).then((res:ITwinType[]) => setTwinTypes(
-            res.map((item:ITwinType) => {
-                return {
-                        label : item.twinTypeId,
-                        value : item.twinTypeId,
-                        text : JSON.stringify(item, undefined, 4)
+    const updateTypes = () => {
+        getAllRootTypesService(context).then(res => {
+            setTypes(res)
+            console.log(types)
+            if(res !== undefined){
+                setValues(res.map((item:IDittoThing) => {
+                    return {
+                        label: item.thingId,
+                        value: item.thingId
                     }
-            })
-        ))
+                }))
+            }
+        }).catch(() => console.log("error"))
     }
 
-    const handleDeleteThingType = (value:string) => {
-        deleteThingTypeService(context, value)
-        updateThingTypes()
+    const handleOnClickDelete = (e:any, thingId:string) => {
+        e.preventDefault()
+        updateTypes()
     }
 
-    const handleDeleteTwinType = (value:string) => {
-        deleteTwinTypeService(context, value)
-        updateTwinTypes()
-    }
+    return <MainList path={path} meta={meta} things={types} values={values} funcThings={updateTypes} funcDelete={handleOnClickDelete}/>
 
-    useEffect(() => { //https://www.smashingmagazine.com/2020/06/rest-api-react-fetch-axios/
-        updateThingTypes()
-        updateTwinTypes()
-    }, [])
-
-    return (
-        <div className="row">
-            <div className="col-12 col-md-6">
-                <Legend>Twins</Legend>
-                <SelectWithTextArea path={path} tab="types&obj=twin" name="type of twin" values={twinTypes} deleteFunction={handleDeleteTwinType}/>
-            </div>
-            <div className="col-12 col-md-6">
-                <Legend>Things</Legend>
-                <SelectWithTextArea path={path} tab="types&obj=thing" name="type of thing" values={thingTypes} deleteFunction={handleDeleteThingType}/>
-            </div>
-        </div>
-    );
 }

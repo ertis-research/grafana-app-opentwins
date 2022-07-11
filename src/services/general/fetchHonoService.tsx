@@ -5,6 +5,6 @@ export const fetchHonoService = ( context:IStaticContext, url:string, init:Reque
     if(context.hono_endpoint !== ''){
         return fetchService(context.hono_endpoint + url, init)
     } else {
-        throw new Error("Ditto extended API endpoint not defined")
+        throw new Error("Eclipse Hono endpoint not defined")
     }
 }

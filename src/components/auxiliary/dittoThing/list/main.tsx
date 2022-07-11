@@ -1,9 +1,9 @@
-import React, { useState, useEffect, useContext, Fragment } from 'react';
-import { getThingsByTwinService } from 'services/things/getThingsByTwinService';
-import { SelectWithTextArea } from 'components/general/selectWithTextArea';
+/*import React, { useState, useEffect, useContext, Fragment } from 'react';
+import { getThingsByTwinService } from 'services/(DEPRECATED)things/getThingsByTwinService';
+import { SelectWithTextArea } from 'components/auxiliary/general/selectWithTextArea';
 import { ISelect } from 'utils/interfaces/select';
 import { getSelectFromDittoThingArray } from 'utils/aux_functions';
-import { deleteThingService } from 'services/things/deleteThingService';
+import { deleteThingService } from 'services/(DEPRECATED)things/deleteThingService';
 import { Legend } from '@grafana/ui';
 import { AppPluginMeta, KeyValue } from '@grafana/data';
 import { StaticContext } from 'utils/context/staticContext';
@@ -63,5 +63,5 @@ export function ListThings({ path, id } : parameters) {
                 )}
             />
         </Fragment>*/
-    );
-}
+   /* );
+}*/

@@ -1,5 +1,3 @@
-import { IThingType } from "./types";
-
 export interface IDittoThing {
     thingId: string,
     policyId: string,
@@ -8,16 +6,27 @@ export interface IDittoThing {
     features?: any
 }
 
+export interface IDittoThingData {
+    policyId: string,
+    definition?: string,
+    attributes?: any,
+    features?: any
+}
+
+export interface IDittoThingForm {
+    namespace: string,
+    id: string,
+    policyId: string,
+    name?: string,
+    description?: string,
+    image?: string, 
+    //definition?: string,
+    type?: string
+}
+
 export interface IDittoThingSimple {
     thingId: string,
     policyId: string
-}
-
-export interface IDittoThingWithCredentials {
-    thingId: string,
-    policyId: string,
-    password: string,
-    type?: IThingType
 }
 
 export interface IFeature {
@@ -30,12 +39,4 @@ export interface IFeature {
 export interface IAttribute {
     key: string
     value: string | any
-}
-
-export interface ITwin {
-    twinId: string,
-    name: string,
-    type?: string,
-    image?: string,
-    description?: string
 }

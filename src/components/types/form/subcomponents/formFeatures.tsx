@@ -2,8 +2,8 @@ import React, { Fragment } from 'react'
 import { Button, Field, Input, Form, FormAPI, List } from '@grafana/ui'
 import { IFeature } from 'utils/interfaces/dittoThing';
 import {} from '@emotion/core';
-import { ElementHeader } from 'components/general/elementHeader';
-import { ListElement } from 'components/general/listElement';
+import { ElementHeader } from 'components/auxiliary/general/elementHeader';
+import { ListElement } from 'components/auxiliary/general/listElement';
 
 interface parameters {
     features : IFeature[]

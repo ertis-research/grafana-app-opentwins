@@ -1,10 +1,10 @@
-import React, { Fragment, useEffect, useState, useContext } from 'react'
+/*import React, { Fragment, useEffect, useState, useContext } from 'react'
 import { Button, Field, Input, Form, FormAPI, FieldSet, List, InputControl, Select, Icon } from '@grafana/ui'
-import { ElementHeader } from 'components/general/elementHeader'
-import { ListElement } from 'components/general/listElement'
+import { ElementHeader } from 'components/auxiliary/general/elementHeader'
+import { ListElement } from 'components/auxiliary/general/listElement'
 import { IThingList, IThingType } from 'utils/interfaces/types'
-import { getAllThingTypesService } from 'services/thingTypes/getAllThingTypesService'
-import { getSelectWithObjectsFromThingTypesArray } from 'utils/aux_functions'
+import { getAllThingTypesService } from 'services/(DEPRECATED)thingTypes/getAllThingTypesService'
+import { getSelectWithObjectsFromThingsArray } from 'utils/aux_functions'
 import { ISelect } from 'utils/interfaces/select'
 import { SelectableValue } from '@grafana/data'
 import { StaticContext } from 'utils/context/staticContext'
@@ -41,7 +41,7 @@ export const FormThings = ({things, setThings, disabled} : parameters) => {
     }
 
     useEffect(() => {
-        getAllThingTypesService(context).then((res) => setThingTypes(getSelectWithObjectsFromThingTypesArray(res)))
+        getAllThingTypesService(context).then((res) => setThingTypes(getSelectWithObjectsFromThingsArray(res)))
     }, [])
 
     return (
@@ -88,4 +88,4 @@ export const FormThings = ({things, setThings, disabled} : parameters) => {
             </div>
         </Fragment>
     )
-}
+}*/

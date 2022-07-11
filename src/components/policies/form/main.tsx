@@ -1,7 +1,7 @@
 import React, { useState, Fragment, useEffect, useContext, ChangeEvent } from 'react'
 import { TextArea, Input, Field, List, Legend, Button, Form, FormAPI, FieldSet } from '@grafana/ui'
 import { IEntry, IPolicy, IResource, ISubject } from 'utils/interfaces/dittoPolicy'
-import { ListElement } from 'components/general/listElement'
+import { ListElement } from 'components/auxiliary/general/listElement'
 import { initResources, initSubjects } from 'utils/data/consts'
 import { FormSubjects } from './subcomponents/formSubjects'
 import { FormResources } from './subcomponents/formResources'
@@ -98,7 +98,7 @@ export const CreatePolicy = ({path} : parameters ) => {
         createPolicyService(context, currentPolicy).then(() => 
             //window.location.replace(path + "?tab=policies")
             console.log("Listo")
-        )
+        ).catch(() => console.log("error"))
     }
 
     const handleOnChangeInputName = (event:ChangeEvent<HTMLInputElement>) => {

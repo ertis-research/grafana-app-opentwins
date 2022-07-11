@@ -1,6 +1,6 @@
-import React, { Fragment, useState, useContext, ChangeEvent } from 'react'
+/*import React, { Fragment, useState, useContext, ChangeEvent } from 'react'
 import { Button, Field, FieldSet, Input, FormAPI, Form, TextArea } from '@grafana/ui'
-import { createTwinTypeService } from 'services/twinTypes/createTwinTypeService'
+import { createTwinTypeService } from 'services/(DEPRECATED)twinTypes/createTwinTypeService'
 import { IThingList, ITwinType, ITwinTypeSimple } from 'utils/interfaces/types'
 import { FormThings } from 'components/types/form/subcomponents/formThings'
 import { StaticContext } from 'utils/context/staticContext'
@@ -74,4 +74,4 @@ export const FormTwinType = ({path}:parameters) => {
         </div>
       </div>
     )
-}
+}*/

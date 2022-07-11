@@ -1,6 +1,5 @@
 import { AppPluginMeta, KeyValue } from "@grafana/data"
-import { IDittoThing } from "./interfaces/dittoThing"
-import { IThingType } from "./interfaces/types"
+import { IDittoThing } from "../interfaces/dittoThing"
 
 export const getNameFromDittoThing = (name:string) => {
     const i = name.indexOf(":")
@@ -21,16 +20,6 @@ export const getSelectFromDittoThingArray = (data:IDittoThing[]) => {
     })
 }
 
-export const getSelectFromThingTypeArray = (data:IThingType[]) => {
-    return data.map((item:IThingType) => {
-        return {
-                label : item.thingTypeId,
-                value : item.thingTypeId,
-                text : JSON.stringify(item, undefined, 4)
-            }
-    })
-}
-
 export const getSelectWithObjectsFromDittoThingArray = (data:IDittoThing[]) => {
     return data.map((item:IDittoThing) => {
         return {
@@ -40,10 +29,10 @@ export const getSelectWithObjectsFromDittoThingArray = (data:IDittoThing[]) => {
     })
 }
 
-export const getSelectWithObjectsFromThingTypesArray = (data:IThingType[]) => {
-    return data.map((item:IThingType) => {
+export const getSelectWithObjectsFromThingsArray = (data:IDittoThing[]) => {
+    return data.map((item:IDittoThing) => {
         return {
-                label : item.thingTypeId,
+                label : item.thingId,
                 value : item
             }
     })

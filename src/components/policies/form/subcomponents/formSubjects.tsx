@@ -1,8 +1,8 @@
 import React, { Fragment } from 'react'
 import {Button, Input, Field, FieldSet, Form, FormAPI, List } from '@grafana/ui'
 import { ISubject } from 'utils/interfaces/dittoPolicy'
-import { ListElement } from 'components/general/listElement'
-import { ElementHeader } from 'components/general/elementHeader'
+import { ListElement } from 'components/auxiliary/general/listElement'
+import { ElementHeader } from 'components/auxiliary/general/elementHeader'
 
 interface parameters {
     subjects : ISubject[]
