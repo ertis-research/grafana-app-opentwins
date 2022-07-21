@@ -24,11 +24,6 @@ export interface IDittoThingForm {
     type?: string
 }
 
-export interface IDittoThingSimple {
-    thingId: string,
-    policyId: string
-}
-
 export interface IFeature {
     name: string
     definition?: string[]

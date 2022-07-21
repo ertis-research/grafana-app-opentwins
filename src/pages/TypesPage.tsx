@@ -1,10 +1,11 @@
-import React, { FC } from 'react';
+import React, { FC } from 'react'
 //import { FormThingType } from 'components/types/form/mainThingType';
 import { AppRootProps } from '@grafana/data'
 //import { FormTwinType } from 'components/types/form/mainTwinType';
-import { fromMetaToValues } from 'utils/auxFunctions/dittoThing';
-import { StaticContext } from 'utils/context/staticContext';
-import { ListTypes } from 'components/types/list/main';
+import { fromMetaToValues } from 'utils/auxFunctions/dittoThing'
+import { StaticContext } from 'utils/context/staticContext'
+import { ListTypes } from 'components/types/list/main'
+import { CreateFormType } from 'components/types/form/createForm'
 
 export const TypesPage: FC<AppRootProps> = ({ query, path, meta }) => {
 
@@ -19,11 +20,7 @@ export const TypesPage: FC<AppRootProps> = ({ query, path, meta }) => {
       break
 
     case "create":
-      if(id !== undefined){
-        component = <div></div> //<TwinForm path={path} meta={meta} parentId={id}/>
-      }else{
-        component = <div></div> //<TwinForm path={path} meta={meta} />
-      }
+      component = <CreateFormType path={path} meta={meta} id={id}/>
       break
   }
 

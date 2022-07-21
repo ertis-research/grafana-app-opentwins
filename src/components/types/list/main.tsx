@@ -2,7 +2,7 @@ import React, { useState, useContext } from 'react'
 import { AppPluginMeta, KeyValue } from "@grafana/data"
 import { IDittoThing } from "utils/interfaces/dittoThing"
 import { ISelect } from "utils/interfaces/select"
-import { MainList } from 'components/auxiliary/general/mainList'
+import { MainList } from 'components/auxiliary/dittoThing/list/main'
 import { StaticContext } from 'utils/context/staticContext'
 import { getAllRootTypesService } from 'services/types/getAllRootTypesService'
 
@@ -38,6 +38,6 @@ export function ListTypes({ path, meta } : parameters) {
         updateTypes()
     }
 
-    return <MainList path={path} meta={meta} things={types} values={values} funcThings={updateTypes} funcDelete={handleOnClickDelete}/>
+    return <MainList path={path} meta={meta} things={types} values={values} isType={true} funcThings={updateTypes} funcDelete={handleOnClickDelete}/>
 
 }

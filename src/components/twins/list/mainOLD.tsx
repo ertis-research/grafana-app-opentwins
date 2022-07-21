@@ -2,7 +2,7 @@ import React, { useState, useEffect, useContext, Fragment } from 'react';
 import { getAllRootTwinsService } from 'services/twins/getAllRootTwinsService';
 import { IDittoThing } from 'utils/interfaces/dittoThing';
 import { Card, LinkButton, IconButton, HorizontalGroup, Select, Icon } from '@grafana/ui'
-import { deleteTwinByIdService } from 'services/twins/crud/deleteTwinByIdService';
+import { deleteTwinService } from 'services/twins/crud/deleteTwinService';
 import { AppPluginMeta, KeyValue, SelectableValue } from '@grafana/data';
 import { StaticContext } from 'utils/context/staticContext';
 import { ISelect } from 'utils/interfaces/select';
@@ -61,7 +61,7 @@ export function ListTwins({path, meta} : parameters) {
 
     const handleOnClickDelete = (e:any, thingId:string) => {
         e.preventDefault()
-        deleteTwinByIdService(context, thingId)
+        deleteTwinService(context, thingId)
         updateThings()
     }
 

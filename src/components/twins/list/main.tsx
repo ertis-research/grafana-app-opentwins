@@ -3,9 +3,10 @@ import { AppPluginMeta, KeyValue } from "@grafana/data"
 import { IDittoThing } from "utils/interfaces/dittoThing"
 import { ISelect } from "utils/interfaces/select"
 import { getAllRootTwinsService } from 'services/twins/getAllRootTwinsService'
-import { MainList } from 'components/auxiliary/general/mainList'
+import { MainList } from 'components/auxiliary/dittoThing/list/main'
 import { StaticContext } from 'utils/context/staticContext'
-import { deleteTwinByIdService } from 'services/twins/crud/deleteTwinByIdService'
+import { deleteTwinService } from 'services/twins/crud/deleteTwinService'
+import { deleteTwinWithChildrenService } from 'services/twins/children/deleteTwinWithChildrenService'
 
 interface parameters {
     path : string
@@ -34,12 +35,15 @@ export function ListTwins({path, meta } : parameters) {
         }).catch(() => console.log("error"))
     }
 
-    const handleOnClickDelete = (e:any, thingId:string) => {
-        e.preventDefault()
-        deleteTwinByIdService(context, thingId)
-        updateThings()
-    }
-
-    return <MainList path={path} meta={meta} things={things} values={values} funcThings={updateThings} funcDelete={handleOnClickDelete}/>
+    return <MainList 
+            path={path} 
+            meta={meta} 
+            things={things} 
+            values={values} 
+            isType={false} 
+            funcThings={updateThings} 
+            funcDelete={deleteTwinService}
+            funcDeleteChildren={deleteTwinWithChildrenService}
+        />
 
 }

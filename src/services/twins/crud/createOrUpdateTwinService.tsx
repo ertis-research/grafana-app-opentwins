@@ -2,7 +2,7 @@ import { fetchExtendedApiForDittoService } from "services/general/fetchDittoExte
 import { IStaticContext } from "utils/context/staticContext"
 import { IDittoThingData } from "utils/interfaces/dittoThing"
 
-export const createOrUpdateTwinByIdService = ( context:IStaticContext, twinId:string, twin:IDittoThingData ) => {
+export const createOrUpdateTwinService = ( context:IStaticContext, twinId:string, twin:IDittoThingData ) => {
   return fetchExtendedApiForDittoService(context, "/twins/" + twinId, {
     method: 'PUT',
     headers: {

@@ -43,8 +43,8 @@ export const FormAttributes = ({attributes, setAttributes, disabled} : parameter
         <Fragment>
             <ElementHeader title="Attributes" description={attributeDescription} isLegend={false}/>
             <div className="row">
-                <div className="col-8">
-                    <Form id="formAttributes" onSubmit={handleSubmitAttributes}>
+                <div className="col-6">
+                    <Form id="formAttributes" onSubmit={handleSubmitAttributes} maxWidth="none">
                     {({register, errors}:FormAPI<IAttribute>) => {
                         return (
                             <Fragment>
@@ -62,7 +62,7 @@ export const FormAttributes = ({attributes, setAttributes, disabled} : parameter
                     }}
                     </Form>
                 </div>
-                <div className="col-4">
+                <div className="col-6">
                     <List 
                         items={attributes}
                         getItemKey={item => (item.key)}

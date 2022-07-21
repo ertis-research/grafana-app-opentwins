@@ -1,8 +1,8 @@
 import { fetchExtendedApiForDittoService } from "services/general/fetchDittoExtendedService"
 import { IStaticContext } from "utils/context/staticContext"
 
-export const getAllRootTypesService = async (context:IStaticContext) => {
-  return fetchExtendedApiForDittoService(context, "/types", {
+export const getParentOfTypeService = ( context:IStaticContext, typeId:string ) => {
+  return fetchExtendedApiForDittoService(context, "/types/" + typeId + "/parent", {
     method: 'GET',
     headers: {
       "Authorization": 'Basic '+btoa('ditto:ditto'),

@@ -1,12 +1,12 @@
 import { fetchExtendedApiForDittoService } from "services/general/fetchDittoExtendedService"
 import { IStaticContext } from "utils/context/staticContext"
 
-export const getAllRootTypesService = async (context:IStaticContext) => {
-  return fetchExtendedApiForDittoService(context, "/types", {
-    method: 'GET',
+export const deleteTwinService = (context:IStaticContext, twinId : string ) => {
+  return fetchExtendedApiForDittoService(context, "/twins/" + twinId, {
+    method: 'DELETE',
     headers: {
       "Authorization": 'Basic '+btoa('ditto:ditto'),
-      "Accept": "application/json"
+      "Content-Type": "application/json"
     }
-  }).catch(() => console.log("error"))
+  })
 }

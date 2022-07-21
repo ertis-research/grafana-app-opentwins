@@ -4,7 +4,7 @@ import { FilterPill, HorizontalGroup, VerticalGroup } from '@grafana/ui'
 import { ListChildrenTwin } from './subcomponents/children'
 import { IDittoThing } from 'utils/interfaces/dittoThing'
 import { StaticContext } from 'utils/context/staticContext'
-import { getTwinByIdService } from 'services/twins/crud/getTwinByIdService'
+import { getTwinService } from 'services/twins/crud/getTwinService'
 import { defaultIfNoExist } from 'utils/auxFunctions/general'
 import { InformationTwin } from './subcomponents/information'
 
@@ -41,7 +41,7 @@ export function TwinInfo({path, id, meta} : parameters) {
     }
 
     const getTwinInfo = () => {
-        getTwinByIdService(context, id).then(res => {
+        getTwinService(context, id).then(res => {
             setTwinInfo(res)
         }).catch(() => console.log("error"))
     }

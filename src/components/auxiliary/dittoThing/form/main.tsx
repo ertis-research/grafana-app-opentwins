@@ -1,7 +1,7 @@
 import React, { useState, Fragment, useEffect, useContext, ChangeEvent } from 'react'
 import { AppPluginMeta, KeyValue } from '@grafana/data'
 import { IAttribute, IDittoThing, IDittoThingData, IDittoThingForm, IFeature } from 'utils/interfaces/dittoThing'
-import { Form, FormAPI, Field, Input, InputControl, Select, Icon, TextArea, Button, HorizontalGroup, RadioButtonGroup, Switch, useTheme2, Alert } from '@grafana/ui'
+import { Form, FormAPI, Field, Input, InputControl, Select, Icon, TextArea, Button, HorizontalGroup, RadioButtonGroup, Switch, useTheme2, Modal, ConfirmModal } from '@grafana/ui'
 import { SelectableValue } from '@grafana/data/types/select'
 import { ISelect } from 'utils/interfaces/select'
 import { ElementHeader } from 'components/auxiliary/general/elementHeader'
@@ -12,27 +12,23 @@ import { FormFeatures } from 'components/types/form/subcomponents/formFeatures'
 import { getAllPoliciesService } from 'services/policies/getAllPoliciesService'
 import { IPolicy } from 'utils/interfaces/dittoPolicy'
 import { StaticContext } from 'utils/context/staticContext'
-import { createTwinFromTypeService } from 'services/types/createTwinFromTypeService'
-import { createOrUpdateTwinService } from 'services/twins/crud/createOrUpdateTwinService'
 import { getSelectWithObjectsFromThingsArray, JSONtoIAttributes, JSONtoIFeatures } from 'utils/auxFunctions/dittoThing'
 import { getAllTypesService } from 'services/types/getAllTypesService'
-
-const enumNotification = {
-    SUCCESS : "success",
-    ERROR : "error",
-    HIDE : "hide"
-}
-
+import { capitalize, enumNotification } from 'utils/auxFunctions/general'
 
 interface parameters {
     path : string
     parentId ?: string
+    isType : boolean
     meta: AppPluginMeta<KeyValue<any>>
+    funcFromType ?: any
+    funcFromZero : any
 }
 
-export const TwinForm = ({ path, parentId } : parameters) => {
-    const [lastCurrentTwin, setLastCurrentTwin] = useState<IDittoThing>({ thingId: "", policyId: "", attributes: {}})
-    const [currentTwin, setCurrentTwin] = useState<IDittoThing>(lastCurrentTwin)
+export const ThingForm = ({ path, parentId, isType, funcFromType, funcFromZero } : parameters) => {
+    const [lastCurrentThing, setLastCurrentThing] = useState<IDittoThing>({ thingId: "", policyId: "", attributes: {}})
+    const [currentThing, setCurrentThing] = useState<IDittoThing>(lastCurrentThing)
+    const [thingIdField, setThingIdField] = useState<{ id : string, namespace : string }>({id: "", namespace: ""})
     const [type, setType] = useState<SelectableValue<IDittoThing>>()
     const [types, setTypes] = useState<ISelect[]>([])
     const [selected, setSelected] = useState(enumOptions.FROM_TYPE)
@@ -45,96 +41,118 @@ export const TwinForm = ({ path, parentId } : parameters) => {
     
     const context = useContext(StaticContext)
 
+    const title = (isType) ? "type" : "twin"
     const descriptionID = "Identity associated with the authentication credentials"
     const descriptionInformation = "Basic information for creating the Ditto thing"
-    const descriptionThingId = "Thing ID. This must be unique within the scope of the twin. The name of the twin will precede it automatically."
+    const descriptionThingId = `Thing ID. This must be unique within the scope of the ${title}. The name of the ${title} will precede it automatically.`
     //const descriptionPassword = "Password to authenticate when sending data from the sensor to eclipse Hono."
     const descriptionNamespace = "AA"
-    const messageSuccess = "The twin has been created correctly. You can leave this page if you do not want to create any more."
-    const messageError = "The twin has not been created correctly. Please check the data you have entered."
+    const messageSuccess = `The ${title} has been created correctly.`
+    const descriptionSuccess = `You can delete the fields to create a new ${title}, keep them if you want to create a similar one or leave the page if you don't want to create any more.`
+    const messageError = `The ${title} has not been created correctly. `
+    const descriptionError = "Please check the data you have entered."
 
     const headerIfIsChild = () => {
         if(parentId != null){
-            return <h4 style={{color:useTheme2().colors.text.secondary}}>To be child of twin with id: {parentId}</h4>
+            return <h4 style={{color:useTheme2().colors.text.secondary}}>To be child of {title} with id: {parentId}</h4>
         } else {
-            return <div></div>
+            return <div style={{height: '0px'}}></div>
         }
+    }
+
+    const clearFields = () => {
+        setThingIdField({ id : "", namespace: ""})
+        setCustomizeType(false)
+        setType(undefined)
+        setSelectedPolicy(undefined)
+        setAttributes([])
+        setFeatures([])
+        setSelected(enumOptions.FROM_TYPE)
+        setLastCurrentThing({ thingId: "", policyId: "", attributes: { name: "", description: "", image: "", type: ""}})
+        setCurrentThing({ thingId: "", policyId: "", attributes: { name: "", description: "", image: "", type: ""}})
+        setShowNotification(enumNotification.HIDE)
+    }
+
+    const hideNotification = () => {
+        setThingIdField({
+            ...thingIdField,
+            id : ""
+        })
+        setShowNotification(enumNotification.HIDE)
     }
 
     const notification = () => {
         switch(showNotification) {
             case enumNotification.SUCCESS:
-                return <Alert title={messageSuccess} severity={"success"} elevated />
+                return <ConfirmModal isOpen={true} icon='check' title={"Successful creation!"} body={messageSuccess} description={descriptionSuccess} confirmText={"Clear fields"} dismissText={"Keep fields"} onConfirm={clearFields} onDismiss={hideNotification} />
+                //return <Alert title={messageSuccess} severity={"success"} elevated />
             case enumNotification.ERROR:
-                return <Alert title={messageError} severity={"error"} elevated />
+                return <Modal title={messageError} icon='exclamation-triangle' isOpen={true}>{descriptionError}</Modal>
             default:
                 return <div></div>
         }
     }
 
     const handleOnSubmitFinal = (data:IDittoThingForm) => {
-        const twinId = data.namespace + ":" + data.id
+        const thingId = data.namespace + ":" + data.id
         const finalData:IDittoThingData = {
-            policyId : currentTwin.policyId,
-            definition : currentTwin.definition,
-            attributes : currentTwin.attributes,
-            features : currentTwin.features
+            policyId : currentThing.policyId,
+            definition : currentThing.definition,
+            attributes : currentThing.attributes,
+            features : currentThing.features
         }
-        
+        var funcToExecute = undefined
+
         if(selected === enumOptions.FROM_TYPE && type?.value !== undefined){
             if(customizeType){
-              createTwinFromTypeService(context, twinId, type.value.thingId, finalData).then(() =>
-                setShowNotification(enumNotification.SUCCESS)
-              ).catch(() => console.log("error"))
+                funcToExecute = funcFromType(context, thingId, type.value.thingId, finalData)
             } else {
-              createTwinFromTypeService(context, twinId, type.value.thingId).then(() =>
-                setShowNotification(enumNotification.SUCCESS)
-              ).catch(() => console.log("error"))
+                funcToExecute = funcFromType(context, thingId, type.value.thingId)
             }
-            
-          } else {
-            createOrUpdateTwinService(context, twinId, finalData).then(() =>
-              setShowNotification(enumNotification.SUCCESS)
-            ).catch(() => console.log("error"))
-          }
-
+        } else {
+            funcToExecute = funcFromZero(context, thingId, finalData)
+        }
+        
+        try {
+            funcToExecute.then(() => {
+                console.log("OK")
+                setShowNotification(enumNotification.SUCCESS)
+            }).catch(() => {
+                console.log("error")
+                setShowNotification(enumNotification.ERROR)
+            })
+        } catch (e) {
+            console.log("error")
+            setShowNotification(enumNotification.ERROR)
+        }
     }
 
-    const handleOnChangeId = (event:ChangeEvent<HTMLInputElement>) => {
-        const split = currentTwin.thingId.split(":")
-        setCurrentTwin({
-            ...currentTwin,
-            thingId : (split.length < 1) ? ":" + event.target.value : split[0] + ":" + event.target.value
-        })
-    }
-
-    const handleOnChangeNamespace = (event:ChangeEvent<HTMLInputElement>) => {
-        const split = currentTwin.thingId.split(":")
-        setCurrentTwin({
-            ...currentTwin,
-            thingId : (split.length < 2) ? event.target.value + ":" : event.target.value + ":" + split[1]
+    const handleOnChangeThingId = (event:ChangeEvent<HTMLInputElement>) => {
+        setThingIdField({
+            ...thingIdField,
+            [event.currentTarget.name] : event.target.value
         })
     }
 
     const handleOnChangeFrom = (value:number) => {
         setSelected(value)
-        const aux = currentTwin
-        const auxAttributes = lastCurrentTwin.attributes
-        const auxFeatures = lastCurrentTwin.features
-        const auxPolicyId = lastCurrentTwin.policyId
-        setCurrentTwin({
-            ...lastCurrentTwin,
+        const aux = currentThing
+        const auxAttributes = lastCurrentThing.attributes
+        const auxFeatures = lastCurrentThing.features
+        const auxPolicyId = lastCurrentThing.policyId
+        setCurrentThing({
+            ...lastCurrentThing,
             thingId : aux.thingId
         })
-        setLastCurrentTwin(aux)
+        setLastCurrentThing(aux)
         updateUseStates({attributes: auxAttributes, features: auxFeatures, policyId: auxPolicyId})
     }
 
     const handleOnChangeInputAttribute = (event:ChangeEvent<HTMLInputElement>) => {
-      setCurrentTwin({
-          ...currentTwin,
+      setCurrentThing({
+          ...currentThing,
           attributes : {
-              ...currentTwin.attributes,
+              ...currentThing.attributes,
               [event.currentTarget.name] : event.target.value
           }
       })
@@ -175,9 +193,24 @@ export const TwinForm = ({ path, parentId } : parameters) => {
         )
     }
 
+    const fromRadioButton = (control:Control<IDittoThingForm>) => {
+        return (
+            <Fragment>
+                <HorizontalGroup justify='center'>
+                    <RadioButtonGroup
+                        options={options}
+                        value={selected}
+                        onChange={handleOnChangeFrom}
+                    />
+                </HorizontalGroup>
+                {(selected === enumOptions.FROM_TYPE) ? typeForm(control) : (<div></div>)}
+            </Fragment>
+        )
+    }
+
     useEffect(() => {
-        setCurrentTwin({
-            ...currentTwin,
+        setCurrentThing({
+            ...currentThing,
             policyId : ((selectedPolicy !== undefined && selectedPolicy.value !== undefined) ? selectedPolicy.value : "")
         })
     }, [selectedPolicy])
@@ -186,8 +219,8 @@ export const TwinForm = ({ path, parentId } : parameters) => {
         var jsonAttributes:any = {}
         attributes.forEach((item:IAttribute) => jsonAttributes[(item.key)] = item.value)
 
-        setCurrentTwin({
-            ...currentTwin,
+        setCurrentThing({
+            ...currentThing,
             attributes : jsonAttributes
         }
         )
@@ -197,15 +230,22 @@ export const TwinForm = ({ path, parentId } : parameters) => {
         var jsonFeatures:any = {}
         features.forEach((item:IFeature) => jsonFeatures[(item.name)] = { properties : item.properties});
 
-        setCurrentTwin({
-            ...currentTwin,
+        setCurrentThing({
+            ...currentThing,
             features : jsonFeatures
         }
         )
     }, [features])
 
     useEffect(() => {
-    }, [selected])
+    }, [selected, showNotification])
+
+    useEffect(() => {
+        setCurrentThing({
+            ...currentThing,
+            thingId : thingIdField.id + ":" + thingIdField.namespace
+        })
+    }, [thingIdField])
 
     useEffect(() => {
         if(type?.value !== undefined) {
@@ -214,8 +254,8 @@ export const TwinForm = ({ path, parentId } : parameters) => {
                 ...typeValue.attributes,
                 type: typeValue.thingId
             }
-            setCurrentTwin({
-                ...currentTwin,
+            setCurrentThing({
+                ...currentThing,
                 policyId : typeValue.policyId,
                 definition : typeValue.definition,
                 attributes : attributesWithType,
@@ -227,8 +267,12 @@ export const TwinForm = ({ path, parentId } : parameters) => {
 
    
     useEffect(() => {
-        getAllTypesService(context).then((res) => setTypes(getSelectWithObjectsFromThingsArray(res)))
+        if (isType) {
+            setSelected(enumOptions.FROM_ZERO)
+        } else {
+            getAllTypesService(context).then((res) => setTypes(getSelectWithObjectsFromThingsArray(res)))
             .catch(() => console.log("error"))
+        }
         getAllPoliciesService(context).then((res:IPolicy[]) => {
             setPolicies(res.map((item:IPolicy) => {
             return {
@@ -237,39 +281,31 @@ export const TwinForm = ({ path, parentId } : parameters) => {
             }
         }))
         }).catch(() => console.log("error"))
-       
     }, [])
 
     return (
         <Fragment>
-            {notification}
-            <h2 className="mb-0">Create new twin</h2>
-            {headerIfIsChild}
+            {notification()}
+            <h2 style={{marginBottom: '0px', paddingBottom: '0px'}}>Create new {title}</h2>
+            {headerIfIsChild()}
             <div className="row">
-                <div className="col-8">
-                    <Form id="finalForm" onSubmit={handleOnSubmitFinal}>
+                <div className="col-7">
+                    <Form id="finalForm" onSubmit={handleOnSubmitFinal} maxWidth="none" style={{marginTop: '0px', paddingTop: '0px'}}>
                     {({register, errors, control}:FormAPI<IDittoThingForm>) => {
                         return(
                             <Fragment>
                                 <ElementHeader className="mt-5" title="Identification" description={descriptionID} isLegend={true}/>
                                 
                                 <Field label="Id" description={descriptionThingId} required={true}>
-                                    <Input {...register("id", { required : true })} type="text" onChange={handleOnChangeId}/>
+                                    <Input {...register("id", { required : true })} type="text" value={thingIdField.id} onChange={handleOnChangeThingId}/>
                                 </Field>
  
                                 <Field label="Namespace" description={descriptionNamespace} required={true}>
-                                    <Input {...register("namespace", { required : true })} type="text" onChange={handleOnChangeNamespace}/>
+                                    <Input {...register("namespace", { required : true })} type="text" value={thingIdField.namespace} onChange={handleOnChangeThingId}/>
                                 </Field>
-                                 
-                                <ElementHeader className="mt-5" title="Twin information" description={descriptionInformation} isLegend={true}/>
-                                <HorizontalGroup justify='center'>
-                                    <RadioButtonGroup
-                                        options={options}
-                                        value={selected}
-                                        onChange={handleOnChangeFrom}
-                                    />
-                                </HorizontalGroup>
-                                {(selected === enumOptions.FROM_TYPE) ? typeForm(control) : (<div></div>)}
+                                
+                                <ElementHeader className="mt-5" title={`${capitalize(title)} information`} description={descriptionInformation} isLegend={true}/>
+                                {(isType === false) ? fromRadioButton(control) : (<div></div>)}
                                 
                                 <Field label="Policy" disabled={!customizeType && selected === enumOptions.FROM_TYPE} required={true}>
                                     <InputControl
@@ -288,15 +324,15 @@ export const TwinForm = ({ path, parentId } : parameters) => {
                                 </Field>
 
                                 <Field label="Name" description="" required={false}>
-                                    <Input {...register("name", { required : false })} type="text" value={currentTwin.attributes.name} onChange={handleOnChangeInputAttribute}/>
+                                    <Input {...register("name", { required : false })} type="text" value={currentThing.attributes.name} onChange={handleOnChangeInputAttribute}/>
                                 </Field>
 
                                 <Field label="Description" description="">
-                                    <Input {...register("description", { required : false })} type="text" value={currentTwin.attributes.description} onChange={handleOnChangeInputAttribute}/>
+                                    <Input {...register("description", { required : false })} type="text" value={currentThing.attributes.description} onChange={handleOnChangeInputAttribute}/>
                                 </Field>
 
                                 <Field label="Image" description="">
-                                    <Input {...register("image", { required : false })} type="text" value={currentTwin.attributes.image} onChange={handleOnChangeInputAttribute}/>
+                                    <Input {...register("image", { required : false })} type="text" value={currentThing.attributes.image} onChange={handleOnChangeInputAttribute}/>
                                 </Field>
 
                                 <hr/>
@@ -308,12 +344,15 @@ export const TwinForm = ({ path, parentId } : parameters) => {
                     <hr/>
                     <FormFeatures features={features} setFeatures={setFeatures} disabled={!customizeType && selected === enumOptions.FROM_TYPE}/>
                     <hr/>
-                    <Button variant="primary" type="submit" form="finalForm">Create twin</Button>
+                    <div style={{display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
+                        <Button variant="primary" type="submit" form="finalForm">Create {title}</Button>
+                    </div>
                 </div>
-                <div className="col-4" style={{minHeight: '100%'}}>
-                    <Field label="Preview" style={{ minHeight: "100%" }} >
-                        <TextArea style={{resize: 'none', minHeight: '100%', flex: 1, overflow: "auto", boxSizing: 'border-box' }} value={JSON.stringify(currentTwin, undefined, 4)} rows={25} readOnly/>
+                <div className="col-5" style={{minHeight: '100%'}}>
+                    <Field label="Preview" style={{minHeight: '1%', marginBottom: '0px', paddingBottom: '0px'}}>
+                        <div></div>
                     </Field>
+                    <TextArea style={{resize: 'none', minHeight: '99%', flex: 1, overflow: "auto", boxSizing: 'border-box' }} value={JSON.stringify(currentThing, undefined, 4)} rows={25} readOnly/>
                 </div>
             </div>
         </Fragment>

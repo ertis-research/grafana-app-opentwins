@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useContext, Fragment } from 'react';
 import { IDittoThing } from 'utils/interfaces/dittoThing';
 import { Card, LinkButton, IconButton, HorizontalGroup, Select, Icon } from '@grafana/ui'
-import { deleteTwinByIdService } from 'services/twins/crud/deleteTwinByIdService';
+import { deleteTwinService } from 'services/twins/crud/deleteTwinService';
 import { AppPluginMeta, KeyValue, SelectableValue } from '@grafana/data';
 import { StaticContext } from 'utils/context/staticContext';
 import { ISelect } from 'utils/interfaces/select';
@@ -63,7 +63,7 @@ export function TwinInfo({path, id, meta} : parameters) {
     }, [value, things])
 
     const handleOnClickDelete = (thingId:string) => {
-        deleteTwinByIdService(context, thingId)
+        deleteTwinService(context, thingId)
         updateThings()
     }
 

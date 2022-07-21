@@ -52,7 +52,7 @@
     {
       "type": "page",
       "name": "Connections",
-      "path": "/plugins/ertis-digitaltwin-app/?page=connections",
+      "path": "/a/ertis-digitaltwin-app/?tab=connections",
       "role": "Viewer",
       "addToNav": true,
       "icon": "plug"

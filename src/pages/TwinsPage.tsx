@@ -1,11 +1,11 @@
-import React, { FC } from 'react';
-import { AppRootProps } from '@grafana/data';
+import React, { FC } from 'react'
+import { AppRootProps } from '@grafana/data'
 //import { TwinForm } from 'components/twins/form/main';
-import { ListTwins } from 'components/twins/list/main';
-import { StaticContext } from 'utils/context/staticContext';
-import { fromMetaToValues } from 'utils/auxFunctions/dittoThing';
-import { TwinInfo } from 'components/twins/list/twinInfo';
-import { TwinForm } from 'components/twins/form/main';
+import { ListTwins } from 'components/twins/list/main'
+import { StaticContext } from 'utils/context/staticContext'
+import { fromMetaToValues } from 'utils/auxFunctions/dittoThing'
+import { TwinInfo } from 'components/twins/list/twinInfo'
+import { CreateFormTwin } from 'components/twins/form/createForm'
 
 export const TwinsPage: FC<AppRootProps> = ({ query, path, meta }) => {
   
@@ -20,11 +20,7 @@ export const TwinsPage: FC<AppRootProps> = ({ query, path, meta }) => {
       break
 
     case "create":
-      if(id !== undefined){
-        component = <TwinForm path={path} meta={meta} parentId={id}/>
-      }else{
-        component = <TwinForm path={path} meta={meta} />
-      }
+      component = <CreateFormTwin path={path} meta={meta} id={id}/>
       break
   }
 

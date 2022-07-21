@@ -11,5 +11,5 @@ export const createTwinFromTypeService = ( context:IStaticContext, twinId : stri
         "Accept": "application/json"
         },
         body: body
-    }).catch(() => console.log("error"))
+    })
 }
