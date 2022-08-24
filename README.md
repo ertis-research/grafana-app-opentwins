@@ -55,7 +55,7 @@ At this point the plugin should already be installed. If we go into Grafana and 
 
 To activate it, go to its info page (click on it) and click on *enable*.
 
-![Enable button](src/img/readme/enable-button.jpg)
+![Enable button](src/img/readme/enable-button.JPG)
 
 With this, we will have our plugin installed and activated, pending configuration and use.
 
