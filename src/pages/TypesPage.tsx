@@ -4,8 +4,9 @@ import { AppRootProps } from '@grafana/data'
 //import { FormTwinType } from 'components/types/form/mainTwinType';
 import { fromMetaToValues } from 'utils/auxFunctions/dittoThing'
 import { StaticContext } from 'utils/context/staticContext'
-import { ListTypes } from 'components/types/list/main'
-import { CreateFormType } from 'components/types/form/createForm'
+import { ListTypes } from 'components/types/list'
+import { CreateFormType } from 'components/types/createForm'
+import { TypeInfo } from 'components/types/typeInfo'
 
 export const TypesPage: FC<AppRootProps> = ({ query, path, meta }) => {
 
@@ -16,7 +17,7 @@ export const TypesPage: FC<AppRootProps> = ({ query, path, meta }) => {
   var component = <ListTypes path={path} meta={meta}/> //default
   switch (query["mode"]) {
     case "check":
-      if(id !== undefined) component = <div></div>
+      if(id !== undefined) component = <TypeInfo path={path} id={id} meta={meta}/>
       break
 
     case "create":

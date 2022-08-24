@@ -10,5 +10,5 @@ export const patchTypeService = ( context:IStaticContext, typeId:string, type:ID
             "Accept": "application/json"
         },
         body: JSON.stringify(type)
-    }).catch(() => console.log("error"))
+    })
 }

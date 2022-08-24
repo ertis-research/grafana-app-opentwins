@@ -3,7 +3,7 @@ export const APP_SUBTITLE = 'App plugin to manage digital twins';
 
 export const KUBERNETES_NAMESPACE = 'cloud2edge'
 
-export const DEFAULT_IMAGE_TWIN = 'https://cdn.pixabay.com/photo/2020/10/31/19/25/robot-5702074_960_720.png'
+export const DEFAULT_IMAGE_TWIN = 'https://i.imgur.com/DhxyHBc.png' //'https://cdn.pixabay.com/photo/2020/10/31/19/25/robot-5702074_960_720.png'
 
 export const initResources = [
     {name: "policy:/", read: undefined, write: undefined, erasable: false, description: "Will be applied to the policy itself"},
@@ -16,6 +16,28 @@ export const initSubjects = [{subjectIssuer: "{{ request", subject: "subjectId }
 export const enumOptions = {
     FROM_TYPE: 0,
     FROM_ZERO: 1
+}
+
+export enum ContentType {
+    JSON = 'application/json',
+    FORM = 'multipart/form-data'
+}
+
+export enum MethodRequest {
+    GET,
+    POST,
+    PUT,
+    PATCH,
+    DELETE
+}
+
+export enum TypesContent {
+    ARRAY_TEXT = "array(string)",
+    ARRAY_NUMBER = "array(number)",
+    ARRAY_BOOLEAN ="array(boolean)",
+    TEXT = "text",
+    NUMBER = "number",
+    BOOLEAN = "boolean"
 }
 
 export const options = [

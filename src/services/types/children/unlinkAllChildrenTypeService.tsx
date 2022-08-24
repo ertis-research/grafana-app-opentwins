@@ -8,5 +8,5 @@ export const unlinkChildrenType = ( context:IStaticContext, parentId:string ) =>
       "Authorization": 'Basic '+btoa('ditto:ditto'),
       "Accept": "application/json"
     }
-  }).catch(() => console.log("error"))
+  })
 }

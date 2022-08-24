@@ -10,5 +10,5 @@ export const createPolicyService = (context:IStaticContext, data:IPolicy) => {
       "Content-Type": "application/json; charset=UTF-8"
     },
     body: JSON.stringify({ entries : data.entries})
-  }).catch(() => console.log("error"))
+  })
 }

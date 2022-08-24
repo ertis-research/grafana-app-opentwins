@@ -10,5 +10,5 @@ export const deleteTypeService = ( context:IStaticContext, typeId:string, type:I
             "Accept": "application/json"
         },
         body: JSON.stringify(type)
-    }).catch(() => console.log("error"))
+    })
 }

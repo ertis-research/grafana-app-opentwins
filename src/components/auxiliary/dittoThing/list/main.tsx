@@ -9,8 +9,6 @@ import { StaticContext } from 'utils/context/staticContext';
 interface parameters {
     path : string
     meta : AppPluginMeta<KeyValue<any>>
-    things : IDittoThing[]
-    values : ISelect[]
     isType : boolean
     funcThings : any
     funcDelete : any
@@ -18,8 +16,10 @@ interface parameters {
     parentId ?: string
 }
 
-export function MainList({path, meta, things, values, isType, funcThings, funcDelete, funcDeleteChildren, parentId } : parameters) {
+export function MainList({path, meta, isType, funcThings, funcDelete, funcDeleteChildren, parentId } : parameters) {
 
+    const [things, setThings] = useState<IDittoThing[]>([])
+    const [values, setValues] = useState<ISelect[]>([])
     const [filteredThings, setFilteredThings] = useState<IDittoThing[]>([])
     const [value, setValue] = useState<SelectableValue<string>>()
     const [showNotification, setShowNotification] = useState<string>(enumNotification.HIDE)
@@ -41,7 +41,7 @@ export function MainList({path, meta, things, values, isType, funcThings, funcDe
             if(!isType && funcDeleteChildren !== undefined){
                 return <ConfirmModal isOpen={true} title={messageDelete} body={descriptionDelete + `${thingId}?`} description={descriptionDeleteChildren} confirmationText={thingId} confirmText={"With children"} alternativeText={"Without children"} dismissText={"Cancel"} onAlternative={() => deleteThing(funcDelete, context, thingId)} onDismiss={hideNotification} onConfirm={() => deleteThing(funcDeleteChildren, context, thingId)} /> 
             } else {
-                return <ConfirmModal isOpen={true} title={messageDelete} body={descriptionDelete + `${thingId}?`} confirmText={"Delete"} onConfirm={funcDelete} onDismiss={hideNotification} /> 
+                return <ConfirmModal isOpen={true} title={messageDelete} body={descriptionDelete + `${thingId}?`} confirmText={"Delete"} onConfirm={() => deleteThing(funcDelete, context, thingId)} onDismiss={hideNotification} /> 
             }
         }
         switch(showNotification) {
@@ -68,6 +68,7 @@ export function MainList({path, meta, things, values, isType, funcThings, funcDe
             setShowNotification(enumNotification.ERROR)
         }
         setShowDeleteModal(undefined)
+        updateThings()
     }
 
     const hideNotification = () => {
@@ -75,7 +76,25 @@ export function MainList({path, meta, things, values, isType, funcThings, funcDe
         setShowNotification(enumNotification.HIDE)
     }
 
+    const updateThings = () => {
+        funcThings().then((res:any) => {
+            if (res.hasOwnProperty("items")) res = res.items
+            setThings(res)
+            console.log(things)
+            if(res !== undefined){
+                setValues(res.map((item:IDittoThing) => {
+                    return {
+                        label: item.thingId,
+                        value: item.thingId
+                    }
+                }))
+            }
+        }).catch(() => console.log("error"))
+    }
+
     const updateFilteredThings = () => {
+        console.log("FILTERED")
+        console.log(filteredThings)
         if (value == null || value == undefined) {
             setFilteredThings(things)
         } else {
@@ -90,10 +109,21 @@ export function MainList({path, meta, things, values, isType, funcThings, funcDe
 
     useEffect(() => { //https://www.smashingmagazine.com/2020/06/rest-api-react-fetch-axios/
         console.log("HOLA")
-        funcThings()
-        updateFilteredThings()
+        updateThings()
     }, [])
 
+    useEffect(() => {
+        updateFilteredThings()
+    }, [things])
+
+    useEffect(() => {
+        updateThings()
+    }, [showNotification, showDeleteModal])
+
+    useEffect(() => {
+    }, [parentId])
+
+/*
     useEffect(() => {
         console.log("CAMBIO DE VALUE")
         console.log(value)
@@ -101,7 +131,7 @@ export function MainList({path, meta, things, values, isType, funcThings, funcDe
     }, [value, things])
 
     useEffect(() => {
-    }, [things, values, showNotification, showDeleteModal])
+    }, [values, showNotification, showDeleteModal])*/
 
     const thingsMapped = filteredThings.map((item) =>
         <div className="col-12 col-sm-6 col-md-6 col-lg-4 mb-4" key={item.thingId}>
@@ -153,9 +183,9 @@ export function MainList({path, meta, things, values, isType, funcThings, funcDe
                         onInputChange={(v, action) => {
                             if(action.action == 'set-value' || action.action == 'input-change')
                             setValue({
-                            label: v,
-                            value: v
-                        })}
+                                label: v,
+                                value: v
+                            })}
                         }
                         placeholder="Search"
                     />

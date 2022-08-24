@@ -8,5 +8,5 @@ export const getTypeService = ( context:IStaticContext, typeId:string ) => {
       "Authorization": 'Basic '+btoa('ditto:ditto'),
       "Accept": "application/json"
     }
-  }).catch(() => console.log("error"))
+  })
 }

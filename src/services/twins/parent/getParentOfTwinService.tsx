@@ -8,5 +8,5 @@ export const getParentOfTwinService = ( context:IStaticContext, twinId:string ) 
       "Authorization": 'Basic '+btoa('ditto:ditto'),
       "Accept": "application/json"
     }
-  }).catch(() => console.log("error"))
+  })
 }

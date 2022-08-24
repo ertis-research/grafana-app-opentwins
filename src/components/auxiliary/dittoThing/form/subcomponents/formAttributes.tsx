@@ -18,7 +18,7 @@ export const FormAttributes = ({attributes, setAttributes, disabled} : parameter
         var found = false
         const newAttributes = attributes.map((item:IAttribute) => {
             if(item.key === data.key){
-                var updatedItem = undefined
+                var updatedItem:any = undefined
                 updatedItem = {
                     ...item,
                     value : data.value

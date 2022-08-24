@@ -7,8 +7,8 @@ export const createOrUpdateTwinService = ( context:IStaticContext, twinId:string
     method: 'PUT',
     headers: {
       "Authorization": 'Basic '+btoa('ditto:ditto'),
-      "Accept": "application/json"
+      "Content-Type": 'application/json; charset=UTF-8'
     },
     body: JSON.stringify(twin)
-  }).catch(() => console.log("error"))
+  })
 }

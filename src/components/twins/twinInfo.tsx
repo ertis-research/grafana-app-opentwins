@@ -7,6 +7,7 @@ import { StaticContext } from 'utils/context/staticContext'
 import { getTwinService } from 'services/twins/crud/getTwinService'
 import { defaultIfNoExist } from 'utils/auxFunctions/general'
 import { InformationTwin } from './subcomponents/information'
+import { SimulationList } from './subcomponents/simulationList'
 
 
 interface parameters {
@@ -18,7 +19,7 @@ interface parameters {
 const Sections = {
     Information : "Information",
     Children : "Children", 
-    Simulation : "Simulation",
+    Simulations : "Simulations",
     Other : "Other"
 }
 
@@ -32,9 +33,11 @@ export function TwinInfo({path, id, meta} : parameters) {
     const getComponent = () => {
         switch (selected) {
             case Sections.Information:
-                return <InformationTwin path={path} twinInfo={twinInfo} meta={meta} edit={false}/>
+                return <InformationTwin path={path} twinInfo={twinInfo} meta={meta}/>
             case Sections.Children:
                 return <ListChildrenTwin path={path} id={id} meta={meta} />
+            case Sections.Simulations:
+                return <SimulationList path={path} id={id} twinInfo={twinInfo} meta={meta} />
             default:
                 return <div>Default</div>
         }

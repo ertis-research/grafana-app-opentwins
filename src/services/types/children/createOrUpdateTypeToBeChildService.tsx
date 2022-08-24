@@ -8,8 +8,8 @@ export const createOrUpdateTypeToBeChildService = ( context:IStaticContext, pare
     method: 'PUT',
     headers: {
       "Authorization": 'Basic '+btoa('ditto:ditto'),
-      "Accept": "application/json"
+      "Content-Type": 'application/json; charset=UTF-8'
     },
     body: body
-  }).catch(() => console.log("error"))
+  })
 }

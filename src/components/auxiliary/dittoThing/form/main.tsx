@@ -7,8 +7,8 @@ import { ISelect } from 'utils/interfaces/select'
 import { ElementHeader } from 'components/auxiliary/general/elementHeader'
 import { enumOptions, options } from 'utils/data/consts'
 import { Control } from 'react-hook-form'
-import { FormAttributes } from 'components/types/form/subcomponents/formAttributes'
-import { FormFeatures } from 'components/types/form/subcomponents/formFeatures'
+import { FormAttributes } from 'components/auxiliary/dittoThing/form/subcomponents/formAttributes'
+import { FormFeatures } from 'components/auxiliary/dittoThing/form/subcomponents/formFeatures'
 import { getAllPoliciesService } from 'services/policies/getAllPoliciesService'
 import { IPolicy } from 'utils/interfaces/dittoPolicy'
 import { StaticContext } from 'utils/context/staticContext'
@@ -62,22 +62,26 @@ export const ThingForm = ({ path, parentId, isType, funcFromType, funcFromZero }
 
     const clearFields = () => {
         setThingIdField({ id : "", namespace: ""})
-        setCustomizeType(false)
-        setType(undefined)
         setSelectedPolicy(undefined)
         setAttributes([])
         setFeatures([])
-        setSelected(enumOptions.FROM_TYPE)
+        if(!isType) {
+            setCustomizeType(false)
+            setType(undefined)
+            setSelected(enumOptions.FROM_TYPE)
+        }
         setLastCurrentThing({ thingId: "", policyId: "", attributes: { name: "", description: "", image: "", type: ""}})
         setCurrentThing({ thingId: "", policyId: "", attributes: { name: "", description: "", image: "", type: ""}})
         setShowNotification(enumNotification.HIDE)
     }
 
-    const hideNotification = () => {
-        setThingIdField({
-            ...thingIdField,
-            id : ""
-        })
+    const hideNotification = (removeId:boolean = true) => {
+        if(removeId){
+            setThingIdField({
+                ...thingIdField,
+                id : ""
+            })
+        }
         setShowNotification(enumNotification.HIDE)
     }
 
@@ -87,7 +91,7 @@ export const ThingForm = ({ path, parentId, isType, funcFromType, funcFromZero }
                 return <ConfirmModal isOpen={true} icon='check' title={"Successful creation!"} body={messageSuccess} description={descriptionSuccess} confirmText={"Clear fields"} dismissText={"Keep fields"} onConfirm={clearFields} onDismiss={hideNotification} />
                 //return <Alert title={messageSuccess} severity={"success"} elevated />
             case enumNotification.ERROR:
-                return <Modal title={messageError} icon='exclamation-triangle' isOpen={true}>{descriptionError}</Modal>
+                return <Modal title={messageError} icon='exclamation-triangle' isOpen={true} onDismiss={() => hideNotification(false)}>{descriptionError}</Modal>
             default:
                 return <div></div>
         }
@@ -101,7 +105,7 @@ export const ThingForm = ({ path, parentId, isType, funcFromType, funcFromZero }
             attributes : currentThing.attributes,
             features : currentThing.features
         }
-        var funcToExecute = undefined
+        var funcToExecute:any = undefined
 
         if(selected === enumOptions.FROM_TYPE && type?.value !== undefined){
             if(customizeType){
@@ -117,6 +121,7 @@ export const ThingForm = ({ path, parentId, isType, funcFromType, funcFromZero }
             funcToExecute.then(() => {
                 console.log("OK")
                 setShowNotification(enumNotification.SUCCESS)
+                
             }).catch(() => {
                 console.log("error")
                 setShowNotification(enumNotification.ERROR)

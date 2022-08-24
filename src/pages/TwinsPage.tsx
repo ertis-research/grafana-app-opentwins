@@ -1,11 +1,11 @@
 import React, { FC } from 'react'
 import { AppRootProps } from '@grafana/data'
 //import { TwinForm } from 'components/twins/form/main';
-import { ListTwins } from 'components/twins/list/main'
+import { ListTwins } from 'components/twins/list'
 import { StaticContext } from 'utils/context/staticContext'
 import { fromMetaToValues } from 'utils/auxFunctions/dittoThing'
-import { TwinInfo } from 'components/twins/list/twinInfo'
-import { CreateFormTwin } from 'components/twins/form/createForm'
+import { TwinInfo } from 'components/twins/twinInfo'
+import { CreateFormTwin } from 'components/twins/createForm'
 
 export const TwinsPage: FC<AppRootProps> = ({ query, path, meta }) => {
   

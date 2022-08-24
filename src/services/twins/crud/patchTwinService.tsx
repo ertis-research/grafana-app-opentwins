@@ -10,5 +10,5 @@ export const patchTwinService = ( context:IStaticContext, twinId:string, twin:ID
       "Accept": "application/json"
     },
     body: JSON.stringify(twin)
-  }).catch(() => console.log("error"))
+  })
 }
