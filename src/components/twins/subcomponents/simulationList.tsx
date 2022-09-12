@@ -1,9 +1,13 @@
 import { AppPluginMeta, KeyValue } from '@grafana/data'
-import { Button, Card, Field, FieldSet, Form, FormAPI, HorizontalGroup, Input, LinkButton, List, useTheme2, VerticalGroup } from '@grafana/ui'
-import React, { Fragment, useState, useEffect } from 'react'
-import { defaultIfNoExist } from 'utils/auxFunctions/general'
-import { TypesContent } from 'utils/data/consts'
-import { simulationAttributes, simulationContent } from 'utils/interfaces/simulation'
+import { Button, Card, Checkbox, Field, FieldSet, Form, FormAPI, HorizontalGroup, Input, LinkButton, List, Modal, Spinner, useTheme2, VerticalGroup } from '@grafana/ui'
+import React, { Fragment, useState, useContext, useEffect, ChangeEvent } from 'react'
+import { duplicateTwinService } from 'services/twins/duplicateTwinService'
+import { deleteSimulationService } from 'services/twins/simulation/deleteSimulationService'
+import { sendSimulationRequest } from 'services/twins/simulation/sendSimulationRequestService'
+import { defaultIfNoExist, enumNotification, removeEmptyEntries } from 'utils/auxFunctions/general'
+import { StaticContext } from 'utils/context/staticContext'
+import { getPlaceHolderByType, TypesOfField } from 'utils/data/consts'
+import { ISimulationAttributes, ISimulationContent } from 'utils/interfaces/simulation'
 
 interface parameters {
     path : string
@@ -14,45 +18,87 @@ interface parameters {
 
 export const SimulationList = ({path, meta, id, twinInfo} : parameters) => {
 
-    const [selectedSimulation, setselectedSimulation] = useState<simulationAttributes | undefined>()
-    const [simulations, setSimulations] = useState<simulationAttributes[]>([])
+    const [selectedSimulation, setselectedSimulation] = useState<ISimulationAttributes | undefined>()
+    const [simulations, setSimulations] = useState<ISimulationAttributes[]>([])
+    const [thingIdSimulated, setthingIdSimulated] = useState<string>()
+    const [showNotification, setShowNotification] = useState<string>(enumNotification.HIDE)
+    const [duplicateTwin, setDuplicateTwin] = useState<boolean>(true)
 
-    const handleOnSubmit = (data:any) => {
-        console.log(data)
+    const messageSuccess = `Simulated twin successfully created and simulation request sent.`
+    const descriptionSuccess = `aa`
+    const messageError = `Error`
+    const descriptionError = "Please check the data you have entered."
+
+    const context = useContext(StaticContext)
+
+    const sendSimulation = (data:any) => {
+        if(selectedSimulation !== undefined){
+            sendSimulationRequest(selectedSimulation, data).then(() => {
+                console.log("OK simulacion")
+                setShowNotification(enumNotification.SUCCESS)
+                
+            }).catch(() => {
+                console.log("error simulacion")
+                setShowNotification(enumNotification.ERROR)
+            })
+        }
     }
 
-    const handleOnClick = (item:simulationAttributes) => {
-        console.log("CLICK")
+    const handleOnSubmit = (data:any) => {
+        setShowNotification(enumNotification.LOADING)
+        if(duplicateTwin && data.thingId) {
+            const thingIds = data.thingId
+            delete data.thingId
+            if(selectedSimulation !== undefined){
+                data = removeEmptyEntries(data)
+                var ps:Promise<any>[] = thingIds.split(",").map((newId:string) => duplicateTwinService(context, id, newId.trim()))
+                Promise.all(ps).then(() => {
+                    console.log("OK duplicar")
+                    sendSimulation(data)
+                }).catch(() => {
+                    console.log("error duplicar")
+                    setShowNotification(enumNotification.ERROR)
+                })
+            }
+        } else {
+            delete data.thingId
+            data = removeEmptyEntries(data)
+            sendSimulation(data)
+        }
+        
+    }
+
+    const handleOnClick = (item:ISimulationAttributes) => {
         setselectedSimulation((selectedSimulation?.id === item.id) ? undefined : item)
     }
 
-    const simulationsToArray = (object:{[id:string] : simulationAttributes}) => {
+    const handleOnCLickDelete = () => {
+        if(selectedSimulation){
+            deleteSimulationService(context, id, selectedSimulation.id)
+            setselectedSimulation(undefined)
+        }
+    }
+
+    const onChangeThingIdSimulated = (event:ChangeEvent<HTMLInputElement>) => {
+        const newValue = event.target.value
+        if(newValue != id) setthingIdSimulated(newValue)
+    }
+
+    const simulationsToArray = (object:{[id:string] : ISimulationAttributes}) => {
         return Object.entries(object).map(([key, value]) => {
             return value
         })
     }
 
-    const getPlaceHolderByType = (type:string) => {
-        switch(type){
-            case TypesContent.TEXT:
-                return "example"
-            case TypesContent.NUMBER:
-                return "0"
-            case TypesContent.BOOLEAN:
-                return "example"
-            case TypesContent.ARRAY_TEXT:
-                return "text, example, hello"
-            case TypesContent.ARRAY_NUMBER:
-                return "3, 4, 2, 1, 9"
-            case TypesContent.ARRAY_BOOLEAN:
-                return "true, false, false, true"
-            default:
-                return ""
-        }
+    const hideNotification = () => {
+        setShowNotification(enumNotification.HIDE)
     }
 
     useEffect(() => {
     }, [selectedSimulation])
+
+    useEffect(() => {
+    }, [showNotification])
 
     useEffect(() => {
         setSimulations(simulationsToArray(defaultIfNoExist(twinInfo.attributes, "_simulations", {})))
@@ -62,7 +108,23 @@ export const SimulationList = ({path, meta, id, twinInfo} : parameters) => {
         setSimulations(simulationsToArray(defaultIfNoExist(twinInfo.attributes, "_simulations", {})))
     }, [])
 
-    const ElementSimulation = (item:simulationAttributes) => {
+    const notification = () => {
+        switch(showNotification) {
+            case enumNotification.SUCCESS:
+                return <Modal title={messageSuccess} icon='check-circle' isOpen={true} onDismiss={() => hideNotification()}>{descriptionSuccess}</Modal>
+                //return <Alert title={messageSuccess} severity={"success"} elevated />
+            case enumNotification.ERROR:
+                return <Modal title={messageError} icon='exclamation-triangle' isOpen={true} onDismiss={() => hideNotification()}>{descriptionError}</Modal>
+            default:
+                return <div></div>
+        }
+    }
+
+    const loadingSpinner = () => {
+        return (showNotification === enumNotification.LOADING) ? <Spinner size={30}/> : <div></div>
+    }
+
+    const ElementSimulation = (item:ISimulationAttributes) => {
         return (
             <Card heading={item.id} description={item.description} isSelected={item.id === selectedSimulation?.id} onClick={() => handleOnClick(item)}>
                 <Card.Meta>
@@ -74,12 +136,13 @@ export const SimulationList = ({path, meta, id, twinInfo} : parameters) => {
 
     const fieldSet = (register:any) => {
         if(selectedSimulation?.content !== undefined){
-            return selectedSimulation.content.map((item:simulationContent) => {
+            return selectedSimulation.content.map((item:ISimulationContent) => {
                 return(
                     <Field label={item.name} description={item.type} required={item.required}>
                         <Input {...register(item.name, {required : item.required})} 
-                            type={(item.type == TypesContent.NUMBER) ? "number" : "text"} 
+                            type={(item.type == TypesOfField.NUMBER) ? "number" : "text"} 
                             placeholder={getPlaceHolderByType(item.type)}
+                            value={item.default}
                         />
                     </Field>
                 )
@@ -87,8 +150,17 @@ export const SimulationList = ({path, meta, id, twinInfo} : parameters) => {
         } else {
             return <div></div>
         }
-    }
+    }     
 
+    const idSimulatedTwinForm = (register:any) => {
+        return (!duplicateTwin) ? <div></div> : 
+        <Fragment>
+            <p>Id for simulated twin</p>
+            <Field label="ThingId" required={duplicateTwin} disabled={!duplicateTwin}>
+                <Input {...register("thingId", {required : duplicateTwin})} disabled={!duplicateTwin} type="text" value={thingIdSimulated} onChange={onChangeThingIdSimulated}/>
+            </Field>
+            <hr/>
+        </Fragment>}
 
     const getForm = () => {
         if (selectedSimulation !== undefined) {
@@ -96,22 +168,41 @@ export const SimulationList = ({path, meta, id, twinInfo} : parameters) => {
             <Fragment>
                 <h5>Request simulation</h5>
                 <div className="p-4" style={{backgroundColor:useTheme2().colors.background.secondary}}>
-                    <h6>Simulation with id {selectedSimulation.id}</h6>
+                    <h6 className="mb-3">Simulation with id {selectedSimulation.id}</h6>
                     <Form id="formSend" onSubmit={handleOnSubmit} maxWidth="none">
                         {({register, errors}:FormAPI<any>) => {
                             return (
                                 <Fragment>
+                                    <Checkbox
+                                        value={duplicateTwin}
+                                        onChange={() => setDuplicateTwin(!duplicateTwin)}
+                                        label="Duplicate twin before executing the request (recommended)"
+                                        description="Activate in case the simulation requires a twin identical to the current twin but with a different identifier."
+                                    />
+                                    <hr/>
+                                    {idSimulatedTwinForm(register)}
+                                    {(selectedSimulation?.content !== undefined && selectedSimulation.content.length > 0) ? <p>Settings</p> : <div></div>}
                                     <FieldSet>
                                         {fieldSet(register)}
                                     </FieldSet>
                                     <VerticalGroup align="center">
-                                        <Button type="submit" variant="primary" form="formSend">Simulate</Button>
+                                        {loadingSpinner()}
+                                        <Button type="submit" variant="primary" form="formSend" disabled={showNotification != enumNotification.HIDE}>Simulate</Button>
                                     </VerticalGroup>
                                 </Fragment>
                             )
                         }}
                     </Form>
                 </div>
+                <HorizontalGroup justify="flex-end" align="flex-start" className="mt-3">
+                    <LinkButton 
+                        variant="secondary" 
+                        href={path + '&id=' + id +'&mode=edit' + "&element=simulation&simulationId=" + selectedSimulation.id} 
+                        className="m-3"
+                        disabled={showNotification != enumNotification.HIDE}
+                    >Edit</LinkButton>
+                    <Button type="button" variant="destructive" disabled={showNotification != enumNotification.HIDE} className="mt-3" onClick={handleOnCLickDelete}>Delete</Button>
+                </HorizontalGroup>
             </Fragment>
             )
         } else {
@@ -119,26 +210,35 @@ export const SimulationList = ({path, meta, id, twinInfo} : parameters) => {
         }
     }
 
+    const noSimulations = 
+        <VerticalGroup align="center">
+            <h5>This twin has no simulations</h5>
+        </VerticalGroup>
+
+    const simulationsList = 
+        <div className="row mt-4">
+            <div className="col-12 col-md-6">
+            <h5>Simulations available</h5>
+            <List
+                items={simulations}
+                getItemKey={(item:ISimulationAttributes) => (item.id)}
+                renderItem={(item:ISimulationAttributes, index:number) => ElementSimulation(item)}
+            />
+            </div>
+            <div className="col-12 col-md-6">
+                {(selectedSimulation !== undefined) ? getForm() : <div></div>}
+            </div>
+        </div>
+
     return (
         <Fragment>
+            {notification()}
             <HorizontalGroup justify="center">
-                    <LinkButton variant="primary" href={path + '&mode=create' + ((id !== undefined) ? '&id='+ id : "")} className="m-3">
-                        Add simulation
-                    </LinkButton>
-                </HorizontalGroup>
-            <div className="row mt-4">
-                <div className="col-6">
-                    <h5>Simulations available</h5>
-                    <List
-                        items={simulations}
-                        getItemKey={(item:simulationAttributes) => (item.id)}
-                        renderItem={(item:simulationAttributes, index:number) => ElementSimulation(item)}
-                    />
-                </div>
-                <div className="col-6">
-                    {(selectedSimulation !== undefined) ? getForm() : <div></div>}
-                </div>
-            </div>
+                <LinkButton variant="primary" href={path + '&mode=create&id=' + id + "&element=simulation"} className="m-3">
+                    Add simulation
+                </LinkButton>
+            </HorizontalGroup>
+            {(simulations.length > 0) ? simulationsList : noSimulations}
         </Fragment>
     )
 }

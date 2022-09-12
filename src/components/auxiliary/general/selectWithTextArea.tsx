@@ -1,4 +1,4 @@
-import React, { useState, Fragment } from 'react'
+import React, { useState, Fragment, useEffect } from 'react'
 import { Select, TextArea, Button, Icon, ConfirmModal, LinkButton } from '@grafana/ui'
 import { SelectableValue } from '@grafana/data'
 import { ISelect } from 'utils/interfaces/select'
@@ -9,13 +9,14 @@ interface parameters {
     name : string
     values : ISelect[]
     deleteFunction : any
-    buttonHref ?: string
+    getFunction ?: any
 }
 
-export const SelectWithTextArea = ({ path, tab, name, values, deleteFunction } : parameters) => {
+export const SelectWithTextArea = ({ path, tab, name, values, deleteFunction, getFunction } : parameters) => {
 
     const [value, setValue] = useState<SelectableValue<string>>()
     const [isOpen, setIsOpen] = useState(false)
+    const [text, setText] = useState<string>("")
 
     const handleOnClickDelete = () => {
         if(value !== undefined){
@@ -35,6 +36,21 @@ export const SelectWithTextArea = ({ path, tab, name, values, deleteFunction } :
         setIsOpen(false)
     }
 
+    useEffect(() => {
+        if(!value || (!getFunction && !value.text)){
+            setText("")
+        } else if(getFunction  && !value.text){
+            getFunction(value.label).then((item:any) => {
+                setText(JSON.stringify(item, undefined, 4))
+            })
+        } else {
+            setText(value.text)
+        }
+    }, [value])
+
+    useEffect(() => {
+    }, [text, isOpen])
+
     return (
         <Fragment>
             <div className="row">
@@ -52,10 +68,10 @@ export const SelectWithTextArea = ({ path, tab, name, values, deleteFunction } :
                     </LinkButton>
                 </div>
             </div>
-            <TextArea className="mt-3" rows={25} value={value?.text === undefined ? "" : value.text} readOnly/>
+            <TextArea className="mt-3" rows={25} value={text} readOnly/>
             <div className="d-flex justify-content-center">
-                <Button className="m-3">Edit</Button>
-                <Button className="m-3" variant="destructive" onClick={handleOnClickDelete}>Delete</Button>
+                <Button className="m-3" disabled={value == undefined}>Edit</Button>
+                <Button className="m-3" variant="destructive" onClick={handleOnClickDelete} disabled={value == undefined}>Delete</Button>
             </div>
             <ConfirmModal
                 isOpen={isOpen}

@@ -1,5 +1,6 @@
 // Libraries
 import { AppRootProps } from '@grafana/data';
+import { ListConnections } from 'components/connections/list/main';
 import React, { FC } from 'react';
 
 import { fromMetaToValues } from 'utils/auxFunctions/dittoThing';
@@ -8,14 +9,14 @@ import { StaticContext } from 'utils/context/staticContext';
 export const ConnectionsPage: FC<AppRootProps> = ({ query, path, meta }) => {
 
   const valueMeta = fromMetaToValues(meta)
-  path = path + "?tab=policies"
+  path = path + "?tab=connections"
 
   var component = <div></div>
   switch (query["mode"]) {
     case "create":
       component = <div></div>
     default:
-      component = <div>Connections LIST</div>
+      component = <ListConnections path={path}/>
   }
 
   return (

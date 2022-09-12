@@ -37,7 +37,7 @@ export const FormAttributes = ({attributes, setAttributes, disabled} : parameter
             ])
         }
         
-      }
+    }
 
     return (
         <Fragment>

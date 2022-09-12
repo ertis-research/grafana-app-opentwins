@@ -6,6 +6,7 @@ import { StaticContext } from 'utils/context/staticContext'
 import { fromMetaToValues } from 'utils/auxFunctions/dittoThing'
 import { TwinInfo } from 'components/twins/twinInfo'
 import { CreateFormTwin } from 'components/twins/createForm'
+import { SimulationForm } from 'components/twins/subcomponents/simulationForm'
 
 export const TwinsPage: FC<AppRootProps> = ({ query, path, meta }) => {
   
@@ -20,9 +21,30 @@ export const TwinsPage: FC<AppRootProps> = ({ query, path, meta }) => {
       break
 
     case "create":
-      component = <CreateFormTwin path={path} meta={meta} id={id}/>
+      switch (query["element"]) {
+        case "simulation":
+          component = <SimulationForm path={path} id={id} meta={meta}/>
+          break
+    
+        default:
+          component = <CreateFormTwin path={path} meta={meta} id={id}/>
+      }
+      break
+
+    case "edit":
+      switch (query["element"]) {
+        case "simulation":
+          const simulationId = query["simulationId"]
+          component = <SimulationForm path={path} id={id} meta={meta} simulationId={simulationId}/>
+          break
+    
+        default:
+          component = <CreateFormTwin path={path} meta={meta} id={id}/>
+      }
       break
   }
+
+  
 
   return (
     <StaticContext.Provider value={valueMeta}>

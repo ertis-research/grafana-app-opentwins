@@ -1,13 +1,13 @@
 import { fetchExtendedApiForDittoService } from "services/general/fetchDittoExtendedService"
 import { IStaticContext } from "utils/context/staticContext"
-import { IDittoThingData } from "utils/interfaces/dittoThing"
 
-export const patchTwinService = ( context:IStaticContext, twinId:string, twin:IDittoThingData ) => {
+export const patchTwinService = ( context:IStaticContext, twinId:string, twin:any ) => {
+  console.log(JSON.stringify(twin))
   return fetchExtendedApiForDittoService(context, "/twins/" + twinId, {
     method: 'PATCH',
     headers: {
       "Authorization": 'Basic '+btoa('ditto:ditto'),
-      "Accept": "application/json"
+      "Content-Type": "application/json"
     },
     body: JSON.stringify(twin)
   })

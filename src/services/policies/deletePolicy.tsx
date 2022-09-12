@@ -1,8 +1,8 @@
-import { fetchDittoService } from "services/general/fetchDittoService"
+import { fetchDittoAPIService } from "services/general/fetchDittoAPIService"
 import { IStaticContext } from "utils/context/staticContext"
 
 export const deletePolicyService = async (context:IStaticContext, policyId : string) => {
-  return fetchDittoService(context, "/policies/" + policyId, {
+  return fetchDittoAPIService(context, "/policies/" + policyId, {
     method: 'DELETE',
     headers: {
       "Authorization": 'Basic '+btoa('ditto:ditto'),

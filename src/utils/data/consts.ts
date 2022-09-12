@@ -24,20 +24,39 @@ export enum ContentType {
 }
 
 export enum MethodRequest {
-    GET,
-    POST,
-    PUT,
-    PATCH,
-    DELETE
+    GET = "GET",
+    POST = "POST",
+    PUT = "PUT",
+    PATCH = "PATCH",
+    DELETE = "DELETE"
 }
 
-export enum TypesContent {
-    ARRAY_TEXT = "array(string)",
+export enum TypesOfField {
+    ARRAY_TEXT = "array(text)",
     ARRAY_NUMBER = "array(number)",
     ARRAY_BOOLEAN ="array(boolean)",
     TEXT = "text",
     NUMBER = "number",
     BOOLEAN = "boolean"
+}
+
+export const getPlaceHolderByType = (type:string) => {
+    switch(type){
+        case TypesOfField.TEXT:
+            return "example"
+        case TypesOfField.NUMBER:
+            return "0"
+        case TypesOfField.BOOLEAN:
+            return "example"
+        case TypesOfField.ARRAY_TEXT:
+            return "text, example, hello"
+        case TypesOfField.ARRAY_NUMBER:
+            return "3, 4, 2, 1, 9"
+        case TypesOfField.ARRAY_BOOLEAN:
+            return "true, false, false, true"
+        default:
+            return ""
+    }
 }
 
 export const options = [

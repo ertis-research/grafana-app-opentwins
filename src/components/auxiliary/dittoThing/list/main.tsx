@@ -1,6 +1,6 @@
 import React, { useState, useEffect, Fragment, useContext } from 'react';
 import { IDittoThing } from 'utils/interfaces/dittoThing';
-import { Card, LinkButton, IconButton, HorizontalGroup, Select, Icon, ConfirmModal, Modal } from '@grafana/ui'
+import { Card, LinkButton, IconButton, HorizontalGroup, Select, Icon, ConfirmModal, Modal, Spinner, VerticalGroup } from '@grafana/ui'
 import { AppPluginMeta, KeyValue, SelectableValue } from '@grafana/data';
 import { defaultIfNoExist, enumNotification, imageIsUndefined } from 'utils/auxFunctions/general';
 import { ISelect } from 'utils/interfaces/select';
@@ -49,6 +49,13 @@ export function MainList({path, meta, isType, funcThings, funcDelete, funcDelete
                 return <Modal title={messageSuccess} icon='check' isOpen={true} onDismiss={hideNotification}/>
             case enumNotification.ERROR:
                 return <Modal title={messageError} icon='exclamation-triangle' isOpen={true} onDismiss={hideNotification}>{descriptionError}</Modal>
+            case enumNotification.LOADING:
+                return (
+                    <VerticalGroup align="center">
+                        <h4 className="mb-0 mt-4">Loading...</h4>
+                        <Spinner size={30}/> 
+                    </VerticalGroup>
+                )
             default:
                 return <div></div>
         }
@@ -77,6 +84,7 @@ export function MainList({path, meta, isType, funcThings, funcDelete, funcDelete
     }
 
     const updateThings = () => {
+        setShowNotification(enumNotification.LOADING)
         funcThings().then((res:any) => {
             if (res.hasOwnProperty("items")) res = res.items
             setThings(res)
@@ -89,6 +97,7 @@ export function MainList({path, meta, isType, funcThings, funcDelete, funcDelete
                     }
                 }))
             }
+            setShowNotification(enumNotification.READY)
         }).catch(() => console.log("error"))
     }
 
@@ -117,13 +126,15 @@ export function MainList({path, meta, isType, funcThings, funcDelete, funcDelete
     }, [things])
 
     useEffect(() => {
-        updateThings()
+        if(showNotification == enumNotification.HIDE) {
+            updateThings()
+        }
     }, [showNotification, showDeleteModal])
 
     useEffect(() => {
     }, [parentId])
 
-/*
+
     useEffect(() => {
         console.log("CAMBIO DE VALUE")
         console.log(value)
@@ -131,7 +142,7 @@ export function MainList({path, meta, isType, funcThings, funcDelete, funcDelete
     }, [value, things])
 
     useEffect(() => {
-    }, [values, showNotification, showDeleteModal])*/
+    }, [values, showNotification, showDeleteModal])
 
     const thingsMapped = filteredThings.map((item) =>
         <div className="col-12 col-sm-6 col-md-6 col-lg-4 mb-4" key={item.thingId}>
@@ -164,10 +175,13 @@ export function MainList({path, meta, isType, funcThings, funcDelete, funcDelete
         </div>
     );
 
+    const noChildren = (showNotification != enumNotification.READY) ? <div></div> :  
+        <VerticalGroup align="center">
+            <h5>This twin has no children</h5>
+        </VerticalGroup>
 
     return (
         <Fragment>
-            {notification()}
             <HorizontalGroup justify="center">
                 <LinkButton variant="primary" href={path + '&mode=create' + ((parentId !== undefined) ? '&id='+ parentId : "")} className="m-3">
                     Create new {title}
@@ -191,8 +205,9 @@ export function MainList({path, meta, isType, funcThings, funcDelete, funcDelete
                     />
                 </div>
             </div>
+            {notification()}
             <div className="row">
-                {thingsMapped}
+                {(filteredThings.length > 0) ? thingsMapped : noChildren}
             </div>
         </Fragment>
     );

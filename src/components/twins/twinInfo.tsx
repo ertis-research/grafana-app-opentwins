@@ -8,6 +8,7 @@ import { getTwinService } from 'services/twins/crud/getTwinService'
 import { defaultIfNoExist } from 'utils/auxFunctions/general'
 import { InformationTwin } from './subcomponents/information'
 import { SimulationList } from './subcomponents/simulationList'
+import { OtherFunctionsTwin } from './subcomponents/otherFunctions'
 
 
 interface parameters {
@@ -38,6 +39,8 @@ export function TwinInfo({path, id, meta} : parameters) {
                 return <ListChildrenTwin path={path} id={id} meta={meta} />
             case Sections.Simulations:
                 return <SimulationList path={path} id={id} twinInfo={twinInfo} meta={meta} />
+            case Sections.Other:
+                return <OtherFunctionsTwin path={path} id={id} meta={meta} />
             default:
                 return <div>Default</div>
         }

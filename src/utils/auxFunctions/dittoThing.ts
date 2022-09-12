@@ -54,7 +54,11 @@ export const fromMetaToValues = (meta:AppPluginMeta<KeyValue<any>>) => {
     var res:any = {}
     if(meta.jsonData !== undefined){
         const data = meta.jsonData
-        if(data.ditto_endpoint !== undefined) res['ditto_endpoint'] = data.ditto_endpoint + "/api/2"
+        if(data.ditto_endpoint !== undefined) res['ditto_endpoint'] = data.ditto_endpoint
+        if(data.ditto_username !== undefined) res['ditto_username'] = data.ditto_username
+        if(data.ditto_password !== undefined) res['ditto_password'] = data.ditto_password
+        if(data.ditto_username_devops !== undefined) res['ditto_username_devops'] = data.ditto_username_devops
+        if(data.ditto_password_devops !== undefined) res['ditto_password_devops'] = data.ditto_password_devops
         if(data.ditto_extended_endpoint !== undefined) res['ditto_extended_endpoint'] = data.ditto_extended_endpoint + "/api"
         if(data.hono_endpoint !== undefined) res['hono_endpoint'] = data.hono_endpoint + "/v1"
         if(data.hono_tenant !== undefined) res['hono_tenant'] = data.hono_tenant
