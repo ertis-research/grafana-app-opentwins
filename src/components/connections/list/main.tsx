@@ -42,6 +42,10 @@ export const ListConnections = ({path} : parameters) => {
     useEffect(() => {
         updateConnections()
     }, [])
+
+    useEffect(() => {
+        updateConnections()
+    }, [connections])
     
     return (
         <Fragment>

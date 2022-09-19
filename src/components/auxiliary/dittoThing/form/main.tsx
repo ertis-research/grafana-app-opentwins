@@ -10,7 +10,6 @@ import { Control } from 'react-hook-form'
 import { FormAttributes } from 'components/auxiliary/dittoThing/form/subcomponents/formAttributes'
 import { FormFeatures } from 'components/auxiliary/dittoThing/form/subcomponents/formFeatures'
 import { getAllPoliciesService } from 'services/policies/getAllPoliciesService'
-import { IPolicy } from 'utils/interfaces/dittoPolicy'
 import { StaticContext } from 'utils/context/staticContext'
 import { getSelectWithObjectsFromThingsArray, JSONtoIAttributes, JSONtoIFeatures } from 'utils/auxFunctions/dittoThing'
 import { getAllTypesService } from 'services/types/getAllTypesService'
@@ -278,11 +277,11 @@ export const ThingForm = ({ path, parentId, isType, funcFromType, funcFromZero }
             getAllTypesService(context).then((res) => setTypes(getSelectWithObjectsFromThingsArray(res)))
             .catch(() => console.log("error"))
         }
-        getAllPoliciesService(context).then((res:IPolicy[]) => {
-            setPolicies(res.map((item:IPolicy) => {
+        getAllPoliciesService(context).then((res:string[]) => {
+            setPolicies(res.map((item:string) => {
             return {
-                label : item.policyId,
-                value : item.policyId
+                label : item,
+                value : item
             }
         }))
         }).catch(() => console.log("error"))

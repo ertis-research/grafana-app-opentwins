@@ -1,5 +1,5 @@
 
-import { fetchExtendedApiForDittoService } from "services/general/fetchDittoExtendedService"
+import { fetchExtendedApiForDittoService } from "services/general/fetchExtendedApiService"
 import { IStaticContext } from "utils/context/staticContext"
 
 export const getChildrenOfTypeService = ( context:IStaticContext, typeId:string ) => {

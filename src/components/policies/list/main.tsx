@@ -2,8 +2,8 @@ import { SelectWithTextArea } from 'components/auxiliary/general/selectWithTextA
 import React, { useState, useEffect, useContext, Fragment } from 'react'
 import { deletePolicyService } from 'services/policies/deletePolicy'
 import { getAllPoliciesService } from 'services/policies/getAllPoliciesService'
+import { getPolicyByIdService } from 'services/policies/getPolicyByIdService'
 import { StaticContext } from 'utils/context/staticContext'
-import { IPolicy } from 'utils/interfaces/dittoPolicy'
 import { ISelect } from 'utils/interfaces/select'
 /*import { List } from '@grafana/ui';
 import { ControlledCollapse } from '@grafana/ui';
@@ -25,13 +25,17 @@ export const ListPolicies = ({path} : parameters) => {
         updatePolicy()
     }
 
+    const getPolicy = (id:string) => {
+        return getPolicyByIdService(context, id)
+    }
+
     const updatePolicy = () => {
-        getAllPoliciesService(context).then((res:IPolicy[]) => {
-            setPolicies(res.map((item:IPolicy) => {
+        getAllPoliciesService(context).then((res:string[]) => {
+            setPolicies(res.map((item:string) => {
                 return {
-                    label : item.policyId,
-                    value : item.policyId,
-                    text: JSON.stringify(item, undefined, 4)
+                    label : item,
+                    value : item,
+                    text: ""
                 }
             }))
         }).catch(() => console.log("error"))
@@ -40,10 +44,14 @@ export const ListPolicies = ({path} : parameters) => {
     useEffect(() => {
         updatePolicy()
     }, [])
+
+    useEffect(() => {
+        updatePolicy()
+    }, [policies])
     
     return (
         <Fragment>
-            <SelectWithTextArea path={path} tab="policies" name="policy" values={policies} deleteFunction={handleDeletePolicy} />
+            <SelectWithTextArea path={path} tab="policies" name="policy" values={policies} deleteFunction={handleDeletePolicy} getFunction={getPolicy} />
         </Fragment>
     )
 }

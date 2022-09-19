@@ -1,5 +1,5 @@
 import { IDittoThingData } from "utils/interfaces/dittoThing"
-import { fetchExtendedApiForDittoService } from "services/general/fetchDittoExtendedService"
+import { fetchExtendedApiForDittoService } from "services/general/fetchExtendedApiService"
 import { IStaticContext } from "utils/context/staticContext"
 
 export const createTwinFromTypeService = ( context:IStaticContext, twinId : string, typeId : string, data?:IDittoThingData ) => {

@@ -1,4 +1,4 @@
-import { fetchExtendedApiForDittoService } from "services/general/fetchDittoExtendedService"
+import { fetchExtendedApiForDittoService } from "services/general/fetchExtendedApiService"
 import { IStaticContext } from "utils/context/staticContext"
 
 export const patchTwinService = ( context:IStaticContext, twinId:string, twin:any ) => {
