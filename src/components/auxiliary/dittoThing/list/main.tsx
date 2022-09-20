@@ -62,6 +62,8 @@ export function MainList({path, meta, isType, funcThings, funcDelete, funcDelete
     }
 
     const deleteThing = (funcToExecute:any, context:any, thingId:string) => {
+        setShowDeleteModal(undefined)
+        setShowNotification(enumNotification.LOADING)
         try {
             funcToExecute(context, thingId).then(() => {
                 console.log("OK")
@@ -73,9 +75,9 @@ export function MainList({path, meta, isType, funcThings, funcDelete, funcDelete
         } catch (e) {
             console.log("error")
             setShowNotification(enumNotification.ERROR)
+            updateThings()
         }
-        setShowDeleteModal(undefined)
-        updateThings()
+        
     }
 
     const hideNotification = () => {

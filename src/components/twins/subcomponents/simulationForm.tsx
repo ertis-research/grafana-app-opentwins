@@ -47,7 +47,9 @@ export const SimulationForm = ({path, meta, id, simulationId} : parameters) => {
     const descriptionError = "Please check the data you have entered and try again."
 
     const handleOnSubmit = (data:ISimulationAttributesForm) => {
+        console.log("HOLA")
         setShowNotification(enumNotification.LOADING)
+        console.log("HOLA2")
         createOrUpdateSimulationService(context, id, actualSimulation).then(() => {
             console.log("creado")
             setShowNotification(enumNotification.SUCCESS)
@@ -94,7 +96,7 @@ export const SimulationForm = ({path, meta, id, simulationId} : parameters) => {
         switch(showNotification) {
             case enumNotification.SUCCESS:
                 if (editMode) {
-                    return <Modal isOpen={true} icon='check' title={titleSuccessEdit} onDismiss={hideNotification}>{descriptionSuccessEdit}</Modal>
+                    return <Modal isOpen={true} icon='check' title={titleSuccessEdit} onDismiss={() => hideNotification(false)}>{descriptionSuccessEdit}</Modal>
                 } else {
                     return <ConfirmModal isOpen={true} icon='check' title={titleSuccessCreate} body={descriptionSuccessCreate} confirmText={"Clear fields"} dismissText={"Keep fields"} onConfirm={clearFields} onDismiss={hideNotification} />
                 }
@@ -263,8 +265,8 @@ export const SimulationForm = ({path, meta, id, simulationId} : parameters) => {
                         return (
                             <Fragment>
                                 <FieldSet>
-                                    <Field label="Id" required={true} disabled={editMode}>
-                                        <Input {...register("id", { required : true })} type="text" disabled={editMode} value={actualSimulation.id} onChange={handleOnChangeInputAttribute}/>
+                                    <Field label="Id" required={!editMode} disabled={editMode}>
+                                        <Input {...register("id", { required : !editMode })} type="text" disabled={editMode} value={actualSimulation.id} onChange={handleOnChangeInputAttribute}/>
                                     </Field>
                                     <Field label="Description">
                                         <Input {...register("description", { required : false })} type="text" value={actualSimulation.description} onChange={handleOnChangeInputAttribute}/>

@@ -13,7 +13,7 @@ export const capitalize = (str:string) => {
 }
 
 export const removeEmptyEntries = (obj:any) => {
-    return Object.fromEntries(Object.entries(obj).filter(([_, v]) => v != null && v != ""));
+    return Object.fromEntries(Object.entries(obj).filter(([_, v]) => v != null && v != undefined && v != ""));
 }
 
 export const stringToBoolean = (str:string) => {
@@ -24,12 +24,13 @@ export const stringToNumber = (str:string) => {
     return Number(str)
 }
 
-export const enumNotification = {
-    SUCCESS : "success",
-    ERROR : "error",
-    HIDE : "hide",
-    LOADING : "loading",
-    READY: "ready"
+export enum enumNotification {
+    CONFIRM = "confirm",
+    SUCCESS = "success",
+    ERROR = "error",
+    HIDE = "hide",
+    LOADING = "loading",
+    READY = "ready"
 }
 
 export const enumToList = (e:any) => {

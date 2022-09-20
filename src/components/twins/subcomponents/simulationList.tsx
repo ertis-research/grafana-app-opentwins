@@ -1,5 +1,5 @@
 import { AppPluginMeta, KeyValue } from '@grafana/data'
-import { Button, Card, Checkbox, Field, FieldSet, Form, FormAPI, HorizontalGroup, Input, LinkButton, List, Modal, Spinner, useTheme2, VerticalGroup } from '@grafana/ui'
+import { Button, Card, Checkbox, Field, FieldSet, FileUpload, Form, FormAPI, HorizontalGroup, Input, InputControl, LinkButton, List, Modal, Spinner, useTheme2, VerticalGroup } from '@grafana/ui'
 import React, { Fragment, useState, useContext, useEffect, ChangeEvent } from 'react'
 import { duplicateTwinService } from 'services/twins/duplicateTwinService'
 import { deleteSimulationService } from 'services/twins/simulation/deleteSimulationService'
@@ -22,12 +22,19 @@ export const SimulationList = ({path, meta, id, twinInfo} : parameters) => {
     const [simulations, setSimulations] = useState<ISimulationAttributes[]>([])
     const [thingIdSimulated, setthingIdSimulated] = useState<string>()
     const [showNotification, setShowNotification] = useState<string>(enumNotification.HIDE)
-    const [duplicateTwin, setDuplicateTwin] = useState<boolean>(true)
+    const [duplicateTwin, setDuplicateTwin] = useState<boolean>(false)
+    const [otherValues, setOtherValues] = useState<{[id:string] : any}>({})
 
     const messageSuccess = `Simulated twin successfully created and simulation request sent.`
     const descriptionSuccess = `aa`
     const messageError = `Error`
     const descriptionError = "Please check the data you have entered."
+
+    const simulationOfAttribute = {
+        attributes: {
+            simulationOf: id
+        }
+    }
 
     const context = useContext(StaticContext)
 
@@ -45,13 +52,20 @@ export const SimulationList = ({path, meta, id, twinInfo} : parameters) => {
     }
 
     const handleOnSubmit = (data:any) => {
+        if(Object.keys(otherValues).length > 0){
+            data = {
+                ...data,
+                ...otherValues
+            }
+        }
+        console.log(data)
         setShowNotification(enumNotification.LOADING)
         if(duplicateTwin && data.thingId) {
             const thingIds = data.thingId
             delete data.thingId
             if(selectedSimulation !== undefined){
                 data = removeEmptyEntries(data)
-                var ps:Promise<any>[] = thingIds.split(",").map((newId:string) => duplicateTwinService(context, id, newId.trim()))
+                var ps:Promise<any>[] = thingIds.split(",").map((newId:string) => duplicateTwinService(context, id, newId.trim(), simulationOfAttribute))
                 Promise.all(ps).then(() => {
                     console.log("OK duplicar")
                     sendSimulation(data)
@@ -134,18 +148,43 @@ export const SimulationList = ({path, meta, id, twinInfo} : parameters) => {
         )
     }
 
-    const fieldSet = (register:any) => {
+    const fieldSet = (register:any, control:any) => {
         if(selectedSimulation?.content !== undefined){
             return selectedSimulation.content.map((item:ISimulationContent) => {
-                return(
-                    <Field label={item.name} description={item.type} required={item.required}>
-                        <Input {...register(item.name, {required : item.required})} 
-                            type={(item.type == TypesOfField.NUMBER) ? "number" : "text"} 
-                            placeholder={getPlaceHolderByType(item.type)}
-                            value={item.default}
-                        />
-                    </Field>
-                )
+                if(item.type == TypesOfField.FILE){
+                    return(
+                        <Field label={item.name} description={item.type} required={item.required}>
+                            <InputControl
+                                render={({field}) => 
+                                <FileUpload {...field} 
+                                    onFileUpload={({ currentTarget }) => {
+                                        console.log('file', currentTarget?.files && currentTarget.files[0])
+                                        if(currentTarget.files){
+                                            setOtherValues({
+                                                ...otherValues,
+                                                [item.name] : currentTarget.files[0]
+                                            })
+                                        }
+                                    }}
+                                />
+                                }
+                                control={control}
+                                name={`${item.name}` as const}
+                            />
+                        </Field>
+                    )
+                } else {
+                    return(
+                        <Field label={item.name} description={item.type} required={item.required}>
+                            <Input {...register(item.name, {required : item.required})} 
+                                type={(item.type == TypesOfField.NUMBER) ? "number" : "text"} 
+                                placeholder={getPlaceHolderByType(item.type)}
+                                value={item.default}
+                            />
+                        </Field>
+                    )
+                }
+                
             })
         } else {
             return <div></div>
@@ -170,20 +209,20 @@ export const SimulationList = ({path, meta, id, twinInfo} : parameters) => {
                 <div className="p-4" style={{backgroundColor:useTheme2().colors.background.secondary}}>
                     <h6 className="mb-3">Simulation with id {selectedSimulation.id}</h6>
                     <Form id="formSend" onSubmit={handleOnSubmit} maxWidth="none">
-                        {({register, errors}:FormAPI<any>) => {
+                        {({register, errors, control}:FormAPI<any>) => {
                             return (
                                 <Fragment>
                                     <Checkbox
                                         value={duplicateTwin}
                                         onChange={() => setDuplicateTwin(!duplicateTwin)}
-                                        label="Duplicate twin before executing the request (recommended)"
+                                        label="Duplicate twin before executing the request"
                                         description="Activate in case the simulation requires a twin identical to the current twin but with a different identifier."
                                     />
                                     <hr/>
                                     {idSimulatedTwinForm(register)}
                                     {(selectedSimulation?.content !== undefined && selectedSimulation.content.length > 0) ? <p>Settings</p> : <div></div>}
                                     <FieldSet>
-                                        {fieldSet(register)}
+                                        {fieldSet(register, control)}
                                     </FieldSet>
                                     <VerticalGroup align="center">
                                         {loadingSpinner()}
@@ -215,6 +254,14 @@ export const SimulationList = ({path, meta, id, twinInfo} : parameters) => {
             <h5>This twin has no simulations</h5>
         </VerticalGroup>
 
+    const twinSimulated = 
+        <VerticalGroup align="center">
+            <h5>This twin has been created from a simulation. Access the original twin to perform simulations.</h5>
+            <LinkButton variant="primary" href={path + '&mode=check&id=' + twinInfo.attributes.simulationOf + "&element=simulation"}>
+                Go to {twinInfo.attributes.simulationOf}
+            </LinkButton>
+        </VerticalGroup>
+
     const simulationsList = 
         <div className="row mt-4">
             <div className="col-12 col-md-6">
@@ -230,7 +277,7 @@ export const SimulationList = ({path, meta, id, twinInfo} : parameters) => {
             </div>
         </div>
 
-    return (
+    const twinNoSimulated =
         <Fragment>
             {notification()}
             <HorizontalGroup justify="center">
@@ -240,5 +287,6 @@ export const SimulationList = ({path, meta, id, twinInfo} : parameters) => {
             </HorizontalGroup>
             {(simulations.length > 0) ? simulationsList : noSimulations}
         </Fragment>
-    )
+
+    return (twinInfo.attributes && twinInfo.attributes.simulationOf) ? twinSimulated : twinNoSimulated
 }

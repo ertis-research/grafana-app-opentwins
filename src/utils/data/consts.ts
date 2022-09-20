@@ -37,7 +37,8 @@ export enum TypesOfField {
     ARRAY_BOOLEAN ="array(boolean)",
     TEXT = "text",
     NUMBER = "number",
-    BOOLEAN = "boolean"
+    BOOLEAN = "boolean",
+    FILE = "file"
 }
 
 export const getPlaceHolderByType = (type:string) => {
