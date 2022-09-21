@@ -1,87 +1,136 @@
 import React, { useState, Fragment, useEffect } from 'react'
-import { Select, TextArea, Button, Icon, ConfirmModal, LinkButton } from '@grafana/ui'
+import { Select, TextArea, Button, Icon, LinkButton, HorizontalGroup } from '@grafana/ui'
 import { SelectableValue } from '@grafana/data'
 import { ISelect } from 'utils/interfaces/select'
+import { capitalize, enumNotification } from 'utils/auxFunctions/general'
+import { INotification } from 'utils/interfaces/notification'
+import { CustomNotification } from './notification'
+
+export interface parametersExtraButtons {
+    selectedConnection : any
+    selectedId ?: SelectableValue<string>
+    isDisabled : boolean
+    setShowNotification : any
+}
 
 interface parameters {
     path : string
-    tab : string
     name : string
-    values : ISelect[]
-    deleteFunction : any
-    getFunction ?: any
+    getByIdFunc : any
+    getAllFunc : any
+    deleteFunc : any
+    ExtraButtonComponent ?: React.FC<parametersExtraButtons>
 }
 
-export const SelectWithTextArea = ({ path, tab, name, values, deleteFunction, getFunction } : parameters) => {
+export const SelectWithTextArea = ({ path, name, getByIdFunc, getAllFunc, deleteFunc, ExtraButtonComponent } : parameters) => {
 
+    const confirmDelete_title = "Delete " + name
+    const confirmDelete_description = (id) => "Are you sure you want to delete " + name + " " + id + "?"
+    const confirmDelete_body = "This action cannot be undone."
+
+    const [objects, setObjects] = useState<ISelect[]>([])
     const [value, setValue] = useState<SelectableValue<string>>()
-    const [isOpen, setIsOpen] = useState(false)
-    const [text, setText] = useState<string>("")
+    const [selectedObject, setselectedObject] = useState<any>(undefined)
+    const [showNotification, setShowNotification] = useState<INotification>({state: enumNotification.HIDE, title: ""})
+
+
+    const handleOnClickEdit = () => {
+
+    }
+
+    const handleOnConfirmDelete = () => {
+        if(value?.value !== undefined){
+            setShowNotification({state: enumNotification.LOADING, title: ""})
+            deleteFunc(value.value).then(() => {
+                setShowNotification({
+                    state: enumNotification.SUCCESS, 
+                    title: capitalize(name) + " successfully deleted!"
+                })
+            }).catch(() => {
+                setShowNotification({
+                    state: enumNotification.ERROR, 
+                    title: "Error deleting " + name
+                })
+            })
+            setValue(undefined)
+        }
+    }
 
     const handleOnClickDelete = () => {
-        if(value !== undefined){
-            setIsOpen(true)
+        if(value?.value){
+            setShowNotification({
+                state: enumNotification.CONFIRM,
+                title: confirmDelete_title,
+                description: confirmDelete_description(value?.value),
+                body: confirmDelete_body,
+                onConfirmFunc: handleOnConfirmDelete,
+                confirmText: "Delete",
+                dismissText: "Cancel"
+            })
         }
     }
 
-    const handleOnConfirmModal = () => {
-        if(value?.value !== undefined){
-            deleteFunction(value.value)
-            setValue(undefined)
-        } 
-        setIsOpen(false)
-    }
-
-    const handleOnDismissModal = () => {
-        setIsOpen(false)
-    }
-
     useEffect(() => {
-        if(!value || (!getFunction && !value.text)){
-            setText("")
-        } else if(getFunction  && !value.text){
-            getFunction(value.label).then((item:any) => {
-                setText(JSON.stringify(item, undefined, 4))
+        if(value && value.label){
+            getByIdFunc(value.label).then((item:any) => {
+                setselectedObject(item)
+            }).catch(() => {
+                setselectedObject(undefined)
             })
         } else {
-            setText(value.text)
+            setselectedObject(undefined)
         }
-    }, [value])
+    }, [value, showNotification])
 
     useEffect(() => {
-    }, [text, isOpen])
+    }, [selectedObject])
+
+
+    useEffect(() => {
+        getAllFunc(setObjects)
+    }, [])
+
+    useEffect(() => {
+        if(showNotification.state == enumNotification.HIDE){
+            getAllFunc(setObjects)
+        }
+    }, [objects, showNotification])
+
+    const isDisabled = !selectedObject || showNotification.state !== enumNotification.HIDE
+
+    const extraButtons = (!ExtraButtonComponent) ? <div></div> :
+        <ExtraButtonComponent selectedConnection={selectedObject} selectedId={value} isDisabled={isDisabled} setShowNotification={setShowNotification} />
+
+    const buttons = (selectedObject) ? 
+        <HorizontalGroup justify="center">
+            {extraButtons}
+            <Button variant="secondary" icon="pen" disabled={isDisabled} onClick={handleOnClickEdit}>Edit</Button>
+            <Button variant="destructive" icon="trash-alt" disabled={isDisabled} onClick={handleOnClickDelete}>Delete</Button>
+        </HorizontalGroup>
+        : <div></div>
 
     return (
         <Fragment>
-            <div className="row">
-                <div className="col-md-8 col-12">
+            <HorizontalGroup justify="center">
+                <LinkButton variant="primary" href={path + "&mode=create"} className="m-3" icon="plus">
+                    Create new {name}
+                </LinkButton>
+            </HorizontalGroup>
+            <div className='row justify-content-center mb-3'>
+                <div className="col-12 col-sm-12 col-md-7 col-lg-7">
                     <Select
-                        options={values}
+                        options={objects}
                         value={value}
                         onChange={v => setValue(v)}
                         prefix={<Icon name="search"/>}
+                        placeholder="Search"
+                        disabled={showNotification.state !== enumNotification.HIDE}
                     />
                 </div>
-                <div className="col-md-4 text-end col-12">
-                    <LinkButton variant="primary" href={path + "&mode=create"}>
-                        Create new {name}
-                    </LinkButton>
-                </div>
             </div>
-            <TextArea className="mt-3" rows={25} value={text} readOnly/>
-            <div className="d-flex justify-content-center">
-                <Button className="m-3" disabled={value == undefined}>Edit</Button>
-                <Button className="m-3" variant="destructive" onClick={handleOnClickDelete} disabled={value == undefined}>Delete</Button>
-            </div>
-            <ConfirmModal
-                isOpen={isOpen}
-                title={"Delete " + name}
-                body={"Are you sure you want to delete this " + name + "?"}
-                confirmText='Confirm'
-                icon='exclamation-triangle'
-                onConfirm={handleOnConfirmModal}
-                onDismiss={handleOnDismissModal}
-            />
+            {buttons}
+            <CustomNotification notification={showNotification} setNotificationFunc={setShowNotification}/>
+            <TextArea className="mt-3" rows={25} value={(selectedObject) ? JSON.stringify(selectedObject, undefined, 4) : ""} readOnly/>
         </Fragment>
     )
 

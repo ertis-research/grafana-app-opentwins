@@ -226,7 +226,7 @@ export const SimulationList = ({path, meta, id, twinInfo} : parameters) => {
                                     </FieldSet>
                                     <VerticalGroup align="center">
                                         {loadingSpinner()}
-                                        <Button type="submit" variant="primary" form="formSend" disabled={showNotification != enumNotification.HIDE}>Simulate</Button>
+                                        <Button type="submit" icon="play" variant="primary" form="formSend" disabled={showNotification != enumNotification.HIDE}>Simulate</Button>
                                     </VerticalGroup>
                                 </Fragment>
                             )
@@ -235,12 +235,13 @@ export const SimulationList = ({path, meta, id, twinInfo} : parameters) => {
                 </div>
                 <HorizontalGroup justify="flex-end" align="flex-start" className="mt-3">
                     <LinkButton 
+                        icon="pen"
                         variant="secondary" 
                         href={path + '&id=' + id +'&mode=edit' + "&element=simulation&simulationId=" + selectedSimulation.id} 
                         className="m-3"
                         disabled={showNotification != enumNotification.HIDE}
                     >Edit</LinkButton>
-                    <Button type="button" variant="destructive" disabled={showNotification != enumNotification.HIDE} className="mt-3" onClick={handleOnCLickDelete}>Delete</Button>
+                    <Button type="button" variant="destructive" icon="trash-alt" disabled={showNotification != enumNotification.HIDE} className="mt-3" onClick={handleOnCLickDelete}>Delete</Button>
                 </HorizontalGroup>
             </Fragment>
             )
@@ -257,7 +258,7 @@ export const SimulationList = ({path, meta, id, twinInfo} : parameters) => {
     const twinSimulated = 
         <VerticalGroup align="center">
             <h5>This twin has been created from a simulation. Access the original twin to perform simulations.</h5>
-            <LinkButton variant="primary" href={path + '&mode=check&id=' + twinInfo.attributes.simulationOf + "&element=simulation"}>
+            <LinkButton icon="external-link-alt" variant="primary" href={path + '&mode=check&id=' + twinInfo.attributes.simulationOf + "&element=simulation"}>
                 Go to {twinInfo.attributes.simulationOf}
             </LinkButton>
         </VerticalGroup>
@@ -281,7 +282,7 @@ export const SimulationList = ({path, meta, id, twinInfo} : parameters) => {
         <Fragment>
             {notification()}
             <HorizontalGroup justify="center">
-                <LinkButton variant="primary" href={path + '&mode=create&id=' + id + "&element=simulation"} className="m-3">
+                <LinkButton icon="plus" variant="primary" href={path + '&mode=create&id=' + id + "&element=simulation"} className="m-3">
                     Add simulation
                 </LinkButton>
             </HorizontalGroup>

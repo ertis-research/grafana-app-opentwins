@@ -185,7 +185,7 @@ export function MainList({path, meta, isType, funcThings, funcDelete, funcDelete
     return (
         <Fragment>
             <HorizontalGroup justify="center">
-                <LinkButton variant="primary" href={path + '&mode=create' + ((parentId !== undefined) ? '&id='+ parentId : "")} className="m-3">
+                <LinkButton icon="plus" variant="primary" href={path + '&mode=create' + ((parentId !== undefined) ? '&id='+ parentId : "")} className="m-3">
                     Create new {title}
                 </LinkButton>
             </HorizontalGroup>
