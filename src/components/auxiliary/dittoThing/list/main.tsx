@@ -168,7 +168,9 @@ export function MainList({path, meta, isType, funcThings, funcDelete, funcDelete
                             </div>
                         </Card.Meta>
                         <Card.SecondaryActions>
-                            <IconButton key="edit" name="pen" tooltip="Edit" />
+                            <a href={path + '&mode=edit&element=' + title + '&id='+ item.thingId} style={{all: 'unset'}}>
+                                <IconButton key="edit" name="pen" tooltip="Edit"/>
+                            </a>
                             <IconButton key="delete" name="trash-alt" tooltip="Delete" onClick={(e) => handleOnDelete(e, item.thingId)}/>
                         </Card.SecondaryActions>
                     </Card>

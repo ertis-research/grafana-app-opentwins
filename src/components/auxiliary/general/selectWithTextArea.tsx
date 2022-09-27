@@ -25,8 +25,8 @@ interface parameters {
 export const SelectWithTextArea = ({ path, name, getByIdFunc, getAllFunc, deleteFunc, ExtraButtonComponent } : parameters) => {
 
     const confirmDelete_title = "Delete " + name
-    const confirmDelete_description = (id) => "Are you sure you want to delete " + name + " " + id + "?"
-    const confirmDelete_body = "This action cannot be undone."
+    const confirmDelete_body = (id) => "Are you sure you want to delete " + name + " " + id + "?"
+    const confirmDelete_description = "This action cannot be undone."
 
     const [objects, setObjects] = useState<ISelect[]>([])
     const [value, setValue] = useState<SelectableValue<string>>()
@@ -61,8 +61,8 @@ export const SelectWithTextArea = ({ path, name, getByIdFunc, getAllFunc, delete
             setShowNotification({
                 state: enumNotification.CONFIRM,
                 title: confirmDelete_title,
-                description: confirmDelete_description(value?.value),
-                body: confirmDelete_body,
+                description: confirmDelete_description,
+                body: confirmDelete_body(value?.value),
                 onConfirmFunc: handleOnConfirmDelete,
                 confirmText: "Delete",
                 dismissText: "Cancel"
@@ -71,7 +71,7 @@ export const SelectWithTextArea = ({ path, name, getByIdFunc, getAllFunc, delete
     }
 
     useEffect(() => {
-        if(value && value.label){
+        if(value && value.label && showNotification.state == enumNotification.READY){
             getByIdFunc(value.label).then((item:any) => {
                 setselectedObject(item)
             }).catch(() => {
@@ -80,23 +80,28 @@ export const SelectWithTextArea = ({ path, name, getByIdFunc, getAllFunc, delete
         } else {
             setselectedObject(undefined)
         }
+        console.log("value - showNotification")
     }, [value, showNotification])
 
     useEffect(() => {
+        console.log("selectedObject")
     }, [selectedObject])
 
 
     useEffect(() => {
         getAllFunc(setObjects)
+        console.log("ini")
     }, [])
 
     useEffect(() => {
         if(showNotification.state == enumNotification.HIDE){
             getAllFunc(setObjects)
+            setShowNotification({state: enumNotification.READY, title: ""})
         }
+        console.log("objects - showNotification")
     }, [objects, showNotification])
 
-    const isDisabled = !selectedObject || showNotification.state !== enumNotification.HIDE
+    const isDisabled = !selectedObject || showNotification.state !== enumNotification.READY
 
     const extraButtons = (!ExtraButtonComponent) ? <div></div> :
         <ExtraButtonComponent selectedConnection={selectedObject} selectedId={value} isDisabled={isDisabled} setShowNotification={setShowNotification} />
@@ -112,7 +117,7 @@ export const SelectWithTextArea = ({ path, name, getByIdFunc, getAllFunc, delete
     return (
         <Fragment>
             <HorizontalGroup justify="center">
-                <LinkButton variant="primary" href={path + "&mode=create"} className="m-3" icon="plus">
+                <LinkButton variant="primary" href={path + "&mode=create"} className="m-3" icon="plus" disabled={showNotification.state !== enumNotification.READY}>
                     Create new {name}
                 </LinkButton>
             </HorizontalGroup>
@@ -124,7 +129,7 @@ export const SelectWithTextArea = ({ path, name, getByIdFunc, getAllFunc, delete
                         onChange={v => setValue(v)}
                         prefix={<Icon name="search"/>}
                         placeholder="Search"
-                        disabled={showNotification.state !== enumNotification.HIDE}
+                        disabled={showNotification.state !== enumNotification.READY}
                     />
                 </div>
             </div>

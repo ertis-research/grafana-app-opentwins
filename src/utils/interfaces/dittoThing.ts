@@ -1,3 +1,8 @@
+export interface IThingId {
+    id: string,
+    namespace: string
+}
+
 export interface IDittoThing {
     thingId: string,
     policyId: string,

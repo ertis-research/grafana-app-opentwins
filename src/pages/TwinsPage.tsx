@@ -7,6 +7,7 @@ import { fromMetaToValues } from 'utils/auxFunctions/dittoThing'
 import { TwinInfo } from 'components/twins/twinInfo'
 import { CreateFormTwin } from 'components/twins/createForm'
 import { SimulationForm } from 'components/twins/subcomponents/simulationForm'
+import { EditFormTwin } from 'components/twins/editForm'
 
 export const TwinsPage: FC<AppRootProps> = ({ query, path, meta }) => {
   
@@ -38,8 +39,9 @@ export const TwinsPage: FC<AppRootProps> = ({ query, path, meta }) => {
           component = <SimulationForm path={path} id={id} meta={meta} simulationId={simulationId}/>
           break
     
-        default:
-          component = <CreateFormTwin path={path} meta={meta} id={id}/>
+        case "twin":
+          if(id !== undefined) component = <EditFormTwin path={path} meta={meta} id={id}/>
+          break
       }
       break
   }

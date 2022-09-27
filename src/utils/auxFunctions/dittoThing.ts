@@ -1,32 +1,15 @@
+import { IThingId } from './../interfaces/dittoThing';
 import { AppPluginMeta, KeyValue } from "@grafana/data"
 import { IDittoThing } from "../interfaces/dittoThing"
 
-export const getNameFromDittoThing = (name:string) => {
-    const i = name.indexOf(":")
-    if(i+1<name.length){
-        return name.substring(i+1)
-    } else {
-        return "unnamed"
+export const splitThingId = (thingId:string):IThingId => {
+    const split = thingId.split(":")
+    if (split.length == 0) return {id: "", namespace: ""}
+    if (split.length == 1) return {id: "", namespace: split[0]}
+    return {
+        namespace: split[0],
+        id: split.slice(1).join(":")
     }
-}
-
-export const getSelectFromDittoThingArray = (data:IDittoThing[]) => {
-    return data.map((item:IDittoThing) => {
-        return {
-                label : getNameFromDittoThing(item.thingId),
-                value : item.thingId,
-                text : JSON.stringify(item, undefined, 4)
-            }
-    })
-}
-
-export const getSelectWithObjectsFromDittoThingArray = (data:IDittoThing[]) => {
-    return data.map((item:IDittoThing) => {
-        return {
-                label : getNameFromDittoThing(item.thingId),
-                value : item
-            }
-    })
 }
 
 export const getSelectWithObjectsFromThingsArray = (data:IDittoThing[]) => {

@@ -2,6 +2,7 @@ import React from 'react'
 import { AppPluginMeta, KeyValue } from '@grafana/data'
 import { IDittoThing } from 'utils/interfaces/dittoThing'
 import { capitalize, defaultIfNoExist } from 'utils/auxFunctions/general'
+import { basicAttributesConst } from 'utils/data/consts'
 
 interface parameters {
     path : string
@@ -12,47 +13,47 @@ interface parameters {
 
 export function InformationThing ({path, thingInfo, meta, isType} : parameters) {
 
-    const attributesBasic = ['name', 'description', 'image']
     const tab = '\u00A0\u00A0\u00A0'
 
-    const arrayToJSXElement = (array:any, str:string="") => {
+    const arrayToJSXElement = (array:any, str:string="", isCapitalize:boolean=true) => {
         return array.map((item:any, index:number) => {
             if (Array.isArray(item)){
-                return arrayToJSXElement(item, str)
+                return arrayToJSXElement(item, str, isCapitalize)
             } else if(item.constructor == String || item.constructor == Number || item.constructor == Boolean) {
                 const className = (index != array.length-1) ? "mb-0" : ""
                 return <p className={className}>{str + item}</p>
             } else {
-                return objectToJSXElement(item, str)
+                return objectToJSXElement(item, str, isCapitalize)
             }
         })
     }
 
-    const objectToJSXElement = (object:any, str:string="") => {
+    const objectToJSXElement = (object:any, str:string="", isCapitalize:boolean=true) => {
         if (object != undefined && object != null && Object.keys(object).length > 0){
             const keys = Object.keys(object)
             return keys.map((key:string, index:number) => {
                 const value = object[key]
+                if(isCapitalize) key = capitalize(key)
                 if (Array.isArray(value)) {
                     return (
                         <div>
-                            <h6 className='mb-0'>{str + capitalize(key)}</h6>
-                            <span>{arrayToJSXElement(value, str+tab)}</span>
+                            <h6 className='mb-0'>{str + key}</h6>
+                            <span>{arrayToJSXElement(value, str+tab, isCapitalize)}</span>
                         </div>
                     )
                 }else if (value== null || value == undefined || value.constructor == String || value.constructor == Number || value.constructor == Boolean) {
                     const className = (index != keys.length-1 && str != "") ? "mb-0" : ""
                     return (
                         <div>
-                            <h6 className='mb-0'>{str + capitalize(key)}</h6>
+                            <h6 className='mb-0'>{str + key}</h6>
                             <p className={className}>{str}{(value != null && value != undefined) ? value : "NULL"}</p>
                         </div>
                     )
                 } else {
                     return (
                         <div>
-                            <h6 className='mb-0'>{str + capitalize(key)}</h6>
-                            <span>{objectToJSXElement(value, str+tab)}</span>
+                            <h6 className='mb-0'>{str + key}</h6>
+                            <span>{objectToJSXElement(value, str+tab, isCapitalize)}</span>
                         </div>
                     )
                 }  
@@ -64,7 +65,7 @@ export function InformationThing ({path, thingInfo, meta, isType} : parameters) 
     const attributes = () => {
         var thingAttributes = Object.assign({},defaultIfNoExist(thingInfo, "attributes", {}))
         for (var key in thingAttributes) { 
-            if (thingAttributes.hasOwnProperty(key) && (key.startsWith("_") || attributesBasic.includes(key))) {
+            if (thingAttributes.hasOwnProperty(key) && (key.startsWith("_") || basicAttributesConst.includes(key))) {
                 delete thingAttributes[key]
             }
         }
@@ -72,7 +73,7 @@ export function InformationThing ({path, thingInfo, meta, isType} : parameters) 
     }
 
     const features = () => {
-        return objectToJSXElement(Object.assign({},defaultIfNoExist(thingInfo, "features", {})))
+        return objectToJSXElement(Object.assign({},defaultIfNoExist(thingInfo, "features", {})), "", false)
     }
 
     const attributeIfExist = (object:any, nameAttribute:string, isImage:boolean = false) => {
@@ -83,7 +84,7 @@ export function InformationThing ({path, thingInfo, meta, isType} : parameters) 
             return (
                 <div>
                     <h6 className='mb-0'>{capitalize(nameAttribute)}</h6>
-                    <p>{object[nameAttribute]}</p>
+                    <p style={{ wordWrap: 'break-word', overflowWrap: 'break-word'}}>{object[nameAttribute]}</p>
                     {jsxElement}
                 </div>
             )

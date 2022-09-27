@@ -7,6 +7,7 @@ import { StaticContext } from 'utils/context/staticContext'
 import { ListTypes } from 'components/types/list'
 import { CreateFormType } from 'components/types/createForm'
 import { TypeInfo } from 'components/types/typeInfo'
+import { EditFormType } from 'components/types/editForm'
 
 export const TypesPage: FC<AppRootProps> = ({ query, path, meta }) => {
 
@@ -22,6 +23,10 @@ export const TypesPage: FC<AppRootProps> = ({ query, path, meta }) => {
 
     case "create":
       component = <CreateFormType path={path} meta={meta} id={id}/>
+      break
+
+    case "edit":
+      if(id !== undefined) component = <EditFormType path={path} meta={meta} id={id}/>
       break
   }
 

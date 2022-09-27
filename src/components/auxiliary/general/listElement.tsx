@@ -19,7 +19,7 @@ export function ListElement(name : string, list : any, setList : any, forEqualKe
     //<IconButton key="edit" name="pen" tooltip="Edit" />
 
     return (
-        <Card heading={name}>
+        <Card heading={name} style={{wordWrap: 'break-word'}}>
             <Card.SecondaryActions>
                 <IconButton key="delete" name="trash-alt" tooltip="Delete" onClick={handleOnClickDelete} disabled={disabled}/>
             </Card.SecondaryActions>

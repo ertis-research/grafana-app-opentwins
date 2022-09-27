@@ -1,33 +1,36 @@
 import React, { useState, Fragment, useEffect, useContext, ChangeEvent } from 'react'
 import { AppPluginMeta, KeyValue } from '@grafana/data'
-import { IAttribute, IDittoThing, IDittoThingData, IDittoThingForm, IFeature } from 'utils/interfaces/dittoThing'
-import { Form, FormAPI, Field, Input, InputControl, Select, Icon, TextArea, Button, HorizontalGroup, RadioButtonGroup, Switch, useTheme2, Modal, ConfirmModal } from '@grafana/ui'
+import { IAttribute, IDittoThing, IDittoThingData, IDittoThingForm, IFeature, IThingId } from 'utils/interfaces/dittoThing'
+import { Form, FormAPI, Field, Input, InputControl, Select, Icon, TextArea, Button, HorizontalGroup, RadioButtonGroup, Switch, useTheme2 } from '@grafana/ui'
 import { SelectableValue } from '@grafana/data/types/select'
 import { ISelect } from 'utils/interfaces/select'
 import { ElementHeader } from 'components/auxiliary/general/elementHeader'
-import { enumOptions, options } from 'utils/data/consts'
+import { basicAttributesConst, enumOptions, options, restrictedAttributesConst, staticAttributesConst } from 'utils/data/consts'
 import { Control } from 'react-hook-form'
 import { FormAttributes } from 'components/auxiliary/dittoThing/form/subcomponents/formAttributes'
 import { FormFeatures } from 'components/auxiliary/dittoThing/form/subcomponents/formFeatures'
 import { getAllPoliciesService } from 'services/policies/getAllPoliciesService'
-import { StaticContext } from 'utils/context/staticContext'
-import { getSelectWithObjectsFromThingsArray, JSONtoIAttributes, JSONtoIFeatures } from 'utils/auxFunctions/dittoThing'
+import { getSelectWithObjectsFromThingsArray, JSONtoIAttributes, JSONtoIFeatures, splitThingId } from 'utils/auxFunctions/dittoThing'
 import { getAllTypesService } from 'services/types/getAllTypesService'
 import { capitalize, enumNotification } from 'utils/auxFunctions/general'
+import { StaticContext } from 'utils/context/staticContext'
+import { CustomNotification } from 'components/auxiliary/general/notification'
+import { INotification } from 'utils/interfaces/notification'
 
 interface parameters {
     path : string
     parentId ?: string
+    thingToEdit ?: IDittoThing
     isType : boolean
     meta: AppPluginMeta<KeyValue<any>>
     funcFromType ?: any
     funcFromZero : any
 }
 
-export const ThingForm = ({ path, parentId, isType, funcFromType, funcFromZero } : parameters) => {
+export const ThingForm = ({ path, parentId, thingToEdit, isType, funcFromType, funcFromZero } : parameters) => {
     const [lastCurrentThing, setLastCurrentThing] = useState<IDittoThing>({ thingId: "", policyId: "", attributes: {}})
     const [currentThing, setCurrentThing] = useState<IDittoThing>(lastCurrentThing)
-    const [thingIdField, setThingIdField] = useState<{ id : string, namespace : string }>({id: "", namespace: ""})
+    const [thingIdField, setThingIdField] = useState<IThingId>({id: "", namespace: ""})
     const [type, setType] = useState<SelectableValue<IDittoThing>>()
     const [types, setTypes] = useState<ISelect[]>([])
     const [selected, setSelected] = useState(enumOptions.FROM_TYPE)
@@ -36,98 +39,158 @@ export const ThingForm = ({ path, parentId, isType, funcFromType, funcFromZero }
     const [features, setFeatures] = useState<IFeature[]>([])
     const [policies, setPolicies] = useState<ISelect[]>([])
     const [selectedPolicy, setSelectedPolicy] = useState<SelectableValue<string>>()
-    const [showNotification, setShowNotification] = useState<string>(enumNotification.HIDE)
-    
+    const [showNotification, setShowNotification] = useState<INotification>({state: enumNotification.HIDE, title: ""})
+    const [staticAttributes, setStaticAttributes] = useState<any>([])
+
     const context = useContext(StaticContext)
 
+    const allowFromType = (isType || thingToEdit) ? false : true
     const title = (isType) ? "type" : "twin"
     const descriptionID = "Identity associated with the authentication credentials"
     const descriptionInformation = "Basic information for creating the Ditto thing"
     const descriptionThingId = `Thing ID. This must be unique within the scope of the ${title}. The name of the ${title} will precede it automatically.`
-    //const descriptionPassword = "Password to authenticate when sending data from the sensor to eclipse Hono."
     const descriptionNamespace = "AA"
-    const messageSuccess = `The ${title} has been created correctly.`
-    const descriptionSuccess = `You can delete the fields to create a new ${title}, keep them if you want to create a similar one or leave the page if you don't want to create any more.`
-    const messageError = `The ${title} has not been created correctly. `
-    const descriptionError = "Please check the data you have entered."
 
-    const headerIfIsChild = () => {
-        if(parentId != null){
-            return <h4 style={{color:useTheme2().colors.text.secondary}}>To be child of {title} with id: {parentId}</h4>
-        } else {
-            return <div style={{height: '0px'}}></div>
-        }
-    }
+    
+// -----------------------------------------------------------------------------------------------
+// help functions
+// -----------------------------------------------------------------------------------------------
 
     const clearFields = () => {
         setThingIdField({ id : "", namespace: ""})
         setSelectedPolicy(undefined)
         setAttributes([])
         setFeatures([])
-        if(!isType) {
+        if(allowFromType) {
             setCustomizeType(false)
             setType(undefined)
             setSelected(enumOptions.FROM_TYPE)
         }
         setLastCurrentThing({ thingId: "", policyId: "", attributes: { name: "", description: "", image: "", type: ""}})
         setCurrentThing({ thingId: "", policyId: "", attributes: { name: "", description: "", image: "", type: ""}})
-        setShowNotification(enumNotification.HIDE)
+        setShowNotification({state: enumNotification.HIDE, title: ""})
     }
 
-    const hideNotification = (removeId:boolean = true) => {
-        if(removeId){
-            setThingIdField({
-                ...thingIdField,
-                id : ""
+    const onDismissFunc = () => {
+        setThingIdField({
+            ...thingIdField,
+            id : ""
+        })
+    }
+
+    const notificationError:INotification = {
+        state: enumNotification.ERROR,
+        title: `The ${title} has not been ${(thingToEdit) ? "edited" : "created"} correctly. `,
+        description: "Please check the data you have entered."
+    }
+
+    const notificationSuccess:INotification = (thingToEdit) ? {
+        state: enumNotification.SUCCESS,
+        title: `The ${title} has been edited correctly. `,
+        description: `You can leave the page if you don't want to edit any more.`
+    } : {
+        state: enumNotification.SUCCESS,
+        title: `The ${title} has been created correctly. `,
+        description: `You can delete the fields to create a new ${title}, keep them if you want to create a similar one or leave the page if you don't want to create any more.`,
+        confirmText: "Clear fields",
+        dismissText: "Keep fields", 
+        onConfirmFunc: clearFields,
+        onDismissFunc:  onDismissFunc
+    }
+
+
+// -----------------------------------------------------------------------------------------------
+// help functions
+// -----------------------------------------------------------------------------------------------
+
+    const setDittoThing = (thing:IDittoThing) => {
+        if(thing.attributes) {
+            setStaticAttributes(getListPropertiesToObject(thing.attributes, staticAttributesConst))
+            Object.keys(thing.attributes).forEach((key:string) => {
+                if(restrictedAttributesConst.includes(key) || staticAttributesConst.includes(key)) delete thing.attributes[key]
             })
         }
-        setShowNotification(enumNotification.HIDE)
+        const basicAttributes = getListPropertiesToObject(thing.attributes, basicAttributesConst)
+        basicAttributesConst.forEach((key:string) => delete thing.attributes[key])
+        setCurrentThing({
+            ...currentThing,
+            thingId: thing.thingId,
+            policyId: thing.policyId,
+            attributes: {
+                ...basicAttributes,
+                ...currentThing.attributes
+            }
+        })
+        setThingIdField(splitThingId(thing.thingId))
+
+        updateUseStates({
+            policyId: thing.policyId,
+            attributes: thing.attributes,
+            features: thing.features
+        })
     }
 
-    const notification = () => {
-        switch(showNotification) {
-            case enumNotification.SUCCESS:
-                return <ConfirmModal isOpen={true} icon='check' title={"Successful creation!"} body={messageSuccess} description={descriptionSuccess} confirmText={"Clear fields"} dismissText={"Keep fields"} onConfirm={clearFields} onDismiss={hideNotification} />
-                //return <Alert title={messageSuccess} severity={"success"} elevated />
-            case enumNotification.ERROR:
-                return <Modal title={messageError} icon='exclamation-triangle' isOpen={true} onDismiss={() => hideNotification(false)}>{descriptionError}</Modal>
-            default:
-                return <div></div>
-        }
+    const updateUseStates = (data:{attributes?:any, features?:any, policyId:string}) => {
+        setAttributes((data.attributes !== undefined) ? JSONtoIAttributes(data.attributes) : [])
+        setFeatures((data.features !== undefined) ? JSONtoIFeatures(data.features) : [])
+        setSelectedPolicy({
+            label : data.policyId,
+            value : data.policyId
+        })
     }
+
+    const getListPropertiesToObject = (object:any, properties:string[]) => {
+        var res = {}
+        properties.forEach((property:string) => {
+            if(object.hasOwnProperty(property)){
+                res = {
+                    ...res,
+                    [property] : JSON.parse(JSON.stringify(object[property]))
+                }
+            }
+        })
+        return res
+    }
+
+// -----------------------------------------------------------------------------------------------
+// handles
+// -----------------------------------------------------------------------------------------------
 
     const handleOnSubmitFinal = (data:IDittoThingForm) => {
-        const thingId = data.namespace + ":" + data.id
+        const thingId = currentThing.thingId
         const finalData:IDittoThingData = {
             policyId : currentThing.policyId,
             definition : currentThing.definition,
-            attributes : currentThing.attributes,
+            attributes : {
+                ...currentThing.attributes,
+                ...staticAttributes
+            },
             features : currentThing.features
         }
         var funcToExecute:any = undefined
-
-        if(selected === enumOptions.FROM_TYPE && type?.value !== undefined){
+        console.log("finalData", JSON.stringify(finalData))
+        if(selected === enumOptions.FROM_TYPE && type?.value !== undefined && allowFromType){
             if(customizeType){
-                funcToExecute = funcFromType(context, thingId, type.value.thingId, finalData)
+                funcToExecute = funcFromType(thingId, type.value.thingId, finalData)
             } else {
-                funcToExecute = funcFromType(context, thingId, type.value.thingId)
+                funcToExecute = funcFromType(thingId, type.value.thingId)
             }
         } else {
-            funcToExecute = funcFromZero(context, thingId, finalData)
+            funcToExecute = funcFromZero(thingId, finalData)
         }
-        
+        setShowNotification({state: enumNotification.LOADING, title: ""})
         try {
             funcToExecute.then(() => {
                 console.log("OK")
-                setShowNotification(enumNotification.SUCCESS)
+                setShowNotification(notificationSuccess)
                 
             }).catch(() => {
                 console.log("error")
-                setShowNotification(enumNotification.ERROR)
+                setShowNotification(notificationError)
             })
         } catch (e) {
             console.log("error")
-            setShowNotification(enumNotification.ERROR)
+            setShowNotification(notificationError)
         }
     }
 
@@ -153,64 +216,20 @@ export const ThingForm = ({ path, parentId, isType, funcFromType, funcFromZero }
     }
 
     const handleOnChangeInputAttribute = (event:ChangeEvent<HTMLInputElement>) => {
-      setCurrentThing({
-          ...currentThing,
-          attributes : {
-              ...currentThing.attributes,
-              [event.currentTarget.name] : event.target.value
-          }
-      })
-    }
-
-    const updateUseStates = (data:{attributes?:any, features?:any, policyId:string}) => {
-        setAttributes((data.attributes !== undefined) ? JSONtoIAttributes(data.attributes) : [])
-        setFeatures((data.features !== undefined) ? JSONtoIFeatures(data.features) : [])
-        setSelectedPolicy({
-            label : data.policyId,
-            value : data.policyId
+        setCurrentThing({
+            ...currentThing,
+            attributes : {
+                ...currentThing.attributes,
+                [event.currentTarget.name] : event.target.value
+            }
         })
     }
 
-    const typeForm = (control:Control<IDittoThingForm>) => {
-        return (
-          <Fragment>
-            <Field className="mt-3" label="Type of twin" required={true}>
-              <InputControl
-                render={({field}) => 
-                  <Select {...field} 
-                    options={types}
-                    value={type}
-                    onChange={v => setType(v)}
-                    prefix={<Icon name="arrow-down"/>} 
-                  />
-                }
-                control={control}
-                name="type"
-              />
-            </Field>
-            <Field label="Customize some property of the type for this twin">
-              <Switch value={customizeType} onChange={v => {
-                setCustomizeType(!customizeType)
-              }}/>
-            </Field>
-          </Fragment>
-        )
-    }
 
-    const fromRadioButton = (control:Control<IDittoThingForm>) => {
-        return (
-            <Fragment>
-                <HorizontalGroup justify='center'>
-                    <RadioButtonGroup
-                        options={options}
-                        value={selected}
-                        onChange={handleOnChangeFrom}
-                    />
-                </HorizontalGroup>
-                {(selected === enumOptions.FROM_TYPE) ? typeForm(control) : (<div></div>)}
-            </Fragment>
-        )
-    }
+
+// -----------------------------------------------------------------------------------------------
+// useEffect
+// -----------------------------------------------------------------------------------------------
 
     useEffect(() => {
         setCurrentThing({
@@ -221,13 +240,16 @@ export const ThingForm = ({ path, parentId, isType, funcFromType, funcFromZero }
 
     useEffect(() => {
         var jsonAttributes:any = {}
+        const basicAttributes = getListPropertiesToObject(currentThing.attributes, basicAttributesConst)
+        
         attributes.forEach((item:IAttribute) => jsonAttributes[(item.key)] = item.value)
-
         setCurrentThing({
             ...currentThing,
-            attributes : jsonAttributes
-        }
-        )
+            attributes : {
+                ...basicAttributes,
+                ...jsonAttributes
+            }
+        })
     }, [attributes])
 
     useEffect(() => {
@@ -237,8 +259,7 @@ export const ThingForm = ({ path, parentId, isType, funcFromType, funcFromZero }
         setCurrentThing({
             ...currentThing,
             features : jsonFeatures
-        }
-        )
+        })
     }, [features])
 
     useEffect(() => {
@@ -247,7 +268,7 @@ export const ThingForm = ({ path, parentId, isType, funcFromType, funcFromZero }
     useEffect(() => {
         setCurrentThing({
             ...currentThing,
-            thingId : thingIdField.id + ":" + thingIdField.namespace
+            thingId : thingIdField.namespace + ":" + thingIdField.id
         })
     }, [thingIdField])
 
@@ -269,14 +290,18 @@ export const ThingForm = ({ path, parentId, isType, funcFromType, funcFromZero }
         }
     }, [type, customizeType])
 
-   
     useEffect(() => {
-        if (isType) {
+        console.log("currentThing useEffect", JSON.stringify(currentThing))
+    }, [currentThing])
+
+    useEffect(() => {
+        if (!allowFromType) {
             setSelected(enumOptions.FROM_ZERO)
         } else {
             getAllTypesService(context).then((res) => setTypes(getSelectWithObjectsFromThingsArray(res)))
             .catch(() => console.log("error"))
         }
+
         getAllPoliciesService(context).then((res:string[]) => {
             setPolicies(res.map((item:string) => {
             return {
@@ -285,13 +310,71 @@ export const ThingForm = ({ path, parentId, isType, funcFromType, funcFromZero }
             }
         }))
         }).catch(() => console.log("error"))
+
+        if(thingToEdit){
+            setDittoThing(thingToEdit)
+        }
     }, [])
+    
+
+// -----------------------------------------------------------------------------------------------
+// html
+// -----------------------------------------------------------------------------------------------
+    
+    const titleIfMode = (thingToEdit) ? 
+        <h2 style={{marginBottom: '0px', paddingBottom: '0px'}}>Edit {title} with id {thingToEdit.thingId}</h2>
+        : <h2 style={{marginBottom: '0px', paddingBottom: '0px'}}>Create new {title}</h2> 
+
+    const headerIfIsChild = (parentId != null) ? 
+        <h4 style={{color:useTheme2().colors.text.secondary}}>To be child of {title} with id: {parentId}</h4>
+        : <div style={{height: '0px'}}></div>
+
+    const typeForm = (control:Control<IDittoThingForm>) => {
+        return (
+            <Fragment>
+                <Field className="mt-3" label="Type of twin" required={true}>
+                    <InputControl
+                        render={({field}) => 
+                        <Select {...field} 
+                            options={types}
+                            value={type}
+                            onChange={v => setType(v)}
+                            prefix={<Icon name="arrow-down"/>} 
+                        />
+                    }
+                    control={control}
+                    name="type"
+                />
+                </Field>
+                <Field label="Customize some property of the type for this twin">
+                    <Switch value={customizeType} onChange={v => {
+                        setCustomizeType(!customizeType)
+                    }}/>
+                </Field>
+            </Fragment>
+        )
+    }
+    
+    const fromRadioButton = (control:Control<IDittoThingForm>) => {
+        return (
+            <Fragment>
+                <HorizontalGroup justify='center'>
+                    <RadioButtonGroup
+                        options={options}
+                        value={selected}
+                        onChange={handleOnChangeFrom}
+                    />
+                </HorizontalGroup>
+                {(selected === enumOptions.FROM_TYPE) ? typeForm(control) : (<div></div>)}
+            </Fragment>
+        )
+    }
 
     return (
         <Fragment>
-            {notification()}
-            <h2 style={{marginBottom: '0px', paddingBottom: '0px'}}>Create new {title}</h2>
-            {headerIfIsChild()}
+            <CustomNotification notification={showNotification} setNotificationFunc={setShowNotification}/>
+            {titleIfMode}
+            {headerIfIsChild}
             <div className="row">
                 <div className="col-7">
                     <Form id="finalForm" onSubmit={handleOnSubmitFinal} maxWidth="none" style={{marginTop: '0px', paddingTop: '0px'}}>
@@ -300,16 +383,16 @@ export const ThingForm = ({ path, parentId, isType, funcFromType, funcFromZero }
                             <Fragment>
                                 <ElementHeader className="mt-5" title="Identification" description={descriptionID} isLegend={true}/>
                                 
-                                <Field label="Id" description={descriptionThingId} required={true}>
-                                    <Input {...register("id", { required : true })} type="text" value={thingIdField.id} onChange={handleOnChangeThingId}/>
+                                <Field label="Namespace" description={descriptionNamespace} required={!thingToEdit} disabled={thingToEdit != undefined}>
+                                    <Input {...register("namespace", { required : !thingToEdit })} disabled={thingToEdit != undefined} type="text" value={thingIdField.namespace} onChange={handleOnChangeThingId}/>
                                 </Field>
- 
-                                <Field label="Namespace" description={descriptionNamespace} required={true}>
-                                    <Input {...register("namespace", { required : true })} type="text" value={thingIdField.namespace} onChange={handleOnChangeThingId}/>
+
+                                <Field label="Id" description={descriptionThingId} required={!thingToEdit} disabled={thingToEdit != undefined}>
+                                    <Input {...register("id", { required : !thingToEdit })} type="text" disabled={thingToEdit != undefined} value={thingIdField.id} onChange={handleOnChangeThingId}/>
                                 </Field>
                                 
                                 <ElementHeader className="mt-5" title={`${capitalize(title)} information`} description={descriptionInformation} isLegend={true}/>
-                                {(isType === false) ? fromRadioButton(control) : (<div></div>)}
+                                {(allowFromType) ? fromRadioButton(control) : (<div></div>)}
                                 
                                 <Field label="Policy" disabled={!customizeType && selected === enumOptions.FROM_TYPE} required={true}>
                                     <InputControl
@@ -349,7 +432,7 @@ export const ThingForm = ({ path, parentId, isType, funcFromType, funcFromZero }
                     <FormFeatures features={features} setFeatures={setFeatures} disabled={!customizeType && selected === enumOptions.FROM_TYPE}/>
                     <hr/>
                     <div style={{display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
-                        <Button variant="primary" type="submit" form="finalForm">Create {title}</Button>
+                        <Button variant="primary" type="submit" form="finalForm">{(thingToEdit) ? "Edit" : "Create"} {title}</Button>
                     </div>
                 </div>
                 <div className="col-5" style={{minHeight: '100%'}}>

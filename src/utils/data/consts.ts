@@ -64,3 +64,7 @@ export const options = [
     {label: 'From existing type', value: enumOptions.FROM_TYPE},
     {label: 'From scratch', value: enumOptions.FROM_ZERO}
 ]
+
+export const staticAttributesConst = ["simulationOf", "_simulations"]
+export const basicAttributesConst = ['name', 'description', 'image']
+export const restrictedAttributesConst = ["_isType", "_parents", "type", "copyOf"]
