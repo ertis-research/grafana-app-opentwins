@@ -108,6 +108,15 @@ export const SimulationList = ({path, meta, id, twinInfo} : parameters) => {
         setShowNotification(enumNotification.HIDE)
     }
 
+    const getAndSetSimulations = () => {
+        setSimulations(simulationsToArray(defaultIfNoExist(twinInfo.attributes, "_simulations", {}))
+            .map((item:ISimulationAttributes) => {
+                if(item.content) item.content = item.content.sort((a:ISimulationContent, b:ISimulationContent) => 
+                    (a.required === b.required) ? 0 : a.required? -1 : 1)
+                return item
+        }))
+    }
+
     useEffect(() => {
     }, [selectedSimulation])
 
@@ -115,11 +124,11 @@ export const SimulationList = ({path, meta, id, twinInfo} : parameters) => {
     }, [showNotification])
 
     useEffect(() => {
-        setSimulations(simulationsToArray(defaultIfNoExist(twinInfo.attributes, "_simulations", {})))
+        getAndSetSimulations()
     }, [twinInfo])
 
     useEffect(() => {
-        setSimulations(simulationsToArray(defaultIfNoExist(twinInfo.attributes, "_simulations", {})))
+        getAndSetSimulations()
     }, [])
 
     const notification = () => {
@@ -150,6 +159,7 @@ export const SimulationList = ({path, meta, id, twinInfo} : parameters) => {
 
     const fieldSet = (register:any, control:any) => {
         if(selectedSimulation?.content !== undefined){
+
             return selectedSimulation.content.map((item:ISimulationContent) => {
                 if(item.type == TypesOfField.FILE){
                     return(
@@ -179,7 +189,7 @@ export const SimulationList = ({path, meta, id, twinInfo} : parameters) => {
                             <Input {...register(item.name, {required : item.required})} 
                                 type={(item.type == TypesOfField.NUMBER) ? "number" : "text"} 
                                 placeholder={getPlaceHolderByType(item.type)}
-                                value={item.default}
+                                defaultValue={item.default}
                             />
                         </Field>
                     )
