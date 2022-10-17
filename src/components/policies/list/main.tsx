@@ -13,7 +13,7 @@ export const ListPolicies = ({path} : parameters) => {
 
     const context = useContext(StaticContext)
 
-    const updatePolicy = (setObjects:any) => {
+    const updatePolicy = (setObjects:any, thenFunction?:any) => {
         getAllPoliciesService(context).then((res:string[]) => {
             setObjects(res.map((item:string) => {
                 return {
@@ -21,7 +21,11 @@ export const ListPolicies = ({path} : parameters) => {
                     value : item
                 }
             }))
-        }).catch(() => console.log("error"))
+            if(thenFunction) thenFunction()
+        }).catch(() => {
+            console.log("error")
+            if(thenFunction) thenFunction()
+        })
     }
 
     const getPolicy = (id:string) => {

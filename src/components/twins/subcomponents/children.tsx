@@ -27,6 +27,7 @@ export function ListChildrenTwin({ path, id, meta } : parameters) {
             funcDelete={deleteTwinService} 
             funcDeleteChildren={deleteTwinWithChildrenService} 
             parentId={id}
+            iniCompactMode={true}
         />
 
 }

@@ -6,7 +6,7 @@ import { deleteSimulationService } from 'services/twins/simulation/deleteSimulat
 import { sendSimulationRequest } from 'services/twins/simulation/sendSimulationRequestService'
 import { defaultIfNoExist, enumNotification, removeEmptyEntries } from 'utils/auxFunctions/general'
 import { StaticContext } from 'utils/context/staticContext'
-import { getPlaceHolderByType, TypesOfField } from 'utils/data/consts'
+import { TypesOfField } from 'utils/data/consts'
 import { ISimulationAttributes, ISimulationContent } from 'utils/interfaces/simulation'
 
 interface parameters {
@@ -188,7 +188,6 @@ export const SimulationList = ({path, meta, id, twinInfo} : parameters) => {
                         <Field label={item.name} description={item.type} required={item.required}>
                             <Input {...register(item.name, {required : item.required})} 
                                 type={(item.type == TypesOfField.NUMBER) ? "number" : "text"} 
-                                placeholder={getPlaceHolderByType(item.type)}
                                 defaultValue={item.default}
                             />
                         </Field>

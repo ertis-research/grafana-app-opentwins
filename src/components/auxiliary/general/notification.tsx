@@ -20,7 +20,7 @@ export const CustomNotification = ({notification, setNotificationFunc} : paramet
             if(notification.confirmText && notification.onConfirmFunc){
                 return <ConfirmModal 
                     isOpen={true} 
-                    title={notification.title} 
+                    title={(notification.title) ? notification.title : ""} 
                     body={notification.body} 
                     description={notification.description} 
                     confirmText={notification.confirmText} 
@@ -33,7 +33,7 @@ export const CustomNotification = ({notification, setNotificationFunc} : paramet
             }
         case enumNotification.SUCCESS || enumNotification.ERROR:
             return <Modal 
-                title={notification.title} 
+                title={(notification.title) ? notification.title : ""} 
                 isOpen={true} 
                 onDismiss={hideNotification}>
                     {notification.description}

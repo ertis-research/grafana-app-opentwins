@@ -2,7 +2,7 @@ import { enumNotification } from 'utils/auxFunctions/general';
 
 export interface INotification {
     state : enumNotification
-    title : string
+    title ?: string
     description ?: string
     body ?: string
     onConfirmFunc ?: any

@@ -70,6 +70,12 @@ export const SelectWithTextArea = ({ path, name, getByIdFunc, getAllFunc, delete
         }
     }
 
+    const getAll = () => {
+        setShowNotification({state: enumNotification.LOADING})
+        console.log("LOADING")
+        getAllFunc(setObjects, () => {setShowNotification({state: enumNotification.READY})})
+    }
+
     useEffect(() => {
         if(value && value.label && showNotification.state == enumNotification.READY){
             getByIdFunc(value.label).then((item:any) => {
@@ -89,14 +95,16 @@ export const SelectWithTextArea = ({ path, name, getByIdFunc, getAllFunc, delete
 
 
     useEffect(() => {
-        getAllFunc(setObjects)
+        //getAllFunc(setObjects)
+        getAll()
         console.log("ini")
     }, [])
 
     useEffect(() => {
         if(showNotification.state == enumNotification.HIDE){
-            getAllFunc(setObjects)
-            setShowNotification({state: enumNotification.READY, title: ""})
+            getAll()
+            //getAllFunc(setObjects)
+            //setShowNotification({state: enumNotification.READY, title: ""})
         }
         console.log("objects - showNotification")
     }, [objects, showNotification])

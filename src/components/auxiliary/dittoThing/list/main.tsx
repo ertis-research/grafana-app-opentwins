@@ -1,10 +1,11 @@
 import React, { useState, useEffect, Fragment, useContext } from 'react';
 import { IDittoThing } from 'utils/interfaces/dittoThing';
-import { Card, LinkButton, IconButton, HorizontalGroup, Select, Icon, ConfirmModal, Modal, Spinner, VerticalGroup } from '@grafana/ui'
+import { Card, LinkButton, IconButton, HorizontalGroup, Select, Icon, ConfirmModal, Modal, Spinner, VerticalGroup, InlineSwitch, InlineFieldRow } from '@grafana/ui'
 import { AppPluginMeta, KeyValue, SelectableValue } from '@grafana/data';
 import { defaultIfNoExist, enumNotification, imageIsUndefined } from 'utils/auxFunctions/general';
 import { ISelect } from 'utils/interfaces/select';
 import { StaticContext } from 'utils/context/staticContext';
+import { attributeSimulationOf } from 'utils/data/consts';
 
 interface parameters {
     path : string
@@ -14,9 +15,11 @@ interface parameters {
     funcDelete : any
     funcDeleteChildren ?: any
     parentId ?: string
+    iniCompactMode ?: boolean
+    iniNoSimulations ?: boolean
 }
 
-export function MainList({path, meta, isType, funcThings, funcDelete, funcDeleteChildren, parentId } : parameters) {
+export function MainList({path, meta, isType, funcThings, funcDelete, funcDeleteChildren, parentId, iniCompactMode=false, iniNoSimulations=false } : parameters) {
 
     const [things, setThings] = useState<IDittoThing[]>([])
     const [values, setValues] = useState<ISelect[]>([])
@@ -24,7 +27,9 @@ export function MainList({path, meta, isType, funcThings, funcDelete, funcDelete
     const [value, setValue] = useState<SelectableValue<string>>()
     const [showNotification, setShowNotification] = useState<string>(enumNotification.HIDE)
     const [showDeleteModal, setShowDeleteModal] = useState<string>()
- 
+    const [compactMode, setCompactMode] = useState<boolean>(iniCompactMode)
+    const [noSimulations, setNoSimulations] = useState<boolean>(iniNoSimulations)
+
     const context = useContext(StaticContext)
 
     const title = (isType) ? "type" : "twin"
@@ -104,12 +109,11 @@ export function MainList({path, meta, isType, funcThings, funcDelete, funcDelete
     }
 
     const updateFilteredThings = () => {
-        console.log("FILTERED")
-        console.log(filteredThings)
+        const filterThings = (noSimulations) ? things.filter((item:any) => !item.hasOwnProperty("attributes") || !item.attributes.hasOwnProperty(attributeSimulationOf)) : things
         if (value == null || value == undefined) {
-            setFilteredThings(things)
+            setFilteredThings(filterThings)
         } else {
-            setFilteredThings(things.filter(thing => {return (value.value != undefined) ? thing.thingId.includes(value.value) : true}))
+            setFilteredThings(filterThings.filter(thing => {return (value.value != undefined) ? thing.thingId.includes(value.value) : true}))
         }
     }
 
@@ -134,20 +138,43 @@ export function MainList({path, meta, isType, funcThings, funcDelete, funcDelete
     }, [showNotification, showDeleteModal])
 
     useEffect(() => {
-    }, [parentId])
-
+        updateThings()
+    }, [noSimulations])
 
     useEffect(() => {
-        console.log("CAMBIO DE VALUE")
-        console.log(value)
+    }, [parentId])
+
+    useEffect(() => {
         updateFilteredThings()
     }, [value, things])
 
     useEffect(() => {
     }, [values, showNotification, showDeleteModal])
 
-    const thingsMapped = filteredThings.map((item) =>
-        <div className="col-12 col-sm-6 col-md-6 col-lg-4 mb-4" key={item.thingId}>
+    const getCard = (item:IDittoThing) => {
+        return <Card 
+            heading={defaultIfNoExist(item.attributes, "name", item.thingId)} 
+            href={path + "&mode=check&id=" + item.thingId}
+            style={{height: "100%"}}>
+            <Card.Meta>
+                <div>
+                    <p>{item.thingId}</p>
+                    <p style={{maxWidth: "100%", overflow: "hidden", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical" }}>
+                        {defaultIfNoExist(item.attributes, "description", "")}
+                    </p>
+                </div>
+            </Card.Meta>
+            <Card.SecondaryActions>
+                <a href={path + '&mode=edit&element=' + title + '&id='+ item.thingId} style={{all: 'unset'}}>
+                    <IconButton key="edit" name="pen" tooltip="Edit"/>
+                </a>
+                <IconButton key="delete" name="trash-alt" tooltip="Delete" onClick={(e) => handleOnDelete(e, item.thingId)}/>
+            </Card.SecondaryActions>
+        </Card>
+    }
+
+    const fullCard = (item:IDittoThing) => {
+        return <div className="col-12 col-sm-6 col-md-6 col-lg-4 mb-4" key={item.thingId}>
             <div style={{display: "block", width: "100%"}}>
                 <div style={{display: "inline-block", height: "180px", width:"35%", verticalAlign: "top"}}>
                     <a href={path + "&mode=check&id=" + item.thingId}>
@@ -155,29 +182,27 @@ export function MainList({path, meta, isType, funcThings, funcDelete, funcDelete
                     </a>
                 </div>
                 <div style={{height: "180px", width:"65%", display: "inline-block", verticalAlign: "top"}}>
-                    <Card 
-                        heading={defaultIfNoExist(item.attributes, "name", item.thingId)} 
-                        href={path + "&mode=check&id=" + item.thingId}
-                        style={{height: "100%"}}>
-                        <Card.Meta>
-                            <div>
-                                <p>{item.thingId}</p>
-                                <p style={{maxWidth: "100%", overflow: "hidden", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical" }}>
-                                    {defaultIfNoExist(item.attributes, "description", "")}
-                                </p>
-                            </div>
-                        </Card.Meta>
-                        <Card.SecondaryActions>
-                            <a href={path + '&mode=edit&element=' + title + '&id='+ item.thingId} style={{all: 'unset'}}>
-                                <IconButton key="edit" name="pen" tooltip="Edit"/>
-                            </a>
-                            <IconButton key="delete" name="trash-alt" tooltip="Delete" onClick={(e) => handleOnDelete(e, item.thingId)}/>
-                        </Card.SecondaryActions>
-                    </Card>
+                    {getCard(item)}
                 </div>
             </div>
         </div>
-    );
+    }
+
+    const compactCard = (item:IDittoThing) => {
+        return <div className="col-6 col-sm-4 col-md-4 col-lg-2 mb-2" key={item.thingId}>
+            <div style={{display: "block", width: "100%"}}>
+                {getCard(item)}
+            </div>
+        </div>
+    }
+
+    const thingsMapped = () => {
+        const typeOfCard = (compactMode) ? compactCard : fullCard
+        return filteredThings.map((item:IDittoThing) => typeOfCard(item))
+    }
+
+    const switchSimulation = (!things.some((item:any) => item.hasOwnProperty("attributes") && item.attributes.hasOwnProperty(attributeSimulationOf))) ? <div></div> :
+        <InlineSwitch value={!noSimulations} onChange={() => setNoSimulations(!noSimulations)} label="Show simulated twins" showLabel={true} className="pb-3"/>
 
     const noChildren = (showNotification != enumNotification.READY) ? <div></div> :  
         <VerticalGroup align="center">
@@ -209,9 +234,15 @@ export function MainList({path, meta, isType, funcThings, funcDelete, funcDelete
                     />
                 </div>
             </div>
+            <VerticalGroup align="flex-end">
+                <InlineFieldRow className="pb-3">
+                    {switchSimulation}
+                    <InlineSwitch value={compactMode} onChange={() => setCompactMode(!compactMode)} label="Compact view" showLabel={true} className="pb-3"/>
+                </InlineFieldRow>
+            </VerticalGroup>
             {notification()}
             <div className="row">
-                {(filteredThings.length > 0) ? thingsMapped : noChildren}
+                {(filteredThings.length > 0) ? thingsMapped() : noChildren}
             </div>
         </Fragment>
     );
