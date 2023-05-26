@@ -2,8 +2,8 @@ import { fetchExtendedApiForDittoDevopsService } from "services/general/fetchExt
 import { IStaticContext } from "utils/context/staticContext"
 
 export const deleteConnectionByIdService = (context:IStaticContext, id:string) => {
-  return fetchExtendedApiForDittoDevopsService(context, "/piggyback/connectivity/" + id, {
-    method: 'GET',
+  return fetchExtendedApiForDittoDevopsService(context, "/connections/" + id + "/delete", {
+    method: 'PUT',
     headers: {
       "Authorization": 'Basic '+btoa('ditto:ditto'),
       "Accept": "application/json"

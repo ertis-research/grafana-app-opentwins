@@ -149,7 +149,9 @@ export const SimulationList = ({path, meta, id, twinInfo} : parameters) => {
 
     const ElementSimulation = (item:ISimulationAttributes) => {
         return (
-            <Card heading={item.id} description={item.description} isSelected={item.id === selectedSimulation?.id} onClick={() => handleOnClick(item)}>
+            <Card isSelected={item.id === selectedSimulation?.id} onClick={() => handleOnClick(item)}>
+            <Card.Heading>{item.id}</Card.Heading>
+            <Card.Description>{item.description}</Card.Description>
                 <Card.Meta>
                     {[item.method, item.contentType, item.url]}
                 </Card.Meta>

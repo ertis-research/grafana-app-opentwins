@@ -15,11 +15,11 @@ export const ListConnections = ({path} : parameters) => {
     const context = useContext(StaticContext)
 
     const updateConnections = (setObjects:any, thenFunction?:any) => {
-        getAllConnectionIdsService(context).then((res:string[]) => {
-            setObjects(res.map((item:string) => {
+        getAllConnectionIdsService(context).then((res:{id: string, name: string}[]) => {
+            setObjects(res.map(({id, name} : {id: string, name: string}) => {
                 return {
-                    label : item,
-                    value : item
+                    label : name,
+                    value : id
                 }
             }))
             if(thenFunction) thenFunction()

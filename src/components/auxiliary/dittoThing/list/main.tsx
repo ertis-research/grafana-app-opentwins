@@ -152,10 +152,9 @@ export function MainList({path, meta, isType, funcThings, funcDelete, funcDelete
     }, [values, showNotification, showDeleteModal])
 
     const getCard = (item:IDittoThing) => {
-        return <Card 
-            heading={defaultIfNoExist(item.attributes, "name", item.thingId)} 
-            href={path + "&mode=check&id=" + item.thingId}
-            style={{height: "100%"}}>
+        return <Card href={path + "&mode=check&id=" + item.thingId}
+        style={{height: "100%"}}>
+            <Card.Heading >{defaultIfNoExist(item.attributes, "name", item.thingId)} </Card.Heading>
             <Card.Meta>
                 <div>
                     <p>{item.thingId}</p>

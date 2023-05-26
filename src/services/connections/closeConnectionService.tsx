@@ -2,7 +2,7 @@ import { fetchExtendedApiForDittoDevopsService } from "services/general/fetchExt
 import { IStaticContext } from "utils/context/staticContext"
 
 export const closeConnectionService = (context:IStaticContext, id:string) => {
-  return fetchExtendedApiForDittoDevopsService(context, "/piggyback/connectivity/" + id + "/close", {
+  return fetchExtendedApiForDittoDevopsService(context, "/connections/" + id + "/close", {
     method: 'PUT',
     headers: {
       "Authorization": 'Basic '+btoa('ditto:ditto')

@@ -2,7 +2,7 @@ import { fetchExtendedApiForDittoDevopsService } from "services/general/fetchExt
 import { IStaticContext } from "utils/context/staticContext"
 
 export const getConnectionByIdService = (context:IStaticContext, id:string) => {
-  return fetchExtendedApiForDittoDevopsService(context, "/piggyback/connectivity/" + id, {
+  return fetchExtendedApiForDittoDevopsService(context, "/connections/" + id, {
     method: 'GET',
     headers: {
       "Authorization": 'Basic '+btoa('ditto:ditto'),

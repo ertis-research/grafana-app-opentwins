@@ -77,8 +77,8 @@ export const SelectWithTextArea = ({ path, name, getByIdFunc, getAllFunc, delete
     }
 
     useEffect(() => {
-        if(value && value.label && showNotification.state == enumNotification.READY){
-            getByIdFunc(value.label).then((item:any) => {
+        if(value && value.value && showNotification.state == enumNotification.READY){
+            getByIdFunc(value.value).then((item:any) => {
                 setselectedObject(item)
             }).catch(() => {
                 setselectedObject(undefined)
