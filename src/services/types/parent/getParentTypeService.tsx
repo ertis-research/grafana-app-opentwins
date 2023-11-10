@@ -1,7 +1,7 @@
 import { fetchExtendedApiForDittoService } from "services/general/fetchExtendedApiService"
-import { IStaticContext } from "utils/context/staticContext"
+import { Context } from "utils/context/staticContext"
 
-export const getParentOfTypeService = ( context:IStaticContext, typeId:string ) => {
+export const getParentOfTypeService = ( context: Context, typeId: string ) => {
   return fetchExtendedApiForDittoService(context, "/types/" + typeId + "/parent", {
     method: 'GET',
     headers: {

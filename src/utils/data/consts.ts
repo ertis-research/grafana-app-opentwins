@@ -41,7 +41,7 @@ export enum TypesOfField {
     FILE = "file"
 }
 
-export const getPlaceHolderByType = (type:string) => {
+export const getPlaceHolderByType = (type: string) => {
     switch(type){
         case TypesOfField.TEXT:
             return "example"

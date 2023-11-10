@@ -5,15 +5,14 @@ import { ListElement } from 'components/auxiliary/general/listElement'
 import { initResources, initSubjects } from 'utils/data/consts'
 import { FormSubjects } from './subcomponents/formSubjects'
 import { FormResources } from './subcomponents/formResources'
-import {} from '@emotion/core'
 import { createPolicyService } from 'services/policies/createPolicyService'
 import { StaticContext } from 'utils/context/staticContext'
 
-interface parameters {
-    path : string
+interface Parameters {
+    path: string
 }
 
-export const CreatePolicy = ({path} : parameters ) => {
+export const CreatePolicy = ({path}: Parameters ) => {
 
     const [entries, setEntries] = useState<IEntry[]>([])
     const [entry, setEntry] = useState<IEntry>({ name: "" })
@@ -23,7 +22,7 @@ export const CreatePolicy = ({path} : parameters ) => {
 
     const context = useContext(StaticContext)
 
-    const handleOnSubmitEntry = (data:{name:string}) => {
+    const handleOnSubmitEntry = (data: {name: string}) => {
         setEntries([
             ...entries,
             {
@@ -35,15 +34,15 @@ export const CreatePolicy = ({path} : parameters ) => {
     }
 
     useEffect(() => {
-        var provEntries:any = {}
+        let provEntries: any = {}
         entries.forEach((item) => {
 
-            var provSubjects:any = {}
-            var provResources:any = {}
+            let provSubjects: any = {}
+            let provResources: any = {}
             subjects.forEach((item) => provSubjects[item.subjectIssuer + ":" + item.subject]={type : item.type})
             resources.forEach((item) => {
-                var grantList:any = []
-                var revokeList:any = []
+                let grantList: any = []
+                let revokeList: any = []
 
                 if(item.read) {
                     grantList.push("READ")
@@ -90,7 +89,7 @@ export const CreatePolicy = ({path} : parameters ) => {
         })
     }, [resources])
 
-    const handleOnSubmitFinal = (data:{name:string}) => {
+    const handleOnSubmitFinal = (data: {name: string}) => {
         setCurrentPolicy({
             ...currentPolicy,
             policyId : data.name
@@ -101,7 +100,7 @@ export const CreatePolicy = ({path} : parameters ) => {
         ).catch(() => console.log("error"))
     }
 
-    const handleOnChangeInputName = (event:ChangeEvent<HTMLInputElement>) => {
+    const handleOnChangeInputName = (event: ChangeEvent<HTMLInputElement>) => {
         setCurrentPolicy({
           ...currentPolicy,
           policyId : event.target.value
@@ -114,7 +113,7 @@ export const CreatePolicy = ({path} : parameters ) => {
             <div className="row">
                 <div className="col-9">
                     <Form id="finalForm" onSubmit={handleOnSubmitFinal}>
-                    {({register, errors}:FormAPI<{name:string}>) => {
+                    {({register, errors}: FormAPI<{name: string}>) => {
                         return(
                             <FieldSet>
                                 <Field label="Name">
@@ -137,7 +136,7 @@ export const CreatePolicy = ({path} : parameters ) => {
                         <div className="col-9">
                             <Legend>Entry information</Legend>
                             <Form id="entryForm" onSubmit={handleOnSubmitEntry}>
-                            {({register, errors}:FormAPI<{name:string}>) => {
+                            {({register, errors}: FormAPI<{name: string}>) => {
                                 return (
                                     <Field label="Name of entry">
                                         <Input {...register("name", { required : true })} type="text" form="entryForm"/>

@@ -1,8 +1,8 @@
 import { fetchDittoAPIService } from "services/general/fetchDittoAPIService"
-import { IStaticContext } from "utils/context/staticContext"
+import { Context } from "utils/context/staticContext"
 import { IPolicy } from "utils/interfaces/dittoPolicy"
 
-export const createPolicyService = (context:IStaticContext, data:IPolicy) => {
+export const createPolicyService = (context: Context, data: IPolicy) => {
   return fetchDittoAPIService(context, "/policies/"+ data.policyId, {
     method: 'PUT',
     headers: {

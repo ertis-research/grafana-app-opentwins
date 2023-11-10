@@ -12,16 +12,16 @@ import { StaticContext } from 'utils/context/staticContext'
 import { createOrUpdateSimulationService } from 'services/twins/simulation/createOrUpdateSimulationService'
 import { getSimulationService } from 'services/twins/simulation/getSimulationService'
 
-interface parameters {
-    path : string
-    meta : AppPluginMeta<KeyValue<any>>
-    id : string
-    simulationId ?: string
+interface Parameters {
+    path: string
+    meta: AppPluginMeta<KeyValue<any>>
+    id: string
+    simulationId?: string
 }
 
-export const SimulationForm = ({path, meta, id, simulationId} : parameters) => {
+export const SimulationForm = ({path, meta, id, simulationId}: Parameters) => {
 
-    const editMode = simulationId != undefined
+    const editMode = simulationId !== undefined
     const iniMethod = MethodRequest.GET
 
     const [method, setMethod] = useState<SelectableValue<MethodRequest>>()
@@ -32,9 +32,9 @@ export const SimulationForm = ({path, meta, id, simulationId} : parameters) => {
     const [actualSimulation, setActualSimulation] = useState<ISimulationAttributes>({id:"", url: "", method: iniMethod})
     const [showNotification, setShowNotification] = useState(enumNotification.HIDE)
 
-    const methodList:ISelect[] = enumToISelectList(MethodRequest)
-    const contentTypeList:ISelect[] = enumToISelectList(ContentType)
-    const typesOfFieldList:ISelect[] = enumToISelectList(TypesOfField)
+    const methodList: ISelect[] = enumToISelectList(MethodRequest)
+    const contentTypeList: ISelect[] = enumToISelectList(ContentType)
+    const typesOfFieldList: ISelect[] = enumToISelectList(TypesOfField)
 
     const context = useContext(StaticContext)
 
@@ -46,7 +46,7 @@ export const SimulationForm = ({path, meta, id, simulationId} : parameters) => {
     const titleError = "The simulation has not been created correctly. "
     const descriptionError = "Please check the data you have entered and try again."
 
-    const handleOnSubmit = (data:ISimulationAttributesForm) => {
+    const handleOnSubmit = (data: ISimulationAttributesForm) => {
         console.log("HOLA")
         setShowNotification(enumNotification.LOADING)
         console.log("HOLA2")
@@ -58,24 +58,24 @@ export const SimulationForm = ({path, meta, id, simulationId} : parameters) => {
         })
     }
 
-    const handleOnChangeInputAttribute = (event:ChangeEvent<HTMLInputElement>) => {
+    const handleOnChangeInputAttribute = (event: ChangeEvent<HTMLInputElement>) => {
         setActualSimulation({
             ...actualSimulation,
             [event.currentTarget.name] : event.target.value
         })
       }
 
-    const handleSubmitContent = (data:ISimulationContent) => {
+    const handleSubmitContent = (data: ISimulationContent) => {
         if(typeOfField?.value) {
             data = {
                 ...data,
                 type: typeOfField.value
             }
         }
-        if (data.default === "") delete data.default 
+        if (data.default === "") {delete data.default} 
 
-        var found = false
-        const newContent = content.map((item:ISimulationContent) => {
+        let found = false
+        const newContent = content.map((item: ISimulationContent) => {
             if(item.name === data.name){
                 found = true
                 return data
@@ -116,7 +116,7 @@ export const SimulationForm = ({path, meta, id, simulationId} : parameters) => {
         setActualSimulation({id:"", url: "", method: iniMethod})
     }
 
-    const hideNotification = (removeId:boolean = true) => {
+    const hideNotification = (removeId = true) => {
         if(removeId){
             setActualSimulation({
                 ...actualSimulation,
@@ -128,8 +128,8 @@ export const SimulationForm = ({path, meta, id, simulationId} : parameters) => {
 
     useEffect(() => {
         if (hasContent) {
-            var jsonContent:ISimulationContent[] = []
-            content.forEach((item:ISimulationContent) => jsonContent.push(item));
+            let jsonContent: ISimulationContent[] = []
+            content.forEach((item: ISimulationContent) => jsonContent.push(item));
     
             setActualSimulation({
                 ...actualSimulation,
@@ -165,11 +165,11 @@ export const SimulationForm = ({path, meta, id, simulationId} : parameters) => {
     }, [method])
 
     useEffect(() => {
-        if(simulationId != undefined) {
-            getSimulationService(context, id, simulationId).then((simulation:ISimulationAttributes) => {
+        if(simulationId !== undefined) {
+            getSimulationService(context, id, simulationId).then((simulation: ISimulationAttributes) => {
                 setActualSimulation(simulation)
                 setMethod({label: simulation.method, value: simulation.method})
-                if (simulation.contentType) setContentType({label: simulation.contentType, value: simulation.contentType})
+                if (simulation.contentType) {setContentType({label: simulation.contentType, value: simulation.contentType})}
                 if (simulation.content) {
                     setHasContent(true)
                     setContent(simulation.content)
@@ -181,7 +181,7 @@ export const SimulationForm = ({path, meta, id, simulationId} : parameters) => {
     useEffect(() => {
     }, [actualSimulation, showNotification])
 
-    const contentTypeField = (control:Control<ISimulationAttributesForm>) => {
+    const contentTypeField = (control: Control<ISimulationAttributesForm>) => {
         return (!hasContent) ? <div></div> : 
         <Fragment>
             <Field label="Content-type" required={hasContent}>
@@ -208,7 +208,7 @@ export const SimulationForm = ({path, meta, id, simulationId} : parameters) => {
             <div className="row">
                 <div className="col-6">
                     <Form id="formContent" onSubmit={handleSubmitContent} maxWidth="none">
-                    {({register, errors, control}:FormAPI<ISimulationContent>) => {
+                    {({register, errors, control}: FormAPI<ISimulationContent>) => {
                         return (
                             <Fragment>
                                 <FieldSet>
@@ -222,7 +222,7 @@ export const SimulationForm = ({path, meta, id, simulationId} : parameters) => {
                                                 options={typesOfFieldList}
                                                 value={typeOfField}
                                                 onChange={(v) => { setTypeOfField(v); }}
-                                                disabled={showNotification != enumNotification.HIDE}
+                                                disabled={showNotification !== enumNotification.HIDE}
                                             />
                                         }
                                         control={control}
@@ -236,7 +236,7 @@ export const SimulationForm = ({path, meta, id, simulationId} : parameters) => {
                                         <Input {...register("default")} type="text"/>
                                     </Field>
                                 </FieldSet>
-                                <Button type="submit" variant="secondary" form="formContent" disabled={showNotification != enumNotification.HIDE}>Add</Button>
+                                <Button type="submit" variant="secondary" form="formContent" disabled={showNotification !== enumNotification.HIDE}>Add</Button>
                             </Fragment>
                         )
                     }}
@@ -261,7 +261,7 @@ export const SimulationForm = ({path, meta, id, simulationId} : parameters) => {
             <div className="row">
                 <div className="col-7">
                     <Form id="formSimulation" onSubmit={handleOnSubmit} maxWidth="none">
-                    {({register, errors, control}:FormAPI<ISimulationAttributesForm>) => {
+                    {({register, errors, control}: FormAPI<ISimulationAttributesForm>) => {
                         return (
                             <Fragment>
                                 <FieldSet>
@@ -282,7 +282,7 @@ export const SimulationForm = ({path, meta, id, simulationId} : parameters) => {
                                                     value={method}
                                                     defaultValue={{label: actualSimulation.method, value: actualSimulation.method}}
                                                     onChange={(v) => { setMethod(v); }}
-                                                    disabled={showNotification != enumNotification.HIDE}
+                                                    disabled={showNotification !== enumNotification.HIDE}
                                                 />
                                             }
                                             control={control}
@@ -290,7 +290,7 @@ export const SimulationForm = ({path, meta, id, simulationId} : parameters) => {
                                         />
                                     </Field>
                                     <Field label="Has content?" required={true}>
-                                        <Switch {...register("hasContent")} value={hasContent} disabled={showNotification != enumNotification.HIDE} onChange={(e) => setHasContent(!hasContent)}/>
+                                        <Switch {...register("hasContent")} value={hasContent} disabled={showNotification !== enumNotification.HIDE} onChange={(e) => setHasContent(!hasContent)}/>
                                     </Field>
                                     {contentTypeField(control)}
                                 </FieldSet>
@@ -300,7 +300,7 @@ export const SimulationForm = ({path, meta, id, simulationId} : parameters) => {
                     </Form>
                     {contentForm()}
                     <div style={{display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
-                        <Button type="submit" variant="primary" form="formSimulation" disabled={showNotification != enumNotification.HIDE}>{(editMode) ? "Edit" : "Create"} simulation</Button>
+                        <Button type="submit" variant="primary" form="formSimulation" disabled={showNotification !== enumNotification.HIDE}>{(editMode) ? "Edit" : "Create"} simulation</Button>
                     </div>
                 </div>
                 <div className="col-5">

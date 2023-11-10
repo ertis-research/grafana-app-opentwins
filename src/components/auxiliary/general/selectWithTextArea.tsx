@@ -6,26 +6,26 @@ import { capitalize, enumNotification } from 'utils/auxFunctions/general'
 import { INotification } from 'utils/interfaces/notification'
 import { CustomNotification } from './notification'
 
-export interface parametersExtraButtons {
-    selectedConnection : any
-    selectedId ?: SelectableValue<string>
-    isDisabled : boolean
-    setShowNotification : any
+export interface ParametersExtraButtons {
+    selectedConnection: any
+    selectedId?: SelectableValue<string>
+    isDisabled: boolean
+    setShowNotification: any
 }
 
-interface parameters {
-    path : string
-    name : string
-    getByIdFunc : any
-    getAllFunc : any
-    deleteFunc : any
-    ExtraButtonComponent ?: React.FC<parametersExtraButtons>
+interface Parameters {
+    path: string
+    name: string
+    getByIdFunc: any
+    getAllFunc: any
+    deleteFunc: any
+    ExtraButtonComponent?: React.FC<ParametersExtraButtons>
 }
 
-export const SelectWithTextArea = ({ path, name, getByIdFunc, getAllFunc, deleteFunc, ExtraButtonComponent } : parameters) => {
+export const SelectWithTextArea = ({ path, name, getByIdFunc, getAllFunc, deleteFunc, ExtraButtonComponent }: Parameters) => {
 
     const confirmDelete_title = "Delete " + name
-    const confirmDelete_body = (id) => "Are you sure you want to delete " + name + " " + id + "?"
+    const confirmDelete_body = (id: any) => "Are you sure you want to delete " + name + " " + id + "?"
     const confirmDelete_description = "This action cannot be undone."
 
     const [objects, setObjects] = useState<ISelect[]>([])
@@ -77,8 +77,8 @@ export const SelectWithTextArea = ({ path, name, getByIdFunc, getAllFunc, delete
     }
 
     useEffect(() => {
-        if(value && value.value && showNotification.state == enumNotification.READY){
-            getByIdFunc(value.value).then((item:any) => {
+        if(value && value.value && showNotification.state === enumNotification.READY){
+            getByIdFunc(value.value).then((item: any) => {
                 setselectedObject(item)
             }).catch(() => {
                 setselectedObject(undefined)
@@ -101,7 +101,7 @@ export const SelectWithTextArea = ({ path, name, getByIdFunc, getAllFunc, delete
     }, [])
 
     useEffect(() => {
-        if(showNotification.state == enumNotification.HIDE){
+        if(showNotification.state === enumNotification.HIDE){
             getAll()
             //getAllFunc(setObjects)
             //setShowNotification({state: enumNotification.READY, title: ""})

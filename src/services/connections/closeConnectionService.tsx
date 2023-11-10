@@ -1,7 +1,7 @@
 import { fetchExtendedApiForDittoDevopsService } from "services/general/fetchExtendedApiDevopsService"
-import { IStaticContext } from "utils/context/staticContext"
+import { Context } from "utils/context/staticContext"
 
-export const closeConnectionService = (context:IStaticContext, id:string) => {
+export const closeConnectionService = (context: Context, id: string) => {
   return fetchExtendedApiForDittoDevopsService(context, "/connections/" + id + "/close", {
     method: 'PUT',
     headers: {

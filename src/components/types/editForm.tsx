@@ -6,24 +6,24 @@ import { getTypeService } from 'services/types/crud/getTypeService'
 import { StaticContext } from 'utils/context/staticContext'
 import { IDittoThing, IDittoThingData } from 'utils/interfaces/dittoThing'
 
-interface parameters {
-    path : string
-    id : string
+interface Parameters {
+    path: string
+    id: string
     meta: AppPluginMeta<KeyValue<any>>
 }
 
-export const EditFormType = ({ path, meta, id } : parameters) => {
+export const EditFormType = ({ path, meta, id }: Parameters) => {
 
     const [typeInfo, setTypeInfo] = useState<IDittoThing>()
 
     const context = useContext(StaticContext)
 
-    const handleEditType = (twinId:string, data:IDittoThingData) => {
+    const handleEditType = (twinId: string, data: IDittoThingData) => {
         return createOrUpdateTypeService(context, twinId, data)
     }
 
     useEffect(() => {
-        getTypeService(context, id).then((info:IDittoThing) => {
+        getTypeService(context, id).then((info: IDittoThing) => {
             setTypeInfo(info)
         })
     }, [id])

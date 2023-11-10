@@ -1,7 +1,7 @@
 import { fetchExtendedApiForDittoService } from "services/general/fetchExtendedApiService"
-import { IStaticContext } from "utils/context/staticContext"
+import { Context } from "utils/context/staticContext"
 
-export const getAllRootTwinsService = (context:IStaticContext) => {
+export const getAllRootTwinsService = (context: Context) => {
   return fetchExtendedApiForDittoService(context, "/twins", {
     method: 'GET',
     headers: {

@@ -1,6 +1,6 @@
 export interface IPolicy {
-    policyId : string,
-    entries? : JSON[]
+    policyId: string,
+    entries?: JSON[]
 }
 
 export interface IEntry {

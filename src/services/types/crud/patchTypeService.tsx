@@ -1,8 +1,8 @@
 import { fetchExtendedApiForDittoService } from "services/general/fetchExtendedApiService"
-import { IStaticContext } from "utils/context/staticContext"
+import { Context } from "utils/context/staticContext"
 import { IDittoThingData } from "utils/interfaces/dittoThing"
 
-export const patchTypeService = ( context:IStaticContext, typeId:string, type:IDittoThingData ) => {
+export const patchTypeService = ( context: Context, typeId: string, type: IDittoThingData ) => {
     return fetchExtendedApiForDittoService(context, "/types/" + typeId, {
         method: 'PATCH',
         headers: {

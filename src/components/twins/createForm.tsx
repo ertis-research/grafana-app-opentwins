@@ -7,13 +7,13 @@ import { createTwinFromTypeService } from 'services/types/createTwinFromTypeServ
 import { StaticContext } from 'utils/context/staticContext'
 import { IDittoThingData } from 'utils/interfaces/dittoThing'
 
-interface parameters {
-    path : string
-    id ?: string
+interface Parameters {
+    path: string
+    id?: string
     meta: AppPluginMeta<KeyValue<any>>
 }
 
-export const CreateFormTwin = ({ path, meta, id } : parameters) => {
+export const CreateFormTwin = ({ path, meta, id }: Parameters) => {
 
     useEffect(() => {
     }, [id])
@@ -22,10 +22,10 @@ export const CreateFormTwin = ({ path, meta, id } : parameters) => {
     const context = useContext(StaticContext)
 
     if (id !== undefined) {
-        const handleCreateChildren = (thingId : string, data?:IDittoThingData) => {
+        const handleCreateChildren = (thingId: string, data?: IDittoThingData) => {
             return createOrUpdateTwinToBeChildService(context, id, thingId, data)
         }
-        const handleCreateChildrenByType = (thingId : string, typeId : string, data?:IDittoThingData) => {
+        const handleCreateChildrenByType = (thingId: string, typeId: string, data?: IDittoThingData) => {
             return createTwinFromTypeService(context, thingId, typeId, data).then(() => 
                 createOrUpdateTwinToBeChildService(context, id, thingId)
             )
@@ -33,10 +33,10 @@ export const CreateFormTwin = ({ path, meta, id } : parameters) => {
         return <ThingForm path={path} meta={meta} parentId={id} isType={false} funcFromZero={handleCreateChildren} funcFromType={handleCreateChildrenByType}/>
     
     } else {
-        const handleCreateNew = (thingId : string, data:IDittoThingData ) => {
+        const handleCreateNew = (thingId: string, data: IDittoThingData ) => {
             return createOrUpdateTwinService(context, thingId, data)
         }
-        const handleCreateNewByType = (thingId : string, typeId : string, data?:IDittoThingData) => {
+        const handleCreateNewByType = (thingId: string, typeId: string, data?: IDittoThingData) => {
             return createTwinFromTypeService(context, thingId, typeId, data)
         }
         return <ThingForm path={path} meta={meta} isType={false} funcFromZero={handleCreateNew} funcFromType={handleCreateNewByType}/>

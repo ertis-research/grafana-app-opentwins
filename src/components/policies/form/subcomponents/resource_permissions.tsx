@@ -2,24 +2,24 @@ import React, { useState, FormEvent, useEffect } from 'react'
 import { Checkbox, IconButton, useTheme2 } from '@grafana/ui'
 import { IResource } from 'utils/interfaces/dittoPolicy'
 
-interface parameters {
+interface Parameters {
     resource: IResource
-    resources : IResource[]
-    setResources : any
+    resources: IResource[]
+    setResources: any
 }
 
-export const Resource_permissions = ({resource, resources, setResources} : parameters) => {
+export const Resource_permissions = ({resource, resources, setResources}: Parameters) => {
 
     const [read, setRead] = useState(resource.read)
     const [write, setWrite] = useState(resource.write)
 
-    const handleOnChangeCheckbox = (event:FormEvent<HTMLInputElement>, setFunction:any, variable:any, grant:boolean) => {
-        setFunction((variable === undefined) ? grant : (variable == grant) ? undefined : !variable)
+    const handleOnChangeCheckbox = (event: FormEvent<HTMLInputElement>, setFunction: any, variable: any, grant: boolean) => {
+        setFunction((variable === undefined) ? grant : (variable === grant) ? undefined : !variable)
     }
 
     useEffect(() => {
         setResources(
-            resources.map((item:IResource) => {
+            resources.map((item: IResource) => {
                 if(item.name === resource.name){
                     return {
                         ...item,
@@ -33,7 +33,7 @@ export const Resource_permissions = ({resource, resources, setResources} : param
 
     useEffect(() => {
         setResources(
-            resources.map((item:IResource) => {
+            resources.map((item: IResource) => {
                 if(item.name === resource.name){
                     return {
                         ...item,
@@ -46,7 +46,7 @@ export const Resource_permissions = ({resource, resources, setResources} : param
     }, [write])
 
     const handleOnClickDelete = () => {
-        setResources(resources.filter((item:any) => item.name !== resource.name))
+        setResources(resources.filter((item: any) => item.name !== resource.name))
     }
 
     const header = 

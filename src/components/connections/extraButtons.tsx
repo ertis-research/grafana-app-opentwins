@@ -4,16 +4,16 @@ import { enumNotification } from 'utils/auxFunctions/general'
 import { openConnectionService } from 'services/connections/openConnectionService'
 import { closeConnectionService } from 'services/connections/closeConnectionService'
 import { StaticContext } from 'utils/context/staticContext'
-import { parametersExtraButtons } from 'components/auxiliary/general/selectWithTextArea'
+import { ParametersExtraButtons } from 'components/auxiliary/general/selectWithTextArea'
 
-export const ExtraButtonsConnection = ({selectedConnection, selectedId, isDisabled, setShowNotification} : parametersExtraButtons) => {
+export const ExtraButtonsConnection = ({selectedConnection, selectedId, isDisabled, setShowNotification}: ParametersExtraButtons) => {
     
     const context = useContext(StaticContext)
 
     const handleOnClickStatusConnection = () => {
         if(selectedId?.value && selectedConnection && selectedConnection.connectionStatus){
             setShowNotification({state: enumNotification.LOADING, title: ""})
-            if(selectedConnection.connectionStatus.toLowerCase() == "closed"){
+            if(selectedConnection.connectionStatus.toLowerCase() === "closed"){
                 openConnectionService(context, selectedId.value).then(() => {
                     setShowNotification({
                         state: enumNotification.SUCCESS,

@@ -10,7 +10,7 @@ export const PoliciesPage: FC<AppRootProps> = ({ query, path, meta }) => {
   const valueMeta = fromMetaToValues(meta)
   path = path + "?tab=policies"
 
-  var component = <ListPolicies path={path} />
+  let component = <ListPolicies path={path} />
   switch (query["mode"]) {
     case "create":
       component = <CreatePolicy path={path}/>

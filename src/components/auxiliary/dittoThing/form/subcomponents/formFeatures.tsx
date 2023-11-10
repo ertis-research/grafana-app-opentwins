@@ -1,22 +1,21 @@
 import React, { Fragment } from 'react'
 import { Button, Field, Input, Form, FormAPI, List } from '@grafana/ui'
 import { IFeature } from 'utils/interfaces/dittoThing';
-import {} from '@emotion/core';
 import { ElementHeader } from 'components/auxiliary/general/elementHeader';
 import { ListElement } from 'components/auxiliary/general/listElement';
 
-interface parameters {
-    features : IFeature[]
-    setFeatures : any
-    disabled : boolean
+interface Parameters {
+    features: IFeature[]
+    setFeatures: any
+    disabled: boolean
 }
 
-export const FormFeatures = ({features, setFeatures, disabled} : parameters) => {
+export const FormFeatures = ({features, setFeatures, disabled}: Parameters) => {
 
     const featuresDescription = "Features are used to manage all data and functionality of a Thing that can be clustered in an outline technical context"
 
-    const handleSubmitFeatures = (data : {name:string}) => {
-        var item = features.some(item => item.name == data.name);
+    const handleSubmitFeatures = (data: {name: string}) => {
+        let item = features.some(item => item.name === data.name);
     
         if(item === false) { 
             setFeatures([
@@ -39,7 +38,7 @@ export const FormFeatures = ({features, setFeatures, disabled} : parameters) => 
             <div className="row">
                 <div className="col-6">
                     <Form id="formFeatures" onSubmit={handleSubmitFeatures} maxWidth="none">
-                    {({register, errors}:FormAPI<{name:string}>) => {
+                    {({register, errors}: FormAPI<{name: string}>) => {
                         return (
                             <Fragment>
                                 <Field label="Name of feature" disabled={disabled}>

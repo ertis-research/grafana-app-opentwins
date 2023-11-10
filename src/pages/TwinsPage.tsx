@@ -15,10 +15,10 @@ export const TwinsPage: FC<AppRootProps> = ({ query, path, meta }) => {
   const valueMeta = fromMetaToValues(meta)
   path = path + "?tab=twins"
 
-  var component = <ListTwins path={path} meta={meta}/> //default
+  let component = <ListTwins path={path} meta={meta}/> //default
   switch (query["mode"]) {
     case "check":
-      if(id !== undefined) component = <TwinInfo path={path} id={id} meta={meta}/>
+      if(id !== undefined) {component = <TwinInfo path={path} id={id} meta={meta}/>}
       break
 
     case "create":
@@ -40,7 +40,7 @@ export const TwinsPage: FC<AppRootProps> = ({ query, path, meta }) => {
           break
     
         case "twin":
-          if(id !== undefined) component = <EditFormTwin path={path} meta={meta} id={id}/>
+          if(id !== undefined) {component = <EditFormTwin path={path} meta={meta} id={id}/>}
           break
       }
       break

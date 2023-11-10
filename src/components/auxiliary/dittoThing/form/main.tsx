@@ -1,8 +1,7 @@
 import React, { useState, Fragment, useEffect, useContext, ChangeEvent } from 'react'
-import { AppPluginMeta, KeyValue } from '@grafana/data'
+import { AppPluginMeta, KeyValue, SelectableValue } from '@grafana/data'
 import { IAttribute, IDittoThing, IDittoThingData, IDittoThingForm, IFeature, IThingId } from 'utils/interfaces/dittoThing'
 import { Form, FormAPI, Field, Input, InputControl, Select, Icon, TextArea, Button, HorizontalGroup, RadioButtonGroup, Switch, useTheme2 } from '@grafana/ui'
-import { SelectableValue } from '@grafana/data/types/select'
 import { ISelect } from 'utils/interfaces/select'
 import { ElementHeader } from 'components/auxiliary/general/elementHeader'
 import { basicAttributesConst, enumOptions, options, restrictedAttributesConst, staticAttributesConst } from 'utils/data/consts'
@@ -17,17 +16,17 @@ import { StaticContext } from 'utils/context/staticContext'
 import { CustomNotification } from 'components/auxiliary/general/notification'
 import { INotification } from 'utils/interfaces/notification'
 
-interface parameters {
-    path : string
-    parentId ?: string
-    thingToEdit ?: IDittoThing
-    isType : boolean
+interface Parameters {
+    path: string
+    parentId?: string
+    thingToEdit?: IDittoThing
+    isType: boolean
     meta: AppPluginMeta<KeyValue<any>>
-    funcFromType ?: any
-    funcFromZero : any
+    funcFromType?: any
+    funcFromZero: any
 }
 
-export const ThingForm = ({ path, parentId, thingToEdit, isType, funcFromType, funcFromZero } : parameters) => {
+export const ThingForm = ({ path, parentId, thingToEdit, isType, funcFromType, funcFromZero }: Parameters) => {
     const [lastCurrentThing, setLastCurrentThing] = useState<IDittoThing>({ thingId: "", policyId: "", attributes: {}})
     const [currentThing, setCurrentThing] = useState<IDittoThing>(lastCurrentThing)
     const [thingIdField, setThingIdField] = useState<IThingId>({id: "", namespace: ""})
@@ -78,13 +77,13 @@ export const ThingForm = ({ path, parentId, thingToEdit, isType, funcFromType, f
         })
     }
 
-    const notificationError:INotification = {
+    const notificationError: INotification = {
         state: enumNotification.ERROR,
         title: `The ${title} has not been ${(thingToEdit) ? "edited" : "created"} correctly. `,
         description: "Please check the data you have entered."
     }
 
-    const notificationSuccess:INotification = (thingToEdit) ? {
+    const notificationSuccess: INotification = (thingToEdit) ? {
         state: enumNotification.SUCCESS,
         title: `The ${title} has been edited correctly. `,
         description: `You can leave the page if you don't want to edit any more.`
@@ -103,15 +102,15 @@ export const ThingForm = ({ path, parentId, thingToEdit, isType, funcFromType, f
 // help functions
 // -----------------------------------------------------------------------------------------------
 
-    const setDittoThing = (thing:IDittoThing) => {
+    const setDittoThing = (thing: IDittoThing) => {
         if(thing.attributes) {
             setStaticAttributes(getListPropertiesToObject(thing.attributes, staticAttributesConst))
-            Object.keys(thing.attributes).forEach((key:string) => {
-                if(restrictedAttributesConst.includes(key) || staticAttributesConst.includes(key)) delete thing.attributes[key]
+            Object.keys(thing.attributes).forEach((key: string) => {
+                if(restrictedAttributesConst.includes(key) || staticAttributesConst.includes(key)) {delete thing.attributes[key]}
             })
         }
         const basicAttributes = getListPropertiesToObject(thing.attributes, basicAttributesConst)
-        basicAttributesConst.forEach((key:string) => delete thing.attributes[key])
+        basicAttributesConst.forEach((key: string) => delete thing.attributes[key])
         setCurrentThing({
             ...currentThing,
             thingId: thing.thingId,
@@ -130,7 +129,7 @@ export const ThingForm = ({ path, parentId, thingToEdit, isType, funcFromType, f
         })
     }
 
-    const updateUseStates = (data:{attributes?:any, features?:any, policyId:string}) => {
+    const updateUseStates = (data: {attributes?: any, features?: any, policyId: string}) => {
         setAttributes((data.attributes !== undefined) ? JSONtoIAttributes(data.attributes) : [])
         setFeatures((data.features !== undefined) ? JSONtoIFeatures(data.features) : [])
         setSelectedPolicy({
@@ -139,9 +138,9 @@ export const ThingForm = ({ path, parentId, thingToEdit, isType, funcFromType, f
         })
     }
 
-    const getListPropertiesToObject = (object:any, properties:string[]) => {
-        var res = {}
-        properties.forEach((property:string) => {
+    const getListPropertiesToObject = (object: any, properties: string[]) => {
+        let res = {}
+        properties.forEach((property: string) => {
             if(object.hasOwnProperty(property)){
                 res = {
                     ...res,
@@ -156,9 +155,9 @@ export const ThingForm = ({ path, parentId, thingToEdit, isType, funcFromType, f
 // handles
 // -----------------------------------------------------------------------------------------------
 
-    const handleOnSubmitFinal = (data:IDittoThingForm) => {
+    const handleOnSubmitFinal = (data: IDittoThingForm) => {
         const thingId = currentThing.thingId
-        const finalData:IDittoThingData = {
+        const finalData: IDittoThingData = {
             policyId : currentThing.policyId,
             definition : currentThing.definition,
             attributes : {
@@ -167,7 +166,7 @@ export const ThingForm = ({ path, parentId, thingToEdit, isType, funcFromType, f
             },
             features : currentThing.features
         }
-        var funcToExecute:any = undefined
+        let funcToExecute: any = undefined
         console.log("finalData", JSON.stringify(finalData))
         if(selected === enumOptions.FROM_TYPE && type?.value !== undefined && allowFromType){
             if(customizeType){
@@ -194,14 +193,14 @@ export const ThingForm = ({ path, parentId, thingToEdit, isType, funcFromType, f
         }
     }
 
-    const handleOnChangeThingId = (event:ChangeEvent<HTMLInputElement>) => {
+    const handleOnChangeThingId = (event: ChangeEvent<HTMLInputElement>) => {
         setThingIdField({
             ...thingIdField,
             [event.currentTarget.name] : event.target.value
         })
     }
 
-    const handleOnChangeFrom = (value:number) => {
+    const handleOnChangeFrom = (value: number) => {
         setSelected(value)
         const aux = currentThing
         const auxAttributes = lastCurrentThing.attributes
@@ -215,7 +214,7 @@ export const ThingForm = ({ path, parentId, thingToEdit, isType, funcFromType, f
         updateUseStates({attributes: auxAttributes, features: auxFeatures, policyId: auxPolicyId})
     }
 
-    const handleOnChangeInputAttribute = (event:ChangeEvent<HTMLInputElement>) => {
+    const handleOnChangeInputAttribute = (event: ChangeEvent<HTMLInputElement>) => {
         setCurrentThing({
             ...currentThing,
             attributes : {
@@ -239,10 +238,10 @@ export const ThingForm = ({ path, parentId, thingToEdit, isType, funcFromType, f
     }, [selectedPolicy])
 
     useEffect(() => {
-        var jsonAttributes:any = {}
+        let jsonAttributes: any = {}
         const basicAttributes = getListPropertiesToObject(currentThing.attributes, basicAttributesConst)
         
-        attributes.forEach((item:IAttribute) => jsonAttributes[(item.key)] = item.value)
+        attributes.forEach((item: IAttribute) => jsonAttributes[(item.key)] = item.value)
         setCurrentThing({
             ...currentThing,
             attributes : {
@@ -253,8 +252,8 @@ export const ThingForm = ({ path, parentId, thingToEdit, isType, funcFromType, f
     }, [attributes])
 
     useEffect(() => {
-        var jsonFeatures:any = {}
-        features.forEach((item:IFeature) => jsonFeatures[(item.name)] = { properties : item.properties});
+        let jsonFeatures: any = {}
+        features.forEach((item: IFeature) => jsonFeatures[(item.name)] = { properties : item.properties});
 
         setCurrentThing({
             ...currentThing,
@@ -302,8 +301,8 @@ export const ThingForm = ({ path, parentId, thingToEdit, isType, funcFromType, f
             .catch(() => console.log("error"))
         }
 
-        getAllPoliciesService(context).then((res:string[]) => {
-            setPolicies(res.map((item:string) => {
+        getAllPoliciesService(context).then((res: string[]) => {
+            setPolicies(res.map((item: string) => {
             return {
                 label : item,
                 value : item
@@ -325,11 +324,11 @@ export const ThingForm = ({ path, parentId, thingToEdit, isType, funcFromType, f
         <h2 style={{marginBottom: '0px', paddingBottom: '0px'}}>Edit {title} with id {thingToEdit.thingId}</h2>
         : <h2 style={{marginBottom: '0px', paddingBottom: '0px'}}>Create new {title}</h2> 
 
-    const headerIfIsChild = (parentId != null) ? 
+    const headerIfIsChild = (parentId !== null) ? 
         <h4 style={{color:useTheme2().colors.text.secondary}}>To be child of {title} with id: {parentId}</h4>
         : <div style={{height: '0px'}}></div>
 
-    const typeForm = (control:Control<IDittoThingForm>) => {
+    const typeForm = (control: Control<IDittoThingForm>) => {
         return (
             <Fragment>
                 <Field className="mt-3" label="Type of twin" required={true}>
@@ -355,7 +354,7 @@ export const ThingForm = ({ path, parentId, thingToEdit, isType, funcFromType, f
         )
     }
     
-    const fromRadioButton = (control:Control<IDittoThingForm>) => {
+    const fromRadioButton = (control: Control<IDittoThingForm>) => {
         return (
             <Fragment>
                 <HorizontalGroup justify='center'>
@@ -378,17 +377,17 @@ export const ThingForm = ({ path, parentId, thingToEdit, isType, funcFromType, f
             <div className="row">
                 <div className="col-7">
                     <Form id="finalForm" onSubmit={handleOnSubmitFinal} maxWidth="none" style={{marginTop: '0px', paddingTop: '0px'}}>
-                    {({register, errors, control}:FormAPI<IDittoThingForm>) => {
+                    {({register, errors, control}: FormAPI<IDittoThingForm>) => {
                         return(
                             <Fragment>
                                 <ElementHeader className="mt-5" title="Identification" description={descriptionID} isLegend={true}/>
                                 
-                                <Field label="Namespace" description={descriptionNamespace} required={!thingToEdit} disabled={thingToEdit != undefined}>
-                                    <Input {...register("namespace", { required : !thingToEdit })} disabled={thingToEdit != undefined} type="text" value={thingIdField.namespace} onChange={handleOnChangeThingId}/>
+                                <Field label="Namespace" description={descriptionNamespace} required={!thingToEdit} disabled={thingToEdit !== undefined}>
+                                    <Input {...register("namespace", { required : !thingToEdit })} disabled={thingToEdit !== undefined} type="text" value={thingIdField.namespace} onChange={handleOnChangeThingId}/>
                                 </Field>
 
-                                <Field label="Id" description={descriptionThingId} required={!thingToEdit} disabled={thingToEdit != undefined}>
-                                    <Input {...register("id", { required : !thingToEdit })} type="text" disabled={thingToEdit != undefined} value={thingIdField.id} onChange={handleOnChangeThingId}/>
+                                <Field label="Id" description={descriptionThingId} required={!thingToEdit} disabled={thingToEdit !== undefined}>
+                                    <Input {...register("id", { required : !thingToEdit })} type="text" disabled={thingToEdit !== undefined} value={thingIdField.id} onChange={handleOnChangeThingId}/>
                                 </Field>
                                 
                                 <ElementHeader className="mt-5" title={`${capitalize(title)} information`} description={descriptionInformation} isLegend={true}/>

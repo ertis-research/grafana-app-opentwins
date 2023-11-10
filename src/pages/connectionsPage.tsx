@@ -11,7 +11,7 @@ export const ConnectionsPage: FC<AppRootProps> = ({ query, path, meta }) => {
   const valueMeta = fromMetaToValues(meta)
   path = path + "?tab=connections"
 
-  var component = <div></div>
+  let component = <div></div>
   switch (query["mode"]) {
     case "create":
       component = <div></div>

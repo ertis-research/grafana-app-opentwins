@@ -2,14 +2,14 @@ import React, { Fragment } from 'react'
 import { Button, Input, Field, useTheme2, Form, FormAPI } from '@grafana/ui'
 import { IResource } from 'utils/interfaces/dittoPolicy'
 
-interface parameters {
-    resources : any
-    setResources : any
+interface Parameters {
+    resources: any
+    setResources: any
 }
 
-export const FormToAddFeatureToResources = ({resources, setResources} : parameters) => {
+export const FormToAddFeatureToResources = ({resources, setResources}: Parameters) => {
 
-    const onSubmit = (data:IResource) => {
+    const onSubmit = (data: IResource) => {
         data.erasable = true
         setResources([...resources, data])
         console.log(resources)
@@ -18,7 +18,7 @@ export const FormToAddFeatureToResources = ({resources, setResources} : paramete
     return (
         <div className="my-3 p-3" style={{backgroundColor:useTheme2().colors.background.canvas}}>
             <Form onSubmit={onSubmit}>
-            {({register, errors}:FormAPI<IResource>) => {
+            {({register, errors}: FormAPI<IResource>) => {
                 return (
                     <Fragment>
                         <h5 className="text-capitalize mb-0">Feature</h5>

@@ -1,7 +1,7 @@
 import { fetchExtendedApiForDittoService } from "services/general/fetchExtendedApiService"
-import { IStaticContext } from "utils/context/staticContext"
+import { Context } from "utils/context/staticContext"
 
-export const duplicateTwinService = ( context:IStaticContext, twinId:string, newId:string, patch?:any) => {
+export const duplicateTwinService = ( context: Context, twinId: string, newId: string, patch?: any) => {
     const body = (patch !== undefined) ? JSON.stringify(patch) : ""
     return fetchExtendedApiForDittoService(context, "/twins/" + twinId + "/duplicate/" + newId, {
         method: 'POST',

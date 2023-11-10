@@ -4,21 +4,21 @@ import { Button, Field, Input, Form, FormAPI, FieldSet, List } from '@grafana/ui
 import { ElementHeader } from 'components/auxiliary/general/elementHeader'
 import { ListElement } from 'components/auxiliary/general/listElement'
 
-interface parameters {
-    attributes : IAttribute[]
-    setAttributes : any
-    disabled : boolean
+interface Parameters {
+    attributes: IAttribute[]
+    setAttributes: any
+    disabled: boolean
 }
 
-export const FormAttributes = ({attributes, setAttributes, disabled} : parameters) => {
+export const FormAttributes = ({attributes, setAttributes, disabled}: Parameters) => {
 
     const attributeDescription = "Attributes describe the Thing in more detail and can be of any type. They are typically used to model rather static properties at the Thing level."
 
-    const handleSubmitAttributes = (data:IAttribute) => {
-        var found = false
-        const newAttributes = attributes.map((item:IAttribute) => {
+    const handleSubmitAttributes = (data: IAttribute) => {
+        let found = false
+        const newAttributes = attributes.map((item: IAttribute) => {
             if(item.key === data.key){
-                var updatedItem:any = undefined
+                let updatedItem: any = undefined
                 updatedItem = {
                     ...item,
                     value : data.value
@@ -45,7 +45,7 @@ export const FormAttributes = ({attributes, setAttributes, disabled} : parameter
             <div className="row">
                 <div className="col-6">
                     <Form id="formAttributes" onSubmit={handleSubmitAttributes} maxWidth="none">
-                    {({register, errors}:FormAPI<IAttribute>) => {
+                    {({register, errors}: FormAPI<IAttribute>) => {
                         return (
                             <Fragment>
                                 <FieldSet>

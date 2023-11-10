@@ -1,7 +1,7 @@
 import { fetchExtendedApiForDittoService } from "services/general/fetchExtendedApiService"
-import { IStaticContext } from "utils/context/staticContext"
+import { Context } from "utils/context/staticContext"
 
-export const getAllTypesService = (context:IStaticContext) => {
+export const getAllTypesService = (context: Context) => {
   return fetchExtendedApiForDittoService(context, "/types/all", {
     method: 'GET',
     headers: {

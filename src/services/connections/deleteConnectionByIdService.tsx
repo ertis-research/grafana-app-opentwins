@@ -1,7 +1,7 @@
 import { fetchExtendedApiForDittoDevopsService } from "services/general/fetchExtendedApiDevopsService"
-import { IStaticContext } from "utils/context/staticContext"
+import { Context } from "utils/context/staticContext"
 
-export const deleteConnectionByIdService = (context:IStaticContext, id:string) => {
+export const deleteConnectionByIdService = (context: Context, id: string) => {
   return fetchExtendedApiForDittoDevopsService(context, "/connections/" + id + "/delete", {
     method: 'PUT',
     headers: {

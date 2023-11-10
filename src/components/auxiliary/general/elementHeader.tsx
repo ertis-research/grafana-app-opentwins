@@ -1,14 +1,14 @@
 import React, { Fragment } from 'react'
 import { Legend, useTheme2 } from '@grafana/ui'
 
-interface parameters {
-    title : string
-    description : string
-    isLegend : boolean
-    className ?: string
+interface Parameters {
+    title: string
+    description: string
+    isLegend: boolean
+    className?: string
 }
 
-export const ElementHeader = ({className, title, description, isLegend} : parameters) => {
+export const ElementHeader = ({className, title, description, isLegend}: Parameters) => {
     
     const LegendOrHeading = () => {
         if(isLegend) {

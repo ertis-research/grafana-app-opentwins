@@ -5,34 +5,34 @@ import { getAllPoliciesService } from 'services/policies/getAllPoliciesService'
 import { getPolicyByIdService } from 'services/policies/getPolicyByIdService'
 import { StaticContext } from 'utils/context/staticContext'
 
-interface parameters {
-    path : string
+interface Parameters {
+    path: string
 }
 
-export const ListPolicies = ({path} : parameters) => {
+export const ListPolicies = ({path}: Parameters) => {
 
     const context = useContext(StaticContext)
 
-    const updatePolicy = (setObjects:any, thenFunction?:any) => {
-        getAllPoliciesService(context).then((res:string[]) => {
-            setObjects(res.map((item:string) => {
+    const updatePolicy = (setObjects: any, thenFunction?: any) => {
+        getAllPoliciesService(context).then((res: string[]) => {
+            setObjects(res.map((item: string) => {
                 return {
                     label : item,
                     value : item
                 }
             }))
-            if(thenFunction) thenFunction()
+            if(thenFunction) {thenFunction()}
         }).catch(() => {
             console.log("error")
-            if(thenFunction) thenFunction()
+            if(thenFunction) {thenFunction()}
         })
     }
 
-    const getPolicy = (id:string) => {
+    const getPolicy = (id: string) => {
         return getPolicyByIdService(context, id)
     }
 
-    const deletePolicy = (id:string) => {
+    const deletePolicy = (id: string) => {
         return deletePolicyService(context, id)
     }
     

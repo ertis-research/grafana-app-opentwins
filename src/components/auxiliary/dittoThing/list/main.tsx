@@ -7,19 +7,19 @@ import { ISelect } from 'utils/interfaces/select';
 import { StaticContext } from 'utils/context/staticContext';
 import { attributeSimulationOf } from 'utils/data/consts';
 
-interface parameters {
-    path : string
-    meta : AppPluginMeta<KeyValue<any>>
-    isType : boolean
-    funcThings : any
-    funcDelete : any
-    funcDeleteChildren ?: any
-    parentId ?: string
-    iniCompactMode ?: boolean
-    iniNoSimulations ?: boolean
+interface Parameters {
+    path: string
+    meta: AppPluginMeta<KeyValue<any>>
+    isType: boolean
+    funcThings: any
+    funcDelete: any
+    funcDeleteChildren?: any
+    parentId?: string
+    iniCompactMode?: boolean
+    iniNoSimulations?: boolean
 }
 
-export function MainList({path, meta, isType, funcThings, funcDelete, funcDeleteChildren, parentId, iniCompactMode=false, iniNoSimulations=false } : parameters) {
+export function MainList({path, meta, isType, funcThings, funcDelete, funcDeleteChildren, parentId, iniCompactMode=false, iniNoSimulations=false }: Parameters) {
 
     const [things, setThings] = useState<IDittoThing[]>([])
     const [values, setValues] = useState<ISelect[]>([])
@@ -66,7 +66,7 @@ export function MainList({path, meta, isType, funcThings, funcDelete, funcDelete
         }
     }
 
-    const deleteThing = (funcToExecute:any, context:any, thingId:string) => {
+    const deleteThing = (funcToExecute: any, context: any, thingId: string) => {
         setShowDeleteModal(undefined)
         setShowNotification(enumNotification.LOADING)
         try {
@@ -92,12 +92,12 @@ export function MainList({path, meta, isType, funcThings, funcDelete, funcDelete
 
     const updateThings = () => {
         setShowNotification(enumNotification.LOADING)
-        funcThings().then((res:any) => {
-            if (res.hasOwnProperty("items")) res = res.items
+        funcThings().then((res: any) => {
+            if (res.hasOwnProperty("items")) {res = res.items}
             setThings(res)
             console.log(things)
             if(res !== undefined){
-                setValues(res.map((item:IDittoThing) => {
+                setValues(res.map((item: IDittoThing) => {
                     return {
                         label: item.thingId,
                         value: item.thingId
@@ -109,21 +109,22 @@ export function MainList({path, meta, isType, funcThings, funcDelete, funcDelete
     }
 
     const updateFilteredThings = () => {
-        const filterThings = (noSimulations) ? things.filter((item:any) => !item.hasOwnProperty("attributes") || !item.attributes.hasOwnProperty(attributeSimulationOf)) : things
-        if (value == null || value == undefined) {
+        const filterThings = (noSimulations) ? things.filter((item: any) => !item.hasOwnProperty("attributes") || !item.attributes.hasOwnProperty(attributeSimulationOf)) : things
+        if (value === null || value === undefined) {
             setFilteredThings(filterThings)
         } else {
-            setFilteredThings(filterThings.filter(thing => {return (value.value != undefined) ? thing.thingId.includes(value.value) : true}))
+            setFilteredThings(filterThings.filter(thing => {return (value.value !== undefined) ? thing.thingId.includes(value.value) : true}))
         }
     }
 
-    const handleOnDelete = (e:any, thingId:string) => {
+    const handleOnDelete = (e: any, thingId: string) => {
         e.preventDefault()
         setShowDeleteModal(thingId)
     }
 
     useEffect(() => { //https://www.smashingmagazine.com/2020/06/rest-api-react-fetch-axios/
-        console.log("HOLA")
+        console.log("HOLA 11111")
+        console.log("AAAAAA FUNCIONA CONIO")
         updateThings()
     }, [])
 
@@ -132,7 +133,7 @@ export function MainList({path, meta, isType, funcThings, funcDelete, funcDelete
     }, [things])
 
     useEffect(() => {
-        if(showNotification == enumNotification.HIDE) {
+        if(showNotification === enumNotification.HIDE) {
             updateThings()
         }
     }, [showNotification, showDeleteModal])
@@ -151,7 +152,7 @@ export function MainList({path, meta, isType, funcThings, funcDelete, funcDelete
     useEffect(() => {
     }, [values, showNotification, showDeleteModal])
 
-    const getCard = (item:IDittoThing) => {
+    const getCard = (item: IDittoThing) => {
         return <Card href={path + "&mode=check&id=" + item.thingId}
         style={{height: "100%"}}>
             <Card.Heading >{defaultIfNoExist(item.attributes, "name", item.thingId)} </Card.Heading>
@@ -172,7 +173,7 @@ export function MainList({path, meta, isType, funcThings, funcDelete, funcDelete
         </Card>
     }
 
-    const fullCard = (item:IDittoThing) => {
+    const fullCard = (item: IDittoThing) => {
         return <div className="col-12 col-sm-6 col-md-6 col-lg-4 mb-4" key={item.thingId}>
             <div style={{display: "block", width: "100%"}}>
                 <div style={{display: "inline-block", height: "180px", width:"35%", verticalAlign: "top"}}>
@@ -187,7 +188,7 @@ export function MainList({path, meta, isType, funcThings, funcDelete, funcDelete
         </div>
     }
 
-    const compactCard = (item:IDittoThing) => {
+    const compactCard = (item: IDittoThing) => {
         return <div className="col-6 col-sm-4 col-md-4 col-lg-2 mb-2" key={item.thingId}>
             <div style={{display: "block", width: "100%"}}>
                 {getCard(item)}
@@ -197,13 +198,13 @@ export function MainList({path, meta, isType, funcThings, funcDelete, funcDelete
 
     const thingsMapped = () => {
         const typeOfCard = (compactMode) ? compactCard : fullCard
-        return filteredThings.map((item:IDittoThing) => typeOfCard(item))
+        return filteredThings.map((item: IDittoThing) => typeOfCard(item))
     }
 
-    const switchSimulation = (!things.some((item:any) => item.hasOwnProperty("attributes") && item.attributes.hasOwnProperty(attributeSimulationOf))) ? <div></div> :
+    const switchSimulation = (!things.some((item: any) => item.hasOwnProperty("attributes") && item.attributes.hasOwnProperty(attributeSimulationOf))) ? <div></div> :
         <InlineSwitch value={!noSimulations} onChange={() => setNoSimulations(!noSimulations)} label="Show simulated twins" showLabel={true} className="pb-3"/>
 
-    const noChildren = (showNotification != enumNotification.READY) ? <div></div> :  
+    const noChildren = (showNotification !== enumNotification.READY) ? <div></div> :  
         <VerticalGroup align="center">
             <h5>This twin has no children</h5>
         </VerticalGroup>
@@ -223,11 +224,11 @@ export function MainList({path, meta, isType, funcThings, funcDelete, funcDelete
                         onChange={v => setValue(v)}
                         prefix={<Icon name="search"/>}
                         onInputChange={(v, action) => {
-                            if(action.action == 'set-value' || action.action == 'input-change')
-                            setValue({
+                            if(action.action === 'set-value' || action.action === 'input-change')
+                            {setValue({
                                 label: v,
                                 value: v
-                            })}
+                            })}}
                         }
                         placeholder="Search"
                     />

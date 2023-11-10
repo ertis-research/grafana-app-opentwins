@@ -1,12 +1,12 @@
 import React from 'react'
 import { Card, IconButton } from '@grafana/ui'
 
-export function ListElement(name : string, list : any, setList : any, forEqualKeys : {key: string, value: string}[], disabled : boolean) {
+export function ListElement(name: string, list: any, setList: any, forEqualKeys: Array<{key: string, value: string}>, disabled: boolean) {
 
     const handleOnClickDelete = () => {
-        setList(list.filter((item:any) => {
-            var equal = true
-            var i = 0
+        setList(list.filter((item: any) => {
+            let equal = true
+            let i = 0
             while(i < forEqualKeys.length && equal){
                 const element = forEqualKeys[i]
                 equal = item[element.key] === element.value

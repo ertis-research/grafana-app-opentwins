@@ -9,10 +9,10 @@ import { InformationType } from './subcomponents/information'
 import { getTypeService } from 'services/types/crud/getTypeService'
 
 
-interface parameters {
-    path : string
-    id : string
-    meta : AppPluginMeta<KeyValue<any>>
+interface Parameters {
+    path: string
+    id: string
+    meta: AppPluginMeta<KeyValue<any>>
 }
 
 const Sections = {
@@ -21,7 +21,7 @@ const Sections = {
     Other : "Other"
 }
 
-export function TypeInfo({path, id, meta} : parameters) {
+export function TypeInfo({path, id, meta}: Parameters) {
 
     const [selected, setSelected] = useState('Information');
     const [typeInfo, setTypeInfo] = useState<IDittoThing>({thingId: "", policyId: ""})

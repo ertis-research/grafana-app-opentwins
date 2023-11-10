@@ -11,10 +11,10 @@ import { SimulationList } from './subcomponents/simulationList'
 import { OtherFunctionsTwin } from './subcomponents/otherFunctions'
 
 
-interface parameters {
-    path : string
-    id : string
-    meta : AppPluginMeta<KeyValue<any>>
+interface Parameters {
+    path: string
+    id: string
+    meta: AppPluginMeta<KeyValue<any>>
 }
 
 const Sections = {
@@ -24,7 +24,7 @@ const Sections = {
     Other : "Other"
 }
 
-export function TwinInfo({path, id, meta} : parameters) {
+export function TwinInfo({path, id, meta}: Parameters) {
 
     const [selected, setSelected] = useState('Information');
     const [twinInfo, setTwinInfo] = useState<IDittoThing>({thingId: "", policyId: ""})

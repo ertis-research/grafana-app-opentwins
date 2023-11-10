@@ -3,15 +3,15 @@ import { ConfirmModal, Modal, Spinner, VerticalGroup } from '@grafana/ui'
 import { enumNotification } from 'utils/auxFunctions/general'
 import { INotification } from 'utils/interfaces/notification'
 
-interface parameters {
-    notification : INotification
-    setNotificationFunc : React.Dispatch<React.SetStateAction<INotification>>
+interface Parameters {
+    notification: INotification
+    setNotificationFunc: React.Dispatch<React.SetStateAction<INotification>>
 }
 
-export const CustomNotification = ({notification, setNotificationFunc} : parameters) => {
+export const CustomNotification = ({notification, setNotificationFunc}: Parameters) => {
 
     const hideNotification = () => {
-        if (notification.onDismissFunc) notification.onDismissFunc
+        if (notification.onDismissFunc) {notification.onDismissFunc()}
         setNotificationFunc({state: enumNotification.HIDE, title: ""})
     }
 

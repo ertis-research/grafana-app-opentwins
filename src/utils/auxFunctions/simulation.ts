@@ -2,11 +2,11 @@ import { stringToBoolean, stringToNumber } from './general';
 import { TypesOfField } from "utils/data/consts";
 import { ISimulationContent } from "utils/interfaces/simulation";
 
-export const applyTypesOfFields = (data:{[key:string] : any}, content:ISimulationContent[]) => {
-    var res = {}
+export const applyTypesOfFields = (data: {[key: string]: any}, content: ISimulationContent[]) => {
+    let res = {}
     Object.entries(data).forEach(([key, value]) => {
-        var simContent = content.find(t=>t.name === key)
-        if (simContent != undefined) {
+        let simContent = content.find(t=>t.name === key)
+        if (simContent !== undefined) {
             res = {
                 ...res,
                 [key] : valueToType(value as string, simContent.type)
@@ -16,13 +16,13 @@ export const applyTypesOfFields = (data:{[key:string] : any}, content:ISimulatio
     return res
 }
 
-const valueToType = (str:string, type:TypesOfField) => {
+const valueToType = (str: string, type: TypesOfField) => {
     switch (type) {
         case TypesOfField.ARRAY_BOOLEAN:
-            return stringToArray(str).map((element:string) => stringToBoolean(element))
+            return stringToArray(str).map((element: string) => stringToBoolean(element))
         
         case TypesOfField.ARRAY_NUMBER:
-            return stringToArray(str).map((element:string) => stringToNumber(element))
+            return stringToArray(str).map((element: string) => stringToNumber(element))
         
         case TypesOfField.ARRAY_TEXT:
             return stringToArray(str)
@@ -38,6 +38,6 @@ const valueToType = (str:string, type:TypesOfField) => {
     }
 }
 
-const stringToArray = (str:string) => {
+const stringToArray = (str: string) => {
     return str.split(",")
 }

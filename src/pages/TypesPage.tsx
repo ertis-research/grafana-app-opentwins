@@ -15,10 +15,10 @@ export const TypesPage: FC<AppRootProps> = ({ query, path, meta }) => {
   const valueMeta = fromMetaToValues(meta)
   path = path + "?tab=types"
 
-  var component = <ListTypes path={path} meta={meta}/> //default
+  let component = <ListTypes path={path} meta={meta}/> //default
   switch (query["mode"]) {
     case "check":
-      if(id !== undefined) component = <TypeInfo path={path} id={id} meta={meta}/>
+      if(id !== undefined) {component = <TypeInfo path={path} id={id} meta={meta}/>}
       break
 
     case "create":
@@ -26,7 +26,7 @@ export const TypesPage: FC<AppRootProps> = ({ query, path, meta }) => {
       break
 
     case "edit":
-      if(id !== undefined) component = <EditFormType path={path} meta={meta} id={id}/>
+      if(id !== undefined) {component = <EditFormType path={path} meta={meta} id={id}/>}
       break
   }
 

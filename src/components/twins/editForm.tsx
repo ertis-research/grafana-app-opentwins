@@ -6,24 +6,24 @@ import { getTwinService } from 'services/twins/crud/getTwinService'
 import { StaticContext } from 'utils/context/staticContext'
 import { IDittoThing, IDittoThingData } from 'utils/interfaces/dittoThing'
 
-interface parameters {
-    path : string
-    id : string
+interface Parameters {
+    path: string
+    id: string
     meta: AppPluginMeta<KeyValue<any>>
 }
 
-export const EditFormTwin = ({ path, meta, id } : parameters) => {
+export const EditFormTwin = ({ path, meta, id }: Parameters) => {
 
     const [twinInfo, setTwinInfo] = useState<IDittoThing>()
 
     const context = useContext(StaticContext)
 
-    const handleEditTwin = (twinId:string, data:IDittoThingData) => {
+    const handleEditTwin = (twinId: string, data: IDittoThingData) => {
         return createOrUpdateTwinService(context, twinId, data)
     }
 
     useEffect(() => {
-        getTwinService(context, id).then((info:IDittoThing) => {
+        getTwinService(context, id).then((info: IDittoThing) => {
             setTwinInfo(info)
         })
     }, [id])

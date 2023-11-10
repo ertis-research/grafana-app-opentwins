@@ -6,34 +6,34 @@ import { getConnectionByIdService } from 'services/connections/getConnectionById
 import { StaticContext } from 'utils/context/staticContext'
 import { ExtraButtonsConnection } from '../extraButtons'
 
-interface parameters {
-    path : string
+interface Parameters {
+    path: string
 }
 
-export const ListConnections = ({path} : parameters) => {
+export const ListConnections = ({path}: Parameters) => {
 
     const context = useContext(StaticContext)
 
-    const updateConnections = (setObjects:any, thenFunction?:any) => {
-        getAllConnectionIdsService(context).then((res:{id: string, name: string}[]) => {
-            setObjects(res.map(({id, name} : {id: string, name: string}) => {
+    const updateConnections = (setObjects: any, thenFunction?: any) => {
+        getAllConnectionIdsService(context).then((res: Array<{id: string, name: string}>) => {
+            setObjects(res.map(({id, name}: {id: string, name: string}) => {
                 return {
                     label : name,
                     value : id
                 }
             }))
-            if(thenFunction) thenFunction()
+            if(thenFunction) {thenFunction()}
         }).catch(() => {
             console.log("error")
-            if(thenFunction) thenFunction()
+            if(thenFunction) {thenFunction()}
         })
     }
 
-    const getConnection = (id:string) => {
+    const getConnection = (id: string) => {
         return getConnectionByIdService(context, id)
     }
 
-    const deleteConnection = (id:string) => {
+    const deleteConnection = (id: string) => {
         return deleteConnectionByIdService(context, id)
     }
     

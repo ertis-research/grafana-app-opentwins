@@ -5,12 +5,12 @@ import { getAllRootTypesService } from 'services/types/getAllRootTypesService'
 import { deleteTypeService } from 'services/types/crud/deleteTypeService'
 import { StaticContext } from 'utils/context/staticContext'
 
-interface parameters {
-    path : string
-    meta : AppPluginMeta<KeyValue<any>>
+interface Parameters {
+    path: string
+    meta: AppPluginMeta<KeyValue<any>>
 }
 
-export function ListTypes({ path, meta } : parameters) {
+export function ListTypes({ path, meta }: Parameters) {
 
     const context = useContext(StaticContext)
 

@@ -6,12 +6,12 @@ import { deleteTwinService } from 'services/twins/crud/deleteTwinService'
 import { deleteTwinWithChildrenService } from 'services/twins/children/deleteTwinWithChildrenService'
 import { StaticContext } from 'utils/context/staticContext'
 
-interface parameters {
-    path : string
-    meta : AppPluginMeta<KeyValue<any>>
+interface Parameters {
+    path: string
+    meta: AppPluginMeta<KeyValue<any>>
 }
 
-export function ListTwins({path, meta } : parameters) {
+export function ListTwins({path, meta }: Parameters) {
 
     const context = useContext(StaticContext)
 

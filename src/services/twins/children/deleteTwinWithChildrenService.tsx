@@ -1,7 +1,7 @@
 import { fetchExtendedApiForDittoService } from "services/general/fetchExtendedApiService"
-import { IStaticContext } from "utils/context/staticContext"
+import { Context } from "utils/context/staticContext"
 
-export const deleteTwinWithChildrenService = (context:IStaticContext, twinId : string ) => {
+export const deleteTwinWithChildrenService = (context: Context, twinId: string ) => {
   return fetchExtendedApiForDittoService(context, "/twins/" + twinId + "/children", {
     method: 'DELETE',
     headers: {

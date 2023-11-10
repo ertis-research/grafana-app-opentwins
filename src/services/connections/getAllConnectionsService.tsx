@@ -1,7 +1,7 @@
 import { fetchExtendedApiForDittoDevopsService } from "services/general/fetchExtendedApiDevopsService"
-import { IStaticContext } from "utils/context/staticContext"
+import { Context } from "utils/context/staticContext"
 
-export const getAllConnectionIdsService = (context:IStaticContext) => {
+export const getAllConnectionIdsService = (context: Context) => {
   return fetchExtendedApiForDittoDevopsService(context, "/connections/ids", {
     method: 'GET',
     headers: {

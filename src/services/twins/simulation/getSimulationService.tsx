@@ -1,7 +1,7 @@
 import { fetchDittoAPIService } from "services/general/fetchDittoAPIService"
-import { IStaticContext } from "utils/context/staticContext"
+import { Context } from "utils/context/staticContext"
 
-export const getSimulationService = (context:IStaticContext, twinId:string, id:string ) => {
+export const getSimulationService = (context: Context, twinId: string, id: string ) => {
     return fetchDittoAPIService(context, "/things/" + twinId + "/attributes/_simulations/" + id, {
         method: 'GET',
         headers: {

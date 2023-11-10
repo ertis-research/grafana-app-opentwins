@@ -4,9 +4,9 @@ import { ISimulationAttributes } from "utils/interfaces/simulation";
 import { fetchService } from "../../general/fetchService";
 
 
-export const sendSimulationRequest = async (attributes:ISimulationAttributes, data:{[key:string] : any}) => {
+export const sendSimulationRequest = async (attributes: ISimulationAttributes, data: {[key: string]: any}) => {
     console.log(data)
-    var body:any = undefined
+    let body: any = undefined
 
     if(attributes.contentType && attributes.content){
         switch (attributes.contentType) {

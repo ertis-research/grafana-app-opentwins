@@ -1,7 +1,7 @@
-import { IStaticContext } from "utils/context/staticContext"
+import { Context } from "utils/context/staticContext"
 import { fetchService } from "./fetchService"
 
-export function fetchExtendedApiForDittoDevopsService( context:IStaticContext, url:string, init:RequestInit) {
+export function fetchExtendedApiForDittoDevopsService( context: Context, url: string, init: RequestInit) {
     if(context.ditto_extended_endpoint !== ''){
         return fetchService(context.ditto_extended_endpoint + url, init)
     } else {

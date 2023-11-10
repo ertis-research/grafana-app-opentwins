@@ -1,7 +1,7 @@
 import { fetchDittoAPIService } from "services/general/fetchDittoAPIService"
-import { IStaticContext } from "utils/context/staticContext"
+import { Context } from "utils/context/staticContext"
 
-export const getPolicyByIdService = async ( context:IStaticContext, policyId : string ) => {
+export const getPolicyByIdService = async ( context: Context, policyId: string ) => {
   return fetchDittoAPIService(context, "/policies/" + policyId, {
     method: 'GET',
     headers: {

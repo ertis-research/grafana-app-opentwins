@@ -4,16 +4,16 @@ import { ISubject } from 'utils/interfaces/dittoPolicy'
 import { ListElement } from 'components/auxiliary/general/listElement'
 import { ElementHeader } from 'components/auxiliary/general/elementHeader'
 
-interface parameters {
-    subjects : ISubject[]
-    setSubjects : any
+interface Parameters {
+    subjects: ISubject[]
+    setSubjects: any
 }
 
-export const FormSubjects = ({subjects, setSubjects} : parameters) => {
+export const FormSubjects = ({subjects, setSubjects}: Parameters) => {
 
     const subjectDescription = "Who gets permissions granted/revoked on the resources of a policy entry"
 
-    const handleOnSubmitSubject = (data:ISubject) => {
+    const handleOnSubmitSubject = (data: ISubject) => {
         setSubjects([
             ...subjects,
             data
@@ -32,7 +32,7 @@ export const FormSubjects = ({subjects, setSubjects} : parameters) => {
                 <div className="col-8">
                     {/*<Checkbox className="mb-3" label="Add current user as subject" onChange={handleOnChangeCurrentUserCheckbox}/>*/}
                     <Form id="subjectForm" onSubmit={handleOnSubmitSubject}>
-                    {({register, errors}:FormAPI<ISubject>) => {
+                    {({register, errors}: FormAPI<ISubject>) => {
                         return(
                             <Fragment>
                                 <FieldSet>

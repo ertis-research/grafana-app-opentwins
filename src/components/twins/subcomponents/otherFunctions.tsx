@@ -6,18 +6,18 @@ import { duplicateTwinService } from 'services/twins/duplicateTwinService'
 import { enumNotification } from 'utils/auxFunctions/general'
 
 
-interface parameters {
-    path : string
-    id : string
-    meta : AppPluginMeta<KeyValue<any>>
+interface Parameters {
+    path: string
+    id: string
+    meta: AppPluginMeta<KeyValue<any>>
 }
 
-interface IDuplicateForm {
-    id : string,
-    namespace : string
+interface DuplicateForm {
+    id: string,
+    namespace: string
 }
 
-export function OtherFunctionsTwin({ path, id, meta } : parameters) {
+export function OtherFunctionsTwin({ path, id, meta }: Parameters) {
 
     const context = useContext(StaticContext)
     const [notificationText, setNotificationText] = useState({title: "", description: ""})
@@ -44,7 +44,7 @@ export function OtherFunctionsTwin({ path, id, meta } : parameters) {
         }
     }
 
-    const handleDuplicateTwin = (data:IDuplicateForm) => {
+    const handleDuplicateTwin = (data: DuplicateForm) => {
         setShowNotification(enumNotification.LOADING)
         duplicateTwinService(context, id, data.namespace + ":" + data.id).then(() => {
             setNotificationText(duplicateSuccess)
@@ -63,17 +63,17 @@ export function OtherFunctionsTwin({ path, id, meta } : parameters) {
             <h5>Duplicate twin</h5>
             <p>{descriptionDuplicate}</p>
             <Form id="formDuplicate" onSubmit={handleDuplicateTwin} maxWidth="none">
-                {({register, errors, control}:FormAPI<IDuplicateForm>) => {
+                {({register, errors, control}: FormAPI<DuplicateForm>) => {
                 return (
                     <FieldSet>
-                        <Field label="Namespace" required={true} disabled={showNotification != enumNotification.HIDE}>
-                            <Input {...register("namespace", { required : true })} type="text" disabled={showNotification != enumNotification.HIDE}/>
+                        <Field label="Namespace" required={true} disabled={showNotification !== enumNotification.HIDE}>
+                            <Input {...register("namespace", { required : true })} type="text" disabled={showNotification !== enumNotification.HIDE}/>
                         </Field>
-                        <Field label="Id" required={true} disabled={showNotification != enumNotification.HIDE}>
-                            <Input {...register("id", { required : true })} type="text" disabled={showNotification != enumNotification.HIDE}/>
+                        <Field label="Id" required={true} disabled={showNotification !== enumNotification.HIDE}>
+                            <Input {...register("id", { required : true })} type="text" disabled={showNotification !== enumNotification.HIDE}/>
                         </Field>
                         {notification()}
-                        <Button type="submit" variant="primary" form="formDuplicate" disabled={showNotification != enumNotification.HIDE}>Duplicate</Button>
+                        <Button type="submit" variant="primary" form="formDuplicate" disabled={showNotification !== enumNotification.HIDE}>Duplicate</Button>
                     </FieldSet>
                 )}}
             </Form>

@@ -1,7 +1,7 @@
 import { fetchExtendedApiForDittoService } from "services/general/fetchExtendedApiService"
-import { IStaticContext } from "utils/context/staticContext"
+import { Context } from "utils/context/staticContext"
 
-export const getChildrenOfTwinService = ( context:IStaticContext, twinId:string ) => {
+export const getChildrenOfTwinService = ( context: Context, twinId: string ) => {
   return fetchExtendedApiForDittoService(context, '/twins/' + twinId + '/children', {
   //return fetchDittoService(context, '/search/things?filter=and(not(eq(attributes/_isType,true)),eq(attributes/_parents,"' + twinId + '"))', {
     method: 'GET',

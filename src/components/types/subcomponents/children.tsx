@@ -5,13 +5,13 @@ import { StaticContext } from 'utils/context/staticContext'
 import { deleteTypeService } from 'services/types/crud/deleteTypeService'
 import { getChildrenOfTypeService } from 'services/types/children/getChildrenOfTypeService'
 
-interface parameters {
-    path : string
-    id : string
-    meta : AppPluginMeta<KeyValue<any>>
+interface Parameters {
+    path: string
+    id: string
+    meta: AppPluginMeta<KeyValue<any>>
 }
 
-export function ListChildrenType({ path, id, meta } : parameters) {
+export function ListChildrenType({ path, id, meta }: Parameters) {
 
     const context = useContext(StaticContext)
 
