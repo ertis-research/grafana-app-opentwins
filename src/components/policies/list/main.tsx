@@ -15,6 +15,7 @@ export const ListPolicies = ({path}: Parameters) => {
 
     const updatePolicy = (setObjects: any, thenFunction?: any) => {
         getAllPoliciesService(context).then((res: string[]) => {
+            console.log("RES", res)
             setObjects(res.map((item: string) => {
                 return {
                     label : item,

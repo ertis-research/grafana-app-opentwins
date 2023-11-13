@@ -33,11 +33,6 @@ export const SelectWithTextArea = ({ path, name, getByIdFunc, getAllFunc, delete
     const [selectedObject, setselectedObject] = useState<any>(undefined)
     const [showNotification, setShowNotification] = useState<INotification>({state: enumNotification.HIDE, title: ""})
 
-
-    const handleOnClickEdit = () => {
-
-    }
-
     const handleOnConfirmDelete = () => {
         if(value?.value !== undefined){
             setShowNotification({state: enumNotification.LOADING, title: ""})
@@ -114,10 +109,10 @@ export const SelectWithTextArea = ({ path, name, getByIdFunc, getAllFunc, delete
     const extraButtons = (!ExtraButtonComponent) ? <div></div> :
         <ExtraButtonComponent selectedConnection={selectedObject} selectedId={value} isDisabled={isDisabled} setShowNotification={setShowNotification} />
 
-    const buttons = (selectedObject) ? 
+    const buttons = (selectedObject && value !== undefined) ? 
         <HorizontalGroup justify="center">
             {extraButtons}
-            <Button variant="secondary" icon="pen" disabled={isDisabled} onClick={handleOnClickEdit}>Edit</Button>
+            <LinkButton variant="secondary" href={path + "&id=" + value.value + "&mode=edit"} icon="pen" disabled={showNotification.state !== enumNotification.READY}>Edit</LinkButton>
             <Button variant="destructive" icon="trash-alt" disabled={isDisabled} onClick={handleOnClickDelete}>Delete</Button>
         </HorizontalGroup>
         : <div></div>

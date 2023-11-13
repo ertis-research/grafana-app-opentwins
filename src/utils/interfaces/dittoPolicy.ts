@@ -1,21 +1,21 @@
-export interface IPolicy {
+export interface Policy {
     policyId: string,
-    entries?: JSON[]
+    entries?: any[]
 }
 
-export interface IEntry {
+export interface Entry {
     name: string;
-    subjects?: ISubject[]
-    resources?: IResource[]
+    subjects: Subject[]
+    resources: Resource[]
 }
 
-export interface ISubject {
+export interface Subject {
     subjectIssuer: string
     subject: string
     type: string
 }
 
-export interface IResource {
+export interface Resource {
     name: string
     description?: string | undefined
     read: boolean | undefined

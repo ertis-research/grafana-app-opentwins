@@ -1,10 +1,10 @@
 import React, { useState, FormEvent, useEffect } from 'react'
 import { Checkbox, IconButton, useTheme2 } from '@grafana/ui'
-import { IResource } from 'utils/interfaces/dittoPolicy'
+import { Resource } from 'utils/interfaces/dittoPolicy'
 
 interface Parameters {
-    resource: IResource
-    resources: IResource[]
+    resource: Resource
+    resources: Resource[]
     setResources: any
 }
 
@@ -19,7 +19,7 @@ export const Resource_permissions = ({resource, resources, setResources}: Parame
 
     useEffect(() => {
         setResources(
-            resources.map((item: IResource) => {
+            resources.map((item: Resource) => {
                 if(item.name === resource.name){
                     return {
                         ...item,
@@ -33,7 +33,7 @@ export const Resource_permissions = ({resource, resources, setResources}: Parame
 
     useEffect(() => {
         setResources(
-            resources.map((item: IResource) => {
+            resources.map((item: Resource) => {
                 if(item.name === resource.name){
                     return {
                         ...item,
