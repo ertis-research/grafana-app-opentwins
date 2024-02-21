@@ -47,11 +47,8 @@ export const SimulationForm = ({path, meta, id, simulationId}: Parameters) => {
     const descriptionError = "Please check the data you have entered and try again."
 
     const handleOnSubmit = (data: ISimulationAttributesForm) => {
-        console.log("HOLA")
         setShowNotification(enumNotification.LOADING)
-        console.log("HOLA2")
         createOrUpdateSimulationService(context, id, actualSimulation).then(() => {
-            console.log("creado")
             setShowNotification(enumNotification.SUCCESS)
         }).catch(() => {
             setShowNotification(enumNotification.ERROR)

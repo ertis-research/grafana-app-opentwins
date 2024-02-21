@@ -1,11 +1,13 @@
-import { fetchExtendedApiForDittoDevopsService } from "services/general/fetchExtendedApiDevopsService"
+import { fetchDittoAPIService } from "services/general/fetchDittoAPIService"
 import { Context } from "utils/context/staticContext"
 
 export const closeConnectionService = (context: Context, id: string) => {
-  return fetchExtendedApiForDittoDevopsService(context, "/connections/" + id + "/close", {
-    method: 'PUT',
+  return fetchDittoAPIService(context, "/connections/" + id + "/command", {
+    method: 'POST',
     headers: {
-      "Authorization": 'Basic '+btoa('ditto:ditto')
-    }
+      "Authorization": 'Basic '+btoa('devops:foobar'),
+      "Content-Type": "text/plain"
+    },
+    body: 'connectivity.commands:closeConnection'
   })
 }

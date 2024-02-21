@@ -17,13 +17,13 @@ export const CreateFormType = ({ path, meta, id }: Parameters) => {
     const context = useContext(StaticContext)
 
     if (id !== undefined) {
-        const handleCreateChildren = (thingId: string, data?: IDittoThingData) => {
-            return createOrUpdateTypeToBeChildService(context, id, thingId, data)
+        const handleCreateChildren = (thingId: string, data: IDittoThingData, num?: number) => {
+            return createOrUpdateTypeToBeChildService(context, id, thingId, (num) ? num : 1, data)
         }
         return <ThingForm path={path} meta={meta} parentId={id} isType={true} funcFromZero={handleCreateChildren}/>
 
     } else {
-        const handleCreateNew = (thingId: string, data: IDittoThingData ) => {
+        const handleCreateNew = (thingId: string, data: IDittoThingData) => {
             return createOrUpdateTypeService(context, thingId, data)
         }
         return <ThingForm path={path} meta={meta} isType={true} funcFromZero={handleCreateNew}/>

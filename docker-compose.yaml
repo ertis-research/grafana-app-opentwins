@@ -2,7 +2,7 @@ version: '3.0'
 
 services:
   grafana:
-    container_name: 'ertis-digitaltwin-app'
+    container_name: 'ertis-opentwins'
     platform: "linux/amd64"
     build:
       context: ./.config
@@ -12,5 +12,5 @@ services:
     ports:
       - 3000:3000/tcp
     volumes:
-      - ./dist:/var/lib/grafana/plugins/ertis-digitaltwin-app
+      - ./dist:/var/lib/grafana/plugins/ertis-opentwins
       - ./provisioning:/etc/grafana/provisioning

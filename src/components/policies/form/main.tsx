@@ -97,7 +97,6 @@ export const FormPolicy = ({path, id}: Parameters ) => {
                     resources : newResources
                 }
             })
-            console.log("ENTRIES", entries)
             setCurrentPolicy({...currentPolicy, policyId: policy.policyId})
             setEntries(entries)
         }
@@ -120,7 +119,6 @@ export const FormPolicy = ({path, id}: Parameters ) => {
     useEffect(() => {
         let provEntries: any = {}
         entries.forEach((item) => {
-            console.log("ENTRIES ANTES DE AA", entries)
             let provSubjects: any = {}
             let provResources: any = {}
             entry.subjects.forEach((item) => provSubjects[item.subjectIssuer + ":" + item.subject]={type : item.type})
@@ -151,8 +149,6 @@ export const FormPolicy = ({path, id}: Parameters ) => {
                 resources : provResources
             }
         })
-
-        console.log("PROVENTRIES", provEntries)
 
         setCurrentPolicy({
             ...currentPolicy,

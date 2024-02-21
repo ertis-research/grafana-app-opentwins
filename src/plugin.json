@@ -2,7 +2,7 @@
   "$schema": "https://raw.githubusercontent.com/grafana/grafana/master/docs/sources/developers/plugins/plugin.schema.json",
   "type": "app",
   "name": "OpenTwins",
-  "id": "ertis-digitaltwin-app",
+  "id": "ertis-opentwins",
 
   "info": {
     "description": "Grafana App Plugin For Digital Twins",
@@ -15,8 +15,8 @@
       "large": "img/logo.svg"
     },
     "links": [
-      { "name": "Website", "url": "https://github.com/grafana/grafana-starter-app" },
-      { "name": "License", "url": "https://github.com/grafana/grafana-starter-app/blob/master/LICENSE" }
+      { "name": "Website", "url": "https://github.com/ertis-research/OpenTwins" },
+      { "name": "License", "url": "https://github.com/ertis-research/OpenTwins?tab=Apache-2.0-1-ov-file#readme" }
     ],
     "screenshots": [],
     "version": "%VERSION%",
@@ -27,7 +27,7 @@
     {
       "type": "page",
       "name": "Twins",
-      "path": "/a/ertis-digitaltwin-app",
+      "path": "/a/ertis-opentwins",
       "role": "Viewer",
       "addToNav": true,
       "defaultNav": true,
@@ -36,7 +36,7 @@
     {
       "type": "page",
       "name": "Types",
-      "path": "/a/ertis-digitaltwin-app/?tab=types",
+      "path": "/a/ertis-opentwins/?tab=types",
       "role": "Viewer",
       "addToNav": true,
       "icon": "folder-plus"
@@ -44,7 +44,7 @@
     {
       "type": "page",
       "name": "Policies",
-      "path": "/a/ertis-digitaltwin-app/?tab=policies",
+      "path": "/a/ertis-opentwins/?tab=policies",
       "role": "Viewer",
       "addToNav": true,
       "icon": "shield"
@@ -52,7 +52,7 @@
     {
       "type": "page",
       "name": "Connections",
-      "path": "/a/ertis-digitaltwin-app/?tab=connections",
+      "path": "/a/ertis-opentwins/?tab=connections",
       "role": "Viewer",
       "addToNav": true,
       "icon": "plug"
@@ -60,7 +60,7 @@
     {
       "type": "page",
       "name": "Config",
-      "path": "/plugins/ertis-digitaltwin-app/?page=config",
+      "path": "/plugins/ertis-opentwins/?page=config",
       "role": "Admin",
       "addToNav": true,
       "icon" : "sliders-v-alt"

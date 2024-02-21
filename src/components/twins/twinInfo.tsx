@@ -9,6 +9,9 @@ import { defaultIfNoExist } from 'utils/auxFunctions/general'
 import { InformationTwin } from './subcomponents/information'
 import { SimulationList } from './subcomponents/simulationList'
 import { OtherFunctionsTwin } from './subcomponents/otherFunctions'
+import { ButtonsInfo } from 'components/auxiliary/dittoThing/form/subcomponents/buttonsInfo'
+import { deleteTwinService } from 'services/twins/crud/deleteTwinService'
+import { deleteTwinWithChildrenService } from 'services/twins/children/deleteTwinWithChildrenService'
 
 
 interface Parameters {
@@ -73,6 +76,7 @@ export function TwinInfo({path, id, meta}: Parameters) {
                         <h5>{twinInfo.thingId}</h5>
                     </VerticalGroup>
                 </HorizontalGroup>
+                <ButtonsInfo path={path} thingId={twinInfo.thingId} isType={false} funcDelete={deleteTwinService} funcDeleteChildren={deleteTwinWithChildrenService} />
             </div>
             <HorizontalGroup justify='center'>
                 {Object.values(Sections).map((item) => (

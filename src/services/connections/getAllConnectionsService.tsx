@@ -1,11 +1,11 @@
-import { fetchExtendedApiForDittoDevopsService } from "services/general/fetchExtendedApiDevopsService"
+import { fetchDittoAPIService } from "services/general/fetchDittoAPIService"
 import { Context } from "utils/context/staticContext"
 
 export const getAllConnectionIdsService = (context: Context) => {
-  return fetchExtendedApiForDittoDevopsService(context, "/connections/ids", {
+  return fetchDittoAPIService(context, "/connections", {
     method: 'GET',
     headers: {
-      "Authorization": 'Basic '+btoa('ditto:ditto'),
+      "Authorization": 'Basic '+btoa('devops:foobar'),
       "Accept": "application/json"
     }
   })

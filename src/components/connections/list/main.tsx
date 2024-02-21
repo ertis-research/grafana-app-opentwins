@@ -45,6 +45,7 @@ export const ListConnections = ({path}: Parameters) => {
             getAllFunc={updateConnections}
             deleteFunc={deleteConnection}
             ExtraButtonComponent={ExtraButtonsConnection}
+            disableCreate={true}
         />
     )
     

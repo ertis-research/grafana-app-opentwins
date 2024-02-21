@@ -23,7 +23,7 @@ interface Parameters {
     isType: boolean
     meta: AppPluginMeta<KeyValue<any>>
     funcFromType?: any
-    funcFromZero: any
+    funcFromZero: (thingId: string, data: IDittoThingData, num?: number) => Promise<any>
 }
 
 export const ThingForm = ({ path, parentId, thingToEdit, isType, funcFromType, funcFromZero }: Parameters) => {
@@ -40,6 +40,8 @@ export const ThingForm = ({ path, parentId, thingToEdit, isType, funcFromType, f
     const [selectedPolicy, setSelectedPolicy] = useState<SelectableValue<string>>()
     const [showNotification, setShowNotification] = useState<INotification>({state: enumNotification.HIDE, title: ""})
     const [staticAttributes, setStaticAttributes] = useState<any>([])
+    const [numChildren, setNumChildren] = useState<number>(1)
+
 
     const context = useContext(StaticContext)
 
@@ -48,7 +50,8 @@ export const ThingForm = ({ path, parentId, thingToEdit, isType, funcFromType, f
     const descriptionID = "Identity associated with the authentication credentials"
     const descriptionInformation = "Basic information for creating the Ditto thing"
     const descriptionThingId = `Thing ID. This must be unique within the scope of the ${title}. The name of the ${title} will precede it automatically.`
-    const descriptionNamespace = "AA"
+    const descriptionNamespace = `Name of the context to which the ${title} belongs.`
+    const descriptionChildren = "Number of children of this type owned by parent"
 
     
 // -----------------------------------------------------------------------------------------------
@@ -118,7 +121,8 @@ export const ThingForm = ({ path, parentId, thingToEdit, isType, funcFromType, f
             attributes: {
                 ...basicAttributes,
                 ...currentThing.attributes
-            }
+            },
+            features: thing.features
         })
         setThingIdField(splitThingId(thing.thingId))
 
@@ -174,6 +178,8 @@ export const ThingForm = ({ path, parentId, thingToEdit, isType, funcFromType, f
             } else {
                 funcToExecute = funcFromType(thingId, type.value.thingId)
             }
+        } else if(isType) {
+            funcToExecute = funcFromZero(thingId, finalData, numChildren)
         } else {
             funcToExecute = funcFromZero(thingId, finalData)
         }
@@ -198,6 +204,10 @@ export const ThingForm = ({ path, parentId, thingToEdit, isType, funcFromType, f
             ...thingIdField,
             [event.currentTarget.name] : event.target.value
         })
+    }
+
+    const handleOnChangeNumChildren = (event: ChangeEvent<HTMLInputElement>) => {
+        setNumChildren(Number(event.target.value))
     }
 
     const handleOnChangeFrom = (value: number) => {
@@ -324,7 +334,7 @@ export const ThingForm = ({ path, parentId, thingToEdit, isType, funcFromType, f
         <h2 style={{marginBottom: '0px', paddingBottom: '0px'}}>Edit {title} with id {thingToEdit.thingId}</h2>
         : <h2 style={{marginBottom: '0px', paddingBottom: '0px'}}>Create new {title}</h2> 
 
-    const headerIfIsChild = (parentId !== null) ? 
+    const headerIfIsChild = (parentId !== null && parentId !== undefined) ? 
         <h4 style={{color:useTheme2().colors.text.secondary}}>To be child of {title} with id: {parentId}</h4>
         : <div style={{height: '0px'}}></div>
 
@@ -369,6 +379,12 @@ export const ThingForm = ({ path, parentId, thingToEdit, isType, funcFromType, f
         )
     }
 
+    const numChildrenInput = (parentId !== null && parentId !== undefined && isType) ? 
+        <Field label="Number of children" description={descriptionChildren} required={true} className="mt-4">
+            <Input type="number" value={numChildren} onChange={handleOnChangeNumChildren}/>
+        </Field>
+        : <div></div>
+
     return (
         <Fragment>
             <CustomNotification notification={showNotification} setNotificationFunc={setShowNotification}/>
@@ -380,6 +396,7 @@ export const ThingForm = ({ path, parentId, thingToEdit, isType, funcFromType, f
                     {({register, errors, control}: FormAPI<IDittoThingForm>) => {
                         return(
                             <Fragment>
+                                {numChildrenInput}
                                 <ElementHeader className="mt-5" title="Identification" description={descriptionID} isLegend={true}/>
                                 
                                 <Field label="Namespace" description={descriptionNamespace} required={!thingToEdit} disabled={thingToEdit !== undefined}>

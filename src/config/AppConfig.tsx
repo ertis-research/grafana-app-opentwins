@@ -23,24 +23,32 @@ interface Props extends PluginConfigPageProps<AppPluginMeta<JsonData>> { }
 export const AppConfig = ({ plugin }: Props) => {
     const { enabled, pinned, jsonData } = plugin.meta;
     const [state, setState] = useState<State>({
-        dittoURL: '',
-        extendedURL: '',
-        dittoUsername: '',
-        dittoPassword: ''
+        dittoURL: (jsonData && jsonData.dittoURL) ? jsonData.dittoURL : '',
+        extendedURL: (jsonData && jsonData.extendedURL) ? jsonData.extendedURL : '',
+        dittoUsername: (jsonData && jsonData.dittoUsername) ? jsonData.dittoUsername : '',
+        dittoPassword: (jsonData && jsonData.dittoPassword) ? jsonData.dittoPassword : ''
     });
 
 
     const onChangeDittoURL = (event: ChangeEvent<HTMLInputElement>) => {
+        let url = event.target.value
+        if (url.endsWith("/")) { 
+            event.target.value.slice(0, -1)
+        }
         setState({
             ...state,
-            dittoURL: event.target.value.trim(),
+            dittoURL: url.trim(),
         });
     };
 
     const onChangeExtendedAPI = (event: ChangeEvent<HTMLInputElement>) => {
+        let url = event.target.value
+        if (url.endsWith("/")) { 
+            event.target.value.slice(0, -1)
+        }
         setState({
             ...state,
-            extendedURL: event.target.value.trim(),
+            extendedURL: url.trim(),
         });
     };
 
