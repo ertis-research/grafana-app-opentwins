@@ -1,6 +1,6 @@
 import React, { useState, useEffect, Fragment, useContext } from 'react';
 import { IDittoThing } from 'utils/interfaces/dittoThing';
-import { Card, LinkButton, IconButton, Select, Icon, ConfirmModal, Modal, Spinner, VerticalGroup, InlineSwitch, InlineFieldRow, useTheme2 } from '@grafana/ui'
+import { LinkButton, IconButton, Select, Icon, ConfirmModal, Modal, Spinner, VerticalGroup, InlineSwitch, InlineFieldRow, useTheme2 } from '@grafana/ui'
 import { AppPluginMeta, KeyValue, SelectableValue } from '@grafana/data';
 import { defaultIfNoExist, enumNotification, imageIsUndefined } from 'utils/auxFunctions/general';
 import { ISelect } from 'utils/interfaces/select';
@@ -160,23 +160,21 @@ export function MainList({ path, meta, isType, funcThings, funcDelete, funcDelet
     }
 
     const getCard = (item: IDittoThing) => {
-        return <Card href={path + "&mode=check&id=" + item.thingId} style={{ height: "100%" }}>
-            <Card.Heading >{defaultIfNoExist(item.attributes, "name", item.thingId)} </Card.Heading>
-            <Card.Meta>
-                <div>
+        return <div className="p-4" style={{ height: "100%", width: "100%", backgroundColor: useTheme2().colors.background.canvas}}>
+            <a href={path + "&mode=check&id=" + item.thingId}>
+                <div style={{ height: '85%', width: "100%", overflow: "hidden", whiteSpace: 'nowrap', textOverflow: 'ellipsis'}}>
+                    <b>{defaultIfNoExist(item.attributes, "name", item.thingId).trim()}</b>
                     <p>{item.thingId}</p>
-                    <p style={{ maxWidth: "100%", overflow: "hidden", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical" }}>
-                        {defaultIfNoExist(item.attributes, "description", "")}
-                    </p>
+                    <p style={{ whiteSpace: 'normal'}}>{defaultIfNoExist(item.attributes, "description", "")}</p>
                 </div>
-            </Card.Meta>
-            <Card.SecondaryActions>
-                <a href={path + '&mode=edit&element=' + title + '&id=' + item.thingId} style={{ all: 'unset' }}>
-                    <IconButton key="edit" name="pen" tooltip="Edit" />
-                </a>
-                <IconButton key="delete" name="trash-alt" tooltip="Delete" onClick={(e) => handleOnDelete(e, item.thingId)} />
-            </Card.SecondaryActions>
-        </Card>
+                <div className='mt-2' style={{ height: '15%', display: 'flex', justifyContent: 'end' }}>
+                    <a href={path + '&mode=edit&element=' + title + '&id=' + item.thingId} style={{ all: 'unset' }}>
+                        <IconButton key="edit" name="pen" tooltip="Edit" />
+                    </a>
+                    <IconButton key="delete" name="trash-alt" tooltip="Delete" onClick={(e) => handleOnDelete(e, item.thingId)} />
+                </div>
+            </a>
+        </div>
     }
 
     const fullCard = (item: IDittoThing) => {
@@ -196,8 +194,8 @@ export function MainList({ path, meta, isType, funcThings, funcDelete, funcDelet
     }
 
     const compactCard = (item: IDittoThing) => {
-        return <div className="col-6 col-sm-3 col-md-3 col-lg-2 mb-2" key={item.thingId}>
-            <div style={{ display: "block", width: "100%" }}>
+        return <div className="col-6 col-sm-3 col-md-3 col-lg-2 mb-4" key={item.thingId}>
+            <div style={{ display: "block", width: "100%", height: "100px" }}>
                 {getCard(item)}
             </div>
         </div>

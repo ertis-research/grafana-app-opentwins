@@ -78,16 +78,21 @@ export function InformationThing({ path, thingInfo, meta, isType }: Parameters) 
 
     const attributeIfExist = (object: any, nameAttribute: string, isImage = false) => {
         if (defaultIfNoExist(object, nameAttribute, undefined) !== undefined) {
-            const jsxElement = (!isImage) ? <div></div> :
-                <img src={object[nameAttribute]} style={{ height: "200px", width: "100%", objectFit: "cover", objectPosition: "center" }} />
-
-            return (
-                <div>
-                    <h6 className='mb-0'>{capitalize(nameAttribute)}</h6>
-                    <p style={{ wordWrap: 'break-word', overflowWrap: 'break-word' }}>{object[nameAttribute]}</p>
-                    {jsxElement}
-                </div>
-            )
+            if(isImage) {
+                return (
+                    <div>
+                        <h6 className='mb-0'>{capitalize(nameAttribute)}</h6>
+                        <img src={object[nameAttribute]} style={{ height: "200px", width: "100%", objectFit: "cover", objectPosition: "center" }} />
+                    </div>
+                )
+            } else {
+                return (
+                    <div>
+                        <h6 className='mb-0'>{capitalize(nameAttribute)}</h6>
+                        <p style={{ wordWrap: 'break-word', overflowWrap: 'break-word' }}>{object[nameAttribute]}</p>
+                    </div>
+                )
+            }
         } else {
             return <div></div>
         }
