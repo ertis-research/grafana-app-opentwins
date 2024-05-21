@@ -5,7 +5,8 @@ export const openConnectionService = (context: Context, id: string) => {
   return fetchDittoAPIService(context, "/connections/" + id + "/command", {
     method: 'POST',
     headers: {
-      "Authorization": 'Basic '+btoa('devops:foobar')
+      "Authorization": 'Basic '+btoa('devops:foobar'),
+      "Content-Type": "text/plain"
     },
     body: 'connectivity.commands:openConnection'
   })
