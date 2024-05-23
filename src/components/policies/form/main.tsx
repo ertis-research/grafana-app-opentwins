@@ -8,7 +8,7 @@ import { FormResources } from './subcomponents/formResources'
 import { createOrUpdatePolicyService } from 'services/policies/createPolicyService'
 import { StaticContext } from 'utils/context/staticContext'
 import { getPolicyByIdService } from 'services/policies/getPolicyByIdService'
-import { INotification } from 'utils/interfaces/notification'
+import { Notification } from 'utils/interfaces/notification'
 import { enumNotification } from 'utils/auxFunctions/general'
 import { CustomNotification } from 'components/auxiliary/general/notification'
 
@@ -22,7 +22,7 @@ export const FormPolicy = ({path, id}: Parameters ) => {
     const [entries, setEntries] = useState<Entry[]>([])
     const [entry, setEntry] = useState<Entry>({ name: "", subjects: initSubjects, resources: initResources})
     const [currentPolicy, setCurrentPolicy] = useState<Policy>({ policyId: "", entries: []})
-    const [showNotification, setShowNotification] = useState<INotification>({state: enumNotification.HIDE, title: ""})
+    const [showNotification, setShowNotification] = useState<Notification>({state: enumNotification.HIDE, title: ""})
     //const [subjects, setSubjects] = useState<Subject[]>(initSubjects)
     //const [resources, setResources] = useState<Resource[]>(initResources)
 
@@ -33,13 +33,13 @@ export const FormPolicy = ({path, id}: Parameters ) => {
 // Aux functions
 // -----------------------------------------------------------------------------------------------
 
-    const notificationError: INotification = {
+    const notificationError: Notification = {
         state: enumNotification.ERROR,
         title: `The policy has not been ${(id) ? "edited" : "created"} correctly. `,
         description: "Please check the data you have entered."
     }
 
-    const notificationSuccess: INotification = (id) ? {
+    const notificationSuccess: Notification = (id) ? {
         state: enumNotification.SUCCESS,
         title: `The policy has been edited correctly. `,
         description: `You can leave the page if you don't want to edit any more.`

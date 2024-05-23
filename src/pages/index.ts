@@ -3,6 +3,7 @@ import { TwinsPage } from './twinsPage'
 import { PoliciesPage } from './policiesPage'
 import { TypesPage } from './typesPage'
 import { ConnectionsPage } from './connectionsPage'
+import { AgentsPage } from './agentsPage'
 
 export type PageDefinition = {
   component: React.FC<AppRootProps>;
@@ -23,6 +24,12 @@ export const pages: PageDefinition[] = [
     icon: 'folder-plus',
     id: 'types',
     text: 'Types',
+  },
+  {
+    component: AgentsPage,
+    icon: 'users-alt',
+    id: 'agents',
+    text: 'Agents',
   },
   {
     component: PoliciesPage,

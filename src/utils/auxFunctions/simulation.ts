@@ -1,8 +1,8 @@
 import { stringToBoolean, stringToNumber } from './general';
 import { TypesOfField } from "utils/data/consts";
-import { ISimulationContent } from "utils/interfaces/simulation";
+import { SimulationContent } from "utils/interfaces/simulation";
 
-export const applyTypesOfFields = (data: {[key: string]: any}, content: ISimulationContent[]) => {
+export const applyTypesOfFields = (data: {[key: string]: any}, content: SimulationContent[]) => {
     let res = {}
     Object.entries(data).forEach(([key, value]) => {
         let simContent = content.find(t=>t.name === key)

@@ -10,25 +10,25 @@ import { SimulationForm } from 'components/twins/subcomponents/simulationForm'
 import { EditFormTwin } from 'components/twins/editForm'
 
 export const TwinsPage: FC<AppRootProps> = ({ query, path, meta }) => {
-  
+
   const id = query["id"]
   const valueMeta = fromMetaToValues(meta)
   path = path + "?tab=twins"
 
-  let component = <ListTwins path={path} meta={meta}/> //default
+  let component = <ListTwins path={path} meta={meta} /> //default
   switch (query["mode"]) {
     case "check":
-      if(id !== undefined) {component = <TwinInfo path={path} id={id} meta={meta}/>}
+      if (id !== undefined) { component = <TwinInfo path={path} id={id} meta={meta} /> }
       break
 
     case "create":
       switch (query["element"]) {
         case "simulation":
-          component = <SimulationForm path={path} id={id} meta={meta}/>
+          component = <SimulationForm path={path} id={id} meta={meta} />
           break
-    
+
         default:
-          component = <CreateFormTwin path={path} meta={meta} id={id}/>
+          component = <CreateFormTwin path={path} meta={meta} id={id} />
       }
       break
 
@@ -36,17 +36,17 @@ export const TwinsPage: FC<AppRootProps> = ({ query, path, meta }) => {
       switch (query["element"]) {
         case "simulation":
           const simulationId = query["simulationId"]
-          component = <SimulationForm path={path} id={id} meta={meta} simulationId={simulationId}/>
+          component = <SimulationForm path={path} id={id} meta={meta} simulationId={simulationId} />
           break
-    
+
         case "twin":
-          if(id !== undefined) {component = <EditFormTwin path={path} meta={meta} id={id}/>}
+          if (id !== undefined) { component = <EditFormTwin path={path} meta={meta} id={id} /> }
           break
       }
       break
   }
 
-  
+
 
   return (
     <StaticContext.Provider value={valueMeta}>

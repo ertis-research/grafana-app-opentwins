@@ -7,6 +7,7 @@ import { getBackendSrv } from '@grafana/runtime';
 export type JsonData = {
     dittoURL?: string;
     extendedURL?: string;
+    agentsURL?: string;
     dittoUsername?: string;
     dittoPassword?: string;
 };
@@ -14,6 +15,7 @@ export type JsonData = {
 type State = {
     dittoURL: string;
     extendedURL: string;
+    agentsURL: string;
     dittoUsername?: string;
     dittoPassword?: string;
 };
@@ -25,10 +27,12 @@ export const AppConfig = ({ plugin }: Props) => {
     const [state, setState] = useState<State>({
         dittoURL: (jsonData && jsonData.dittoURL) ? jsonData.dittoURL : '',
         extendedURL: (jsonData && jsonData.extendedURL) ? jsonData.extendedURL : '',
+        agentsURL: (jsonData && jsonData.agentsURL) ? jsonData.agentsURL : '',
         dittoUsername: (jsonData && jsonData.dittoUsername) ? jsonData.dittoUsername : '',
         dittoPassword: (jsonData && jsonData.dittoPassword) ? jsonData.dittoPassword : ''
     });
 
+    console.log(state)
 
     const onChangeDittoURL = (event: ChangeEvent<HTMLInputElement>) => {
         let url = event.target.value
@@ -49,6 +53,17 @@ export const AppConfig = ({ plugin }: Props) => {
         setState({
             ...state,
             extendedURL: url.trim(),
+        });
+    };
+
+    const onChangeAgentsAPI = (event: ChangeEvent<HTMLInputElement>) => {
+        let url = event.target.value
+        if (url.endsWith("/")) { 
+            event.target.value.slice(0, -1)
+        }
+        setState({
+            ...state,
+            agentsURL: url.trim(),
         });
     };
 
@@ -133,6 +148,16 @@ export const AppConfig = ({ plugin }: Props) => {
                     />
                 </Field>
 
+                <Field label="Agents API URL" description="">
+                    <Input
+                        width={60}
+                        id="extendedURL"
+                        value={state.agentsURL}
+                        placeholder={`E.g.: http://mywebsite.com`}
+                        onChange={onChangeAgentsAPI}
+                    />
+                </Field>
+
                 {/* API Url */}
                 <Field label="Ditto username" description="" className={useTheme2().spacing(3)}>
                     <Input
@@ -165,7 +190,8 @@ export const AppConfig = ({ plugin }: Props) => {
                                     dittoURL: state.dittoURL,
                                     extendedURL: state.extendedURL,
                                     dittoUsername: state.dittoUsername,
-                                    dittoPassword: state.dittoPassword
+                                    dittoPassword: state.dittoPassword,
+                                    agentsURL: state.agentsURL
                                 }
                             })
                         }

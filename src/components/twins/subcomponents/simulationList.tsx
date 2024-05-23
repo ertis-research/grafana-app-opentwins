@@ -7,7 +7,7 @@ import { sendSimulationRequest } from 'services/twins/simulation/sendSimulationR
 import { defaultIfNoExist, enumNotification, removeEmptyEntries } from 'utils/auxFunctions/general'
 import { StaticContext } from 'utils/context/staticContext'
 import { TypesOfField } from 'utils/data/consts'
-import { ISimulationAttributes, ISimulationContent } from 'utils/interfaces/simulation'
+import { SimulationAttributes, SimulationContent } from 'utils/interfaces/simulation'
 
 interface Parameters {
     path: string
@@ -18,8 +18,8 @@ interface Parameters {
 
 export const SimulationList = ({path, meta, id, twinInfo}: Parameters) => {
 
-    const [selectedSimulation, setselectedSimulation] = useState<ISimulationAttributes | undefined>()
-    const [simulations, setSimulations] = useState<ISimulationAttributes[]>([])
+    const [selectedSimulation, setselectedSimulation] = useState<SimulationAttributes | undefined>()
+    const [simulations, setSimulations] = useState<SimulationAttributes[]>([])
     const [thingIdSimulated, setthingIdSimulated] = useState<string>()
     const [showNotification, setShowNotification] = useState<string>(enumNotification.HIDE)
     const [duplicateTwin, setDuplicateTwin] = useState<boolean>(false)
@@ -82,7 +82,7 @@ export const SimulationList = ({path, meta, id, twinInfo}: Parameters) => {
         
     }
 
-    const handleOnClick = (item: ISimulationAttributes) => {
+    const handleOnClick = (item: SimulationAttributes) => {
         setselectedSimulation((selectedSimulation?.id === item.id) ? undefined : item)
     }
 
@@ -98,7 +98,7 @@ export const SimulationList = ({path, meta, id, twinInfo}: Parameters) => {
         if(newValue !== id) {setthingIdSimulated(newValue)}
     }
 
-    const simulationsToArray = (object: {[id: string]: ISimulationAttributes}) => {
+    const simulationsToArray = (object: {[id: string]: SimulationAttributes}) => {
         return Object.entries(object).map(([key, value]) => {
             return value
         })
@@ -110,8 +110,8 @@ export const SimulationList = ({path, meta, id, twinInfo}: Parameters) => {
 
     const getAndSetSimulations = () => {
         setSimulations(simulationsToArray(defaultIfNoExist(twinInfo.attributes, "_simulations", {}))
-            .map((item: ISimulationAttributes) => {
-                if(item.content) {item.content = item.content.sort((a: ISimulationContent, b: ISimulationContent) => 
+            .map((item: SimulationAttributes) => {
+                if(item.content) {item.content = item.content.sort((a: SimulationContent, b: SimulationContent) => 
                     (a.required === b.required) ? 0 : a.required? -1 : 1)}
                 return item
         }))
@@ -147,7 +147,7 @@ export const SimulationList = ({path, meta, id, twinInfo}: Parameters) => {
         return (showNotification === enumNotification.LOADING) ? <Spinner size={30}/> : <div></div>
     }
 
-    const ElementSimulation = (item: ISimulationAttributes) => {
+    const ElementSimulation = (item: SimulationAttributes) => {
         return (
             <Card isSelected={item.id === selectedSimulation?.id} onClick={() => handleOnClick(item)}>
             <Card.Heading>{item.id}</Card.Heading>
@@ -162,7 +162,7 @@ export const SimulationList = ({path, meta, id, twinInfo}: Parameters) => {
     const fieldSet = (register: any, control: any) => {
         if(selectedSimulation?.content !== undefined){
 
-            return selectedSimulation.content.map((item: ISimulationContent) => {
+            return selectedSimulation.content.map((item: SimulationContent) => {
                 if(item.type === TypesOfField.FILE){
                     return(
                         <Field label={item.name} description={item.type} required={item.required}>
@@ -280,8 +280,8 @@ export const SimulationList = ({path, meta, id, twinInfo}: Parameters) => {
             <h5>Simulations available</h5>
             <List
                 items={simulations}
-                getItemKey={(item: ISimulationAttributes) => (item.id)}
-                renderItem={(item: ISimulationAttributes, index: number) => ElementSimulation(item)}
+                getItemKey={(item: SimulationAttributes) => (item.id)}
+                renderItem={(item: SimulationAttributes, index: number) => ElementSimulation(item)}
             />
             </div>
             <div className="col-12 col-md-6">

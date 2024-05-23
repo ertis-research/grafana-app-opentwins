@@ -4,9 +4,9 @@ import { StaticContext } from 'utils/context/staticContext'
 import { getParentOfTypeService } from 'services/types/parent/getParentTypeService'
 import { Button, Form, FormAPI, InlineField, InlineFieldRow, Input, Select, VerticalGroup } from '@grafana/ui'
 import { getAllTypesService } from 'services/types/getAllTypesService'
-import { ISelect } from 'utils/interfaces/select'
+import { SelectData } from 'utils/interfaces/select'
 import { createOrUpdateTypeToBeChildService } from 'services/types/children/createOrUpdateTypeToBeChildService'
-import { INotification } from 'utils/interfaces/notification'
+import { Notification } from 'utils/interfaces/notification'
 import { enumNotification } from 'utils/auxFunctions/general'
 import { CustomNotification } from 'components/auxiliary/general/notification'
 import { unlinkChildrenTypeById } from 'services/types/children/unlinkChildrenTypeByIdService'
@@ -26,20 +26,20 @@ interface FormScheme {
 export function ListParentsType({ path, id, meta }: Parameters) {
 
     const [parents, setParents] = useState<FormScheme[]>([])
-    const [types, setTypes] = useState<ISelect[]>([])
+    const [types, setTypes] = useState<SelectData[]>([])
     const [selectedType, setSelectedType] = useState<SelectableValue<string>>()
     const [newParent, setNewParent] = useState<FormScheme>({ id: '', num: "1" })
-    const [showNotification, setShowNotification] = useState<INotification>({ state: enumNotification.HIDE, title: "" })
+    const [showNotification, setShowNotification] = useState<Notification>({ state: enumNotification.HIDE, title: "" })
 
     const context = useContext(StaticContext)
 
-    const notificationError: INotification = {
+    const notificationError: Notification = {
         state: enumNotification.ERROR,
         title: `The type ${id} has not been edited correctly.`,
         description: "Please check the data you have entered."
     }
 
-    const notificationSuccess: INotification = {
+    const notificationSuccess: Notification = {
         state: enumNotification.SUCCESS,
         title: `The type ${id} has been edited correctly.`,
         description: "You can leave the page if you don't want to edit any more."

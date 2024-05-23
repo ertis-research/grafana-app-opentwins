@@ -7,6 +7,7 @@ import './css/bootstrap-grid.css';
 //import './css/bootstrap.css';
 import './css/bootstrap-cards.css';
 import './css/bootstrap-basics.css';
+import './css/main.css';
 import { AppConfig } from 'config/AppConfig';
 
 //export { ExampleConfigCtrl as ConfigCtrl };
@@ -17,7 +18,7 @@ export const plugin = new AppPlugin<{}>()
     title: 'Connections',
     icon: 'plug',
     body: ConnectionsPage,
-    id: 'connections',
+    id: 'connections', 
   })*/
   .addConfigPage({
     title: 'Configuration',

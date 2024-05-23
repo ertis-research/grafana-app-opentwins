@@ -5,9 +5,9 @@ import { ElementHeader } from 'components/auxiliary/general/elementHeader'
 import { ListElement } from 'components/auxiliary/general/listElement'
 import { enumNotification, enumToISelectList } from 'utils/auxFunctions/general'
 import { ContentType, MethodRequest, TypesOfField} from 'utils/data/consts'
-import { ISelect } from 'utils/interfaces/select'
+import { SelectData } from 'utils/interfaces/select'
 import { Control } from 'react-hook-form'
-import { ISimulationAttributes, ISimulationAttributesForm, ISimulationContent } from 'utils/interfaces/simulation'
+import { SimulationAttributes, SimulationAttributesForm, SimulationContent } from 'utils/interfaces/simulation'
 import { StaticContext } from 'utils/context/staticContext'
 import { createOrUpdateSimulationService } from 'services/twins/simulation/createOrUpdateSimulationService'
 import { getSimulationService } from 'services/twins/simulation/getSimulationService'
@@ -28,13 +28,13 @@ export const SimulationForm = ({path, meta, id, simulationId}: Parameters) => {
     const [contentType, setContentType] = useState<SelectableValue<ContentType>>()
     const [typeOfField, setTypeOfField] = useState<SelectableValue<TypesOfField>>()
     const [hasContent, setHasContent] = useState<boolean>(false)
-    const [content, setContent] = useState<ISimulationContent[]>([])
-    const [actualSimulation, setActualSimulation] = useState<ISimulationAttributes>({id:"", url: "", method: iniMethod})
+    const [content, setContent] = useState<SimulationContent[]>([])
+    const [actualSimulation, setActualSimulation] = useState<SimulationAttributes>({id:"", url: "", method: iniMethod})
     const [showNotification, setShowNotification] = useState(enumNotification.HIDE)
 
-    const methodList: ISelect[] = enumToISelectList(MethodRequest)
-    const contentTypeList: ISelect[] = enumToISelectList(ContentType)
-    const typesOfFieldList: ISelect[] = enumToISelectList(TypesOfField)
+    const methodList: SelectData[] = enumToISelectList(MethodRequest)
+    const contentTypeList: SelectData[] = enumToISelectList(ContentType)
+    const typesOfFieldList: SelectData[] = enumToISelectList(TypesOfField)
 
     const context = useContext(StaticContext)
 
@@ -46,7 +46,7 @@ export const SimulationForm = ({path, meta, id, simulationId}: Parameters) => {
     const titleError = "The simulation has not been created correctly. "
     const descriptionError = "Please check the data you have entered and try again."
 
-    const handleOnSubmit = (data: ISimulationAttributesForm) => {
+    const handleOnSubmit = (data: SimulationAttributesForm) => {
         setShowNotification(enumNotification.LOADING)
         createOrUpdateSimulationService(context, id, actualSimulation).then(() => {
             setShowNotification(enumNotification.SUCCESS)
@@ -62,7 +62,7 @@ export const SimulationForm = ({path, meta, id, simulationId}: Parameters) => {
         })
       }
 
-    const handleSubmitContent = (data: ISimulationContent) => {
+    const handleSubmitContent = (data: SimulationContent) => {
         if(typeOfField?.value) {
             data = {
                 ...data,
@@ -72,7 +72,7 @@ export const SimulationForm = ({path, meta, id, simulationId}: Parameters) => {
         if (data.default === "") {delete data.default} 
 
         let found = false
-        const newContent = content.map((item: ISimulationContent) => {
+        const newContent = content.map((item: SimulationContent) => {
             if(item.name === data.name){
                 found = true
                 return data
@@ -125,8 +125,8 @@ export const SimulationForm = ({path, meta, id, simulationId}: Parameters) => {
 
     useEffect(() => {
         if (hasContent) {
-            let jsonContent: ISimulationContent[] = []
-            content.forEach((item: ISimulationContent) => jsonContent.push(item));
+            let jsonContent: SimulationContent[] = []
+            content.forEach((item: SimulationContent) => jsonContent.push(item));
     
             setActualSimulation({
                 ...actualSimulation,
@@ -163,7 +163,7 @@ export const SimulationForm = ({path, meta, id, simulationId}: Parameters) => {
 
     useEffect(() => {
         if(simulationId !== undefined) {
-            getSimulationService(context, id, simulationId).then((simulation: ISimulationAttributes) => {
+            getSimulationService(context, id, simulationId).then((simulation: SimulationAttributes) => {
                 setActualSimulation(simulation)
                 setMethod({label: simulation.method, value: simulation.method})
                 if (simulation.contentType) {setContentType({label: simulation.contentType, value: simulation.contentType})}
@@ -178,7 +178,7 @@ export const SimulationForm = ({path, meta, id, simulationId}: Parameters) => {
     useEffect(() => {
     }, [actualSimulation, showNotification])
 
-    const contentTypeField = (control: Control<ISimulationAttributesForm>) => {
+    const contentTypeField = (control: Control<SimulationAttributesForm>) => {
         return (!hasContent) ? <div></div> : 
         <Fragment>
             <Field label="Content-type" required={hasContent}>
@@ -205,7 +205,7 @@ export const SimulationForm = ({path, meta, id, simulationId}: Parameters) => {
             <div className="row">
                 <div className="col-6">
                     <Form id="formContent" onSubmit={handleSubmitContent} maxWidth="none">
-                    {({register, errors, control}: FormAPI<ISimulationContent>) => {
+                    {({register, errors, control}: FormAPI<SimulationContent>) => {
                         return (
                             <Fragment>
                                 <FieldSet>
@@ -258,7 +258,7 @@ export const SimulationForm = ({path, meta, id, simulationId}: Parameters) => {
             <div className="row">
                 <div className="col-7">
                     <Form id="formSimulation" onSubmit={handleOnSubmit} maxWidth="none">
-                    {({register, errors, control}: FormAPI<ISimulationAttributesForm>) => {
+                    {({register, errors, control}: FormAPI<SimulationAttributesForm>) => {
                         return (
                             <Fragment>
                                 <FieldSet>

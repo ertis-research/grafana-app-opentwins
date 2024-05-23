@@ -43,9 +43,17 @@
     },
     {
       "type": "page",
+      "name": "Agents",
+      "path": "/a/ertis-opentwins/?tab=agents",
+      "role": "Viewer",
+      "addToNav": true,
+      "icon": "users-alt"
+    },
+    {
+      "type": "page",
       "name": "Policies",
       "path": "/a/ertis-opentwins/?tab=policies",
-      "role": "Viewer",
+      "role": "Admin",
       "addToNav": true,
       "icon": "shield"
     },
@@ -53,7 +61,7 @@
       "type": "page",
       "name": "Connections",
       "path": "/a/ertis-opentwins/?tab=connections",
-      "role": "Viewer",
+      "role": "Admin",
       "addToNav": true,
       "icon": "plug"
     },

@@ -3,7 +3,7 @@ import { IDittoThing } from 'utils/interfaces/dittoThing';
 import { LinkButton, IconButton, Select, Icon, ConfirmModal, Modal, Spinner, VerticalGroup, InlineSwitch, InlineFieldRow, useTheme2 } from '@grafana/ui'
 import { AppPluginMeta, KeyValue, SelectableValue } from '@grafana/data';
 import { defaultIfNoExist, enumNotification, imageIsUndefined } from 'utils/auxFunctions/general';
-import { ISelect } from 'utils/interfaces/select';
+import { SelectData } from 'utils/interfaces/select';
 import { StaticContext } from 'utils/context/staticContext';
 import { attributeSimulationOf } from 'utils/data/consts';
 
@@ -22,7 +22,7 @@ interface Parameters {
 export function MainList({ path, meta, isType, funcThings, funcDelete, funcDeleteChildren, parentId, iniCompactMode = false, iniNoSimulations = false }: Parameters) {
 
     const [things, setThings] = useState<IDittoThing[]>([])
-    const [values, setValues] = useState<ISelect[]>([])
+    const [values, setValues] = useState<SelectData[]>([])
     const [filteredThings, setFilteredThings] = useState<IDittoThing[]>([])
     const [value, setValue] = useState<SelectableValue<string>>()
     const [showNotification, setShowNotification] = useState<string>(enumNotification.HIDE)

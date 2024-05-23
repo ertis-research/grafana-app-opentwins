@@ -2,7 +2,7 @@ import React, { useState, Fragment, useEffect, useContext, ChangeEvent } from 'r
 import { AppPluginMeta, KeyValue, SelectableValue } from '@grafana/data'
 import { IAttribute, IDittoThing, IDittoThingData, IDittoThingForm, IFeature, IThingId } from 'utils/interfaces/dittoThing'
 import { Form, FormAPI, Field, Input, InputControl, Select, Icon, TextArea, Button, HorizontalGroup, RadioButtonGroup, Switch, useTheme2 } from '@grafana/ui'
-import { ISelect } from 'utils/interfaces/select'
+import { SelectData } from 'utils/interfaces/select'
 import { ElementHeader } from 'components/auxiliary/general/elementHeader'
 import { basicAttributesConst, enumOptions, options, restrictedAttributesConst, staticAttributesConst } from 'utils/data/consts'
 import { Control } from 'react-hook-form'
@@ -14,7 +14,7 @@ import { getAllTypesService } from 'services/types/getAllTypesService'
 import { capitalize, enumNotification } from 'utils/auxFunctions/general'
 import { StaticContext } from 'utils/context/staticContext'
 import { CustomNotification } from 'components/auxiliary/general/notification'
-import { INotification } from 'utils/interfaces/notification'
+import { Notification } from 'utils/interfaces/notification'
 
 interface Parameters {
     path: string
@@ -31,14 +31,14 @@ export const ThingForm = ({ path, parentId, thingToEdit, isType, funcFromType, f
     const [currentThing, setCurrentThing] = useState<IDittoThing>(lastCurrentThing)
     const [thingIdField, setThingIdField] = useState<IThingId>({id: "", namespace: ""})
     const [type, setType] = useState<SelectableValue<IDittoThing>>()
-    const [types, setTypes] = useState<ISelect[]>([])
+    const [types, setTypes] = useState<SelectData[]>([])
     const [selected, setSelected] = useState(enumOptions.FROM_TYPE)
     const [customizeType, setCustomizeType] = useState(false)
     const [attributes, setAttributes] = useState<IAttribute[]>([])
     const [features, setFeatures] = useState<IFeature[]>([])
-    const [policies, setPolicies] = useState<ISelect[]>([])
+    const [policies, setPolicies] = useState<SelectData[]>([])
     const [selectedPolicy, setSelectedPolicy] = useState<SelectableValue<string>>()
-    const [showNotification, setShowNotification] = useState<INotification>({state: enumNotification.HIDE, title: ""})
+    const [showNotification, setShowNotification] = useState<Notification>({state: enumNotification.HIDE, title: ""})
     const [staticAttributes, setStaticAttributes] = useState<any>([])
     const [numChildren, setNumChildren] = useState<number>(1)
 
@@ -80,13 +80,13 @@ export const ThingForm = ({ path, parentId, thingToEdit, isType, funcFromType, f
         })
     }
 
-    const notificationError: INotification = {
+    const notificationError: Notification = {
         state: enumNotification.ERROR,
         title: `The ${title} has not been ${(thingToEdit) ? "edited" : "created"} correctly. `,
         description: "Please check the data you have entered."
     }
 
-    const notificationSuccess: INotification = (thingToEdit) ? {
+    const notificationSuccess: Notification = (thingToEdit) ? {
         state: enumNotification.SUCCESS,
         title: `The ${title} has been edited correctly. `,
         description: `You can leave the page if you don't want to edit any more.`

@@ -1,9 +1,9 @@
 import React, { useState, Fragment, useEffect } from 'react'
 import { Select, TextArea, Button, Icon, HorizontalGroup } from '@grafana/ui'
 import { SelectableValue } from '@grafana/data'
-import { ISelect } from 'utils/interfaces/select'
+import { SelectData } from 'utils/interfaces/select'
 import { capitalize, enumNotification } from 'utils/auxFunctions/general'
-import { INotification } from 'utils/interfaces/notification'
+import { Notification } from 'utils/interfaces/notification'
 import { CustomNotification } from './notification'
 
 export interface ParametersExtraButtons {
@@ -29,10 +29,10 @@ export const SelectWithTextArea = ({ path, name, getByIdFunc, getAllFunc, delete
     const confirmDelete_body = (id: any) => "Are you sure you want to delete " + name + " " + id + "?"
     const confirmDelete_description = "This action cannot be undone."
 
-    const [objects, setObjects] = useState<ISelect[]>([])
+    const [objects, setObjects] = useState<SelectData[]>([])
     const [value, setValue] = useState<SelectableValue<string>>()
     const [selectedObject, setselectedObject] = useState<any>(undefined)
-    const [showNotification, setShowNotification] = useState<INotification>({state: enumNotification.HIDE, title: ""})
+    const [showNotification, setShowNotification] = useState<Notification>({state: enumNotification.HIDE, title: ""})
 
     const handleOnConfirmDelete = () => {
         if(value?.value !== undefined){

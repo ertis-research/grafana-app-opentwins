@@ -1,11 +1,11 @@
 import React from 'react'
 import { ConfirmModal, Modal, Spinner, VerticalGroup } from '@grafana/ui'
 import { enumNotification } from 'utils/auxFunctions/general'
-import { INotification } from 'utils/interfaces/notification'
+import { Notification } from 'utils/interfaces/notification'
 
 interface Parameters {
-    notification: INotification
-    setNotificationFunc: React.Dispatch<React.SetStateAction<INotification>>
+    notification: Notification
+    setNotificationFunc: React.Dispatch<React.SetStateAction<Notification>>
 }
 
 export const CustomNotification = ({notification, setNotificationFunc}: Parameters) => {

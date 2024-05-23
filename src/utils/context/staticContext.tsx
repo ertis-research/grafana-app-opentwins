@@ -9,6 +9,7 @@ export interface Context {
     ditto_extended_endpoint: string
     hono_endpoint: string
     hono_tenant: string
+    agent_endpoint: string
 }
 
 export const StaticContext = React.createContext<Context>({
@@ -19,5 +20,6 @@ export const StaticContext = React.createContext<Context>({
     ditto_password_devops : '',
     ditto_extended_endpoint: '',
     hono_endpoint: '',
-    hono_tenant: ''
+    hono_tenant: '',
+    agent_endpoint: ''
 })
