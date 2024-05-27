@@ -1,6 +1,6 @@
 import React, { ChangeEvent, Fragment, MouseEvent, useContext, useEffect, useState } from 'react'
-import { AppPluginMeta, KeyValue, SelectableValue } from "@grafana/data"
-import { ConfirmModal, Icon, IconButton, Input, LinkButton, Select, TextArea, useTheme2, VerticalGroup } from '@grafana/ui'
+import { AppEvents, AppPluginMeta, KeyValue, SelectableValue } from "@grafana/data"
+import { ConfirmModal, Icon, IconButton, Input, LinkButton, Select, Spinner, TextArea, useTheme2, VerticalGroup } from '@grafana/ui'
 import { enumNotification } from 'utils/auxFunctions/general'
 import { AgentState, ListAgent, Pod, PodState, Types_values } from 'utils/interfaces/agents'
 import { getAllAgentsService } from 'services/agents/getAllAgentsService'
@@ -11,6 +11,7 @@ import { pauseAgentByIdService } from 'services/agents/pauseAgentByIdService'
 import { resumeAgentByIdService } from 'services/agents/resumeAgentByIdService'
 import { deleteAgentByIdService } from 'services/agents/deleteAgentByIdService'
 import cronstrue from 'cronstrue'
+import { getAppEvents } from '@grafana/runtime'
 
 
 interface Parameters {
@@ -21,6 +22,7 @@ interface Parameters {
 export function ListAgents({ path, meta }: Parameters) {
 
     const context = useContext(StaticContext)
+    const appEvents = getAppEvents()
 
     const [agents, setAgents] = useState<ListAgent[]>([])
     const [selectedAgent, setSelectedAgent] = useState<{ id: string, data: any } | undefined>(undefined)
@@ -28,7 +30,7 @@ export function ListAgents({ path, meta }: Parameters) {
     const [value, setValue] = useState<string>()
     const [type, setType] = useState<SelectableValue<string>>(Types_values[0])
     const [filteredAgents, setFilteredAgents] = useState<ListAgent[]>([])
-    const [showNotification, setShowNotification] = useState<string>(enumNotification.HIDE)
+    const [showNotification, setShowNotification] = useState<string>(enumNotification.READY)
     const [isOpenDelete, setIsOpenDelete] = useState<ListAgent | undefined>(undefined)
 
     const stringDateToLocal = (dt: string) => {
@@ -57,13 +59,21 @@ export function ListAgents({ path, meta }: Parameters) {
         }
     }
 
-    const updateThings = () => {
-        setShowNotification(enumNotification.LOADING)
+    const updateAgents = () => {
+        if (agents === undefined || agents.length < 1) {
+            setShowNotification(enumNotification.LOADING)
+        }
         getAllAgentsService(context).then((res: ListAgent[]) => {
             console.log("agents", res)
-            setAgents(res.sort((a: ListAgent, b: ListAgent) => a.id.localeCompare(b.id)))
+            setAgents(res.sort((a: ListAgent, b: ListAgent) => (a.namespace + a.id).localeCompare(b.namespace + b.id)))
             setShowNotification(enumNotification.READY)
-        }).catch(() => console.log("error"))
+        }).catch((e) => {
+            console.log("error", e)
+            appEvents.publish({
+                type: AppEvents.alertError.name,
+                payload: ["Error when getting agents, try again later or ask system administrator"]
+            });
+        })
     }
 
     const updateFilteredThings = () => {
@@ -91,24 +101,43 @@ export function ListAgents({ path, meta }: Parameters) {
         if (item.status === AgentState.ACTIVE) {
             pauseAgentByIdService(context, item.id, item.namespace).then((res: any) => {
                 console.log("pausado")
-                //setShowNotification(enumNotification.READY)
-                updateThings()
-            }).catch(() => console.log("error"))
+                updateAgents()
+            }).catch((e) => {
+                console.log("error", e)
+                appEvents.publish({
+                    type: AppEvents.alertError.name,
+                    payload: ["Error when stopping the agent, try again later or ask system administrator"]
+                });
+            })
         } else {
             resumeAgentByIdService(context, item.id, item.namespace).then((res: any) => {
                 console.log("activando")
-                //setShowNotification(enumNotification.READY)
-                updateThings()
-            }).catch(() => console.log("error"))
+                updateAgents()
+            }).catch((e) => {
+                console.log("error", e)
+                appEvents.publish({
+                    type: AppEvents.alertError.name,
+                    payload: ["Error when starting the agent, try again later or ask system administrator"]
+                });
+            })
         }
     }
 
     const handleOnConfirmDelete = (item: ListAgent) => {
         deleteAgentByIdService(context, item.id, item.namespace).then((res: any) => {
-            console.log("deleteando")
-            //setShowNotification(enumNotification.READY)
-            updateThings()
-        }).catch(() => console.log("error"))
+            updateAgents()
+            setIsOpenDelete(undefined)
+            appEvents.publish({
+                type: AppEvents.alertSuccess.name,
+                payload: ["Agent successfully deleted"]
+            });
+        }).catch((e) => {
+            console.log("error", e)
+            appEvents.publish({
+                type: AppEvents.alertError.name,
+                payload: ["Error when deleting the agent, try again later or ask system administrator."]
+            });
+        })
     }
 
     const handleOnClickCard = (e: MouseEvent<HTMLElement>, item: ListAgent) => {
@@ -120,8 +149,13 @@ export function ListAgents({ path, meta }: Parameters) {
                 if (res !== undefined) {
                     setSelectedAgent({ id: item.id, data: JSON.parse(res) })
                 }
-                setShowNotification(enumNotification.READY)
-            }).catch(() => console.log("error"))
+            }).catch((e) => {
+                console.log("error", e)
+                appEvents.publish({
+                    type: AppEvents.alertError.name,
+                    payload: ["Error when getting the agent's information, try again later or ask system administrator"]
+                });
+            })
         }
     }
 
@@ -130,7 +164,7 @@ export function ListAgents({ path, meta }: Parameters) {
     }, [filteredAgents])
 
     useEffect(() => {
-        updateThings()
+        updateAgents()
     }, [])
 
     useEffect(() => {
@@ -139,7 +173,7 @@ export function ListAgents({ path, meta }: Parameters) {
 
     useEffect(() => {
         const intervalId = setInterval(() => {
-            updateThings()
+            updateAgents()
         }, 10000);
 
         return () => {
@@ -147,13 +181,12 @@ export function ListAgents({ path, meta }: Parameters) {
         };
     }, []);
 
-
     const showPods = (item: ListAgent) => {
         const isSelected: boolean = selectedAgent !== undefined && selectedAgent.id === item.id
         return <div className='listSelected' style={{ width: '90%', height: (isSelected) ? 'auto' : '0px', transformOrigin: 'top', transform: (isSelected) ? 'scaleY(1)' : 'scaleY(0)', transition: 'transform 0.3s ease-in-out' }}>
             {
                 item.pods.map((pod: Pod, idx: number) => {
-                    return <div style={{ color: 'white', display: 'flex', height: '55px', borderTop: (idx !== 0) ?  ('1px solid ' + useTheme2().colors.background.primary) : '' }}>
+                    return <div style={{ color: 'white', display: 'flex', height: '55px', borderTop: (idx !== 0) ? ('1px solid ' + useTheme2().colors.background.primary) : '' }}>
                         <div style={{ backgroundColor: getColorPod(pod), height: '100%', padding: '5px', width: '100px', alignContent: 'center', textAlign: 'center' }}>
                             {(pod.phase === PodState.RUNNING && !pod.status) ? 'Crashed' : pod.phase}
                         </div>
@@ -168,29 +201,31 @@ export function ListAgents({ path, meta }: Parameters) {
 
     const getCard = (item: ListAgent) => {
         return <div className="col-12 col-sm-12 col-md-12 col-lg-12 col-xl-6 mb-3" key={item.id}>
-            <div style={{ height: '12px', width: '100%', backgroundColor: getColor(item), display: 'flex', justifyContent: 'center', alignContent: 'center', paddingRight: '15px', color: useTheme2().colors.background.primary }}></div>
+            <div style={{ height: '12px', width: '100%', backgroundColor: getColor(item), paddingRight: '15px', color: useTheme2().colors.background.primary }}></div>
             <div className={(selectedAgent !== undefined && selectedAgent.id === item.id) ? 'listSelected' : ''} style={{ display: "block", width: "100%", height: '95px', backgroundColor: useTheme2().colors.background.canvas }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', height: '100%' }}>
-                    <a onClick={(e) => handleOnClickCard(e, item)} style={{ margin: '0px', padding: '0px', display: 'block', height: '100%' }}>
-                        <div style={{ display: 'flex', height: '100%' }}>
-                            <div className='px-3' style={{ height: '100%', width: 'fit-content', justifyContent: 'center', alignContent: 'center', backgroundColor: useTheme2().colors.text.primary }}>
-                                {(item.type === "deployment") ? DeployIcon(useTheme2().colors.background.primary) : CronJobIcon(useTheme2().colors.background.primary)}
-                            </div>
-                            <div style={{ display: 'flex', height: '100%', alignContent: 'center', alignItems: 'center', marginLeft: '20px' }}>
-                                <div style={{ display: 'block', height: 'min-content' }}>
-                                    <div style={{ display: 'flex', alignContent: 'center' }}>
-                                        <h5 style={{ marginBottom: '0px', paddingBottom: '0px', marginTop: '0px', paddingTop: '0px' }}>{item.name}</h5>
-                                        <div style={{ marginLeft: '5px', marginRight: '5px', color: useTheme2().colors.text.secondary }}>·</div>
-                                        <div style={{ color: useTheme2().colors.text.secondary }}>{item.type}</div>
-                                    </div>
-                                    <div>{item.namespace} / {item.id}</div>
-                                    <div style={{ color: useTheme2().colors.text.secondary, overflow: 'hidden' }}>
-                                        <i>{item.status}{(item.type === 'cronjob') ? ' · ' + cronstrue.toString(item.schedule) : ''}</i>
+                    <div style={{ width: 'calc(100% - 110px)' }}>
+                        <a onClick={(e) => handleOnClickCard(e, item)} style={{ margin: '0px', padding: '0px', display: 'block', height: '100%' }}>
+                            <div style={{ display: 'flex', height: '100%' }}>
+                                <div className='px-3' style={{ height: '100%', width: 'fit-content', justifyContent: 'center', alignContent: 'center', backgroundColor: useTheme2().colors.text.primary }}>
+                                    {(item.type === "deployment") ? DeployIcon(useTheme2().colors.background.primary) : CronJobIcon(useTheme2().colors.background.primary)}
+                                </div>
+                                <div style={{ display: 'flex', height: '100%', width: '100%', alignContent: 'center', alignItems: 'center', marginLeft: '20px' }}>
+                                    <div style={{ display: 'block', height: 'min-content', width: '100%' }}>
+                                        <div style={{ display: 'flex', alignContent: 'center', width: '100%', overflow: 'hidden', lineHeight: '1.5em', maxHeight: '1.5em' }}>
+                                            <h5 style={{ marginBottom: '0px', paddingBottom: '0px', marginTop: '0px', paddingTop: '0px' }}>{item.name}</h5>
+                                            <div style={{ marginLeft: '5px', marginRight: '5px', color: useTheme2().colors.text.secondary }}>·</div>
+                                            <div style={{ color: useTheme2().colors.text.secondary }}>{item.type}</div>
+                                        </div>
+                                        <div style={{ overflow: 'hidden', lineHeight: '1.5em', maxHeight: '1.5em' }}>{item.namespace} / {item.id}</div>
+                                        <div style={{ color: useTheme2().colors.text.secondary, overflow: 'hidden', lineHeight: '1.5em', maxHeight: '3em' }}>
+                                            <i>{item.status}{(item.type === 'cronjob') ? ' · ' + cronstrue.toString(item.schedule) : ''}</i>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                    </a>
+                        </a>
+                    </div>
                     <div className='buttonsFixResponsive' style={{ height: '100%', alignContent: 'center', marginLeft: '20px' }}>
                         <IconButton size='xl' style={{ paddingRight: '10px' }} name={(item.status === AgentState.ACTIVE) ? "pause" : "play"} onClick={() => handleOnClickPausePlay(item)} />
                         <IconButton size='xl' name='trash-alt' style={{ paddingRight: '10px' }} onClick={() => setIsOpenDelete(item)} />
@@ -239,7 +274,11 @@ export function ListAgents({ path, meta }: Parameters) {
         />
     }
 
-    const noChildren = (showNotification !== enumNotification.READY) ? <div></div> :
+    const noChildren = (showNotification !== enumNotification.READY) ?
+        <VerticalGroup align="center">
+            <h4 className="mb-0 mt-4">Loading...</h4>
+            <Spinner size={30} />
+        </VerticalGroup> :
         <VerticalGroup align="center">
             <h5>There are no agents</h5>
         </VerticalGroup>
@@ -266,13 +305,13 @@ export function ListAgents({ path, meta }: Parameters) {
                 </div>
             </div>
             <div className="row">
-                <div className={'col-12 col-sm-12 ' + ((selectedAgent) ? 'col-md-7 col-lg-7' : 'col-md-12 col-lg-12')}>
+                <div className={'col-12 col-sm-12 ' + ((selectedAgent) ? 'col-md-7 col-lg-7' : 'col-md-12 col-lg-12')} style={{ transition: 'all 0.35s ease' }}>
                     <div className="row">
                         {(filteredAgents.length > 0) ? agentsMapped : noChildren}
                     </div>
                 </div>
-                <div className='col-12 col-sm-12 col-md-5 col-lg-5'>
-                    <TextArea style={{  transformOrigin: 'left', transform: ((selectedAgent) ? 'scaleX(1)' : 'scaleX(0)'), transition: 'transform 0.2s ease-out' }} rows={25} value={(selectedAgent && selectedAgent.data) ? JSON.stringify(selectedAgent.data, undefined, 2) : ""} readOnly />
+                <div className='col-12 col-sm-12 col-md-5 col-lg-5' style={{ transformOrigin: 'right', opacity: ((selectedAgent ? '1' : '0')), transform: ((selectedAgent) ? 'scaleX(1)' : 'scaleX(0)'), transition: ('transform 0.35s ease 0.35s' + ((selectedAgent) ? ', opacity 0s ease 0.35s' : '')) }}>
+                    <TextArea rows={25} value={(selectedAgent && selectedAgent.data) ? JSON.stringify(selectedAgent.data, undefined, 2) : ""} readOnly />
                 </div>
             </div>
         </Fragment>
