@@ -14,12 +14,6 @@ import { AppConfig } from 'config/AppConfig';
 
 export const plugin = new AppPlugin<{}>()
   .setRootPage((ExampleRootPage as unknown) as ComponentClass<AppRootProps>)
-/*  .addConfigPage({
-    title: 'Connections',
-    icon: 'plug',
-    body: ConnectionsPage,
-    id: 'connections', 
-  })*/
   .addConfigPage({
     title: 'Configuration',
     icon: 'cog',
