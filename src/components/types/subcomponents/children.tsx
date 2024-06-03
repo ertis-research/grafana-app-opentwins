@@ -1,9 +1,6 @@
-import React, { useContext, useEffect } from 'react'
+import React, { useEffect } from 'react'
 import { AppPluginMeta, KeyValue } from "@grafana/data"
-import { MainList } from 'components/auxiliary/dittoThing/list/main'
-import { StaticContext } from 'utils/context/staticContext'
-import { deleteTypeService } from 'services/types/crud/deleteTypeService'
-import { getChildrenOfTypeService } from 'services/types/children/getChildrenOfTypeService'
+import { ListChildren } from 'components/auxiliary/dittoThing/list/children'
 
 interface Parameters {
     path: string
@@ -13,18 +10,16 @@ interface Parameters {
 
 export function ListChildrenType({ path, id, meta }: Parameters) {
 
-    const context = useContext(StaticContext)
+    //const context = useContext(StaticContext)
 
     useEffect(() => {
     }, [id])
 
-    return <MainList 
-            path={path} 
-            meta={meta} 
-            isType={true} 
-            funcThings={() => getChildrenOfTypeService(context, id)} 
-            funcDelete={deleteTypeService}
-            parentId={id}
-        />
+    return <ListChildren
+                path={path}
+                meta={meta}
+                isType={true}
+                id={id}
+            />
 
 }

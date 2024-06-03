@@ -1,5 +1,5 @@
-import { ConfirmModal, IconButton, Modal, Spinner, VerticalGroup } from "@grafana/ui"
-import React, { useState, useContext } from "react"
+import { Button, ConfirmModal, Modal, Spinner, VerticalGroup } from "@grafana/ui"
+import React, { useState, useContext, Fragment } from "react"
 import { enumNotification } from "utils/auxFunctions/general"
 import { StaticContext } from "utils/context/staticContext"
 
@@ -82,13 +82,11 @@ export const ButtonsInfo = ({ path, thingId, isType, funcDelete, funcDeleteChild
         setShowDeleteModal(thingId)
     }
 
-    return <div>
+    return <Fragment>
         {notification()}
-        <div style={{ display: "flex", width: "100%", justifyContent: "center"}} className="m-2">
             <a href={path + '&mode=edit&element=' + title + '&id=' + thingId} style={{ all: 'unset', marginRight: "10px"}} >
-                <IconButton key="edit" name="pen" tooltip="Edit" />
+                <Button icon="pen" tooltip="Edit" variant="secondary">Edit</Button>
             </a>
-            <IconButton key="delete" name="trash-alt" tooltip="Delete" onClick={(e) => handleOnDelete(e, thingId)} />
-        </div>
-    </div>
+            <Button icon="trash-alt" tooltip="Delete" variant="destructive" onClick={(e) => handleOnDelete(e, thingId)}>Delete</Button>
+    </Fragment>
 }

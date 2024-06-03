@@ -1,6 +1,6 @@
 import { AppEvents, AppPluginMeta, KeyValue, SelectableValue } from '@grafana/data'
 import { Button, Field, Form, FormAPI, Input, RadioButtonGroup, TextArea } from '@grafana/ui'
-import React, { ChangeEvent, Fragment, useContext, useState } from 'react'
+import React, { ChangeEvent, Fragment, useContext, useEffect, useState } from 'react'
 import { createAgentService } from 'services/agents/createAgentService'
 import { setNestedKey } from 'utils/auxFunctions/general'
 import { StaticContext } from 'utils/context/staticContext'
@@ -34,6 +34,7 @@ export function CreateFormAgent({ path, meta }: Parameters) {
     const InvalidMsg = "Blank spaces and uppercase letters are not allowed"
     
     const context = useContext(StaticContext)
+    const hasSetContext: boolean = context.agent_context !== undefined && context.agent_context.trim() !== ''
 
     const appEvents = getAppEvents()
 
@@ -67,7 +68,8 @@ export function CreateFormAgent({ path, meta }: Parameters) {
             return
         }
         json_data = setNestedKey(json_data, ['metadata', 'labels', 'opentwins.agents/name'], currentAgent.name)
-        console.log(json_data)
+       //json_data = setNestedKey(json_data, ['metadata', 'labels', 'opentwins.agents/twins'], JSON.stringify(["example:aaa", "asasa:rerer"]))
+        console.log(JSON.stringify(json_data))
         createAgentService(context, currentAgent.id, currentAgent.namespace, json_data).then((res: any) => {
             appEvents.publish({
                 type: AppEvents.alertSuccess.name,
@@ -82,6 +84,14 @@ export function CreateFormAgent({ path, meta }: Parameters) {
             });
         })
     }
+
+    useEffect(() => {
+        setCurrentAgent({
+            ...currentAgent,
+            namespace: context.agent_context
+        })
+    }, [context])
+    
 
     const handleOnChangeInput = (event: ChangeEvent<HTMLInputElement>) => {
         setCurrentAgent({
@@ -104,12 +114,13 @@ export function CreateFormAgent({ path, meta }: Parameters) {
                     return (
                         <div style={{ minHeight: '100%' }}>
                             <h2 style={{ marginBottom: '20px' }}>Create new agent</h2>
-                            <Field label="Identifier" required={true} description="A unique identifier for the agent" invalid={isInvalid(currentAgent.id)} error={isInvalid(currentAgent.id) ? InvalidMsg : ''}>
-                                <Input {...register("id", { required: true })} type="text" value={currentAgent.id} onChange={handleOnChangeInput} />
+
+                            <Field label="Context" required={true} disabled={hasSetContext} description="The context or namespace in which the agent operates, used for grouping agents" invalid={isInvalid(currentAgent.namespace)} error={isInvalid(currentAgent.namespace) ? InvalidMsg : ''}>
+                                <Input {...register("namespace", { required: !hasSetContext })} disabled={hasSetContext} type="text" value={currentAgent.namespace} onChange={handleOnChangeInput} />
                             </Field>
 
-                            <Field label="Context" required={true} description="The context or namespace in which the agent operates, used for grouping agents" invalid={isInvalid(currentAgent.namespace)} error={isInvalid(currentAgent.namespace) ? InvalidMsg : ''}>
-                                <Input {...register("namespace", { required: true })} type="text" value={currentAgent.namespace} onChange={handleOnChangeInput} />
+                            <Field label="Identifier" required={true} description="A unique identifier for the agent" invalid={isInvalid(currentAgent.id)} error={isInvalid(currentAgent.id) ? InvalidMsg : ''}>
+                                <Input {...register("id", { required: true })} type="text" value={currentAgent.id} onChange={handleOnChangeInput} />
                             </Field>
 
                             <Field label="Name" description="A readable name for the agent that does not need to be unique" required={true} invalid={currentAgent.name.includes(" ")} error={currentAgent.name.includes(" ") ? 'Blank spaces are not allowed' : ''}>

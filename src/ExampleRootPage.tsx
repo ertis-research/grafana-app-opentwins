@@ -19,7 +19,7 @@ export const ExampleRootPage = React.memo(function ExampleRootPage(props: AppRoo
   // Update the navigation when the tab or path changes
   const navModel = useNavModel(
     useMemo(() => ({ tab, pages, path: pathWithoutLeadingSlash, meta }), [meta, pathWithoutLeadingSlash, tab])
-  );
+  ); 
   useEffect(() => {
     onNavChanged(navModel);
   }, [navModel, onNavChanged]);

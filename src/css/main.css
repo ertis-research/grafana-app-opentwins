@@ -1,17 +1,118 @@
 .listSelected {
-    -webkit-box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px; 
+    -webkit-box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
     box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
 }
 
-.buttonsFixResponsive {
-    width: 30px;
+.searchAndButton {
+    display: block;
 }
 
-@media ((min-width: 0px) and (max-width: 992px)) or (min-width: 1250px) {
-    .buttonsFixResponsive {
-        width: 80px; 
-        display: flex;
-        justify-content: flex-end;
-        padding-right: 10px;
+.searchAndButton > a {
+    width: 100%;
+    margin-top: 15px;
+}
+
+.responsiveImage {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    justify-items: center;
+    align-items: center;
+}
+
+.responsiveImage img {
+    margin-bottom: 20px;
+}
+
+.responsiveTextHeader {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    justify-items: center;
+    align-items: center;
+}
+
+.headerInfo {
+    display: grid;
+    grid-template-rows: 1fr 0.2fr 100px;
+    grid-template-columns: 1fr;
+    gap: 10px 0px;
+    width: 100%;
+    margin-bottom: 0px;
+}
+
+.headerInfo > div {
+    display: flex;
+    justify-items: center;
+    justify-content: center;
+    align-items: center;
+}
+
+.headerInfo .div1 {
+    grid-area: 1/1/2/2;
+    justify-content: center;
+}
+
+.headerInfo .div2 {
+    grid-area: 3/1/4/2;
+}
+
+.headerInfo .div3 {
+    grid-area: 2/1/3/2;
+    justify-content: center;
+}
+
+/*md*/
+@media (min-width: 768px) {}
+
+/*lg*/
+@media (min-width: 992px) {
+    .searchAndButton {
+        display: flex
     }
+
+    .searchAndButton a {
+        width: auto;
+        margin-top: 0px;
+    }
+
+    .responsiveImage {
+        display: flex;
+        flex-direction: row;
+    }
+
+    .responsiveImage img {
+        margin-bottom: 0px;
+        margin-right: 20px;
+    }
+
+    .responsiveTextHeader {
+        justify-content: flex-start;
+        justify-items: flex-start;
+        align-items: flex-start;
+    }
+
+    .headerInfo {
+        display: grid;
+        grid-template-rows: 100px;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 0px 10px;
+        width: 100%;
+        margin-bottom: 20px;
+    }
+    
+    .headerInfo .div1 {
+        grid-area: 1/1/2/2;
+        justify-content: flex-start;
+    }
+    
+    .headerInfo .div2 {
+        grid-area: 1/2/2/3;
+    }
+    
+    .headerInfo .div3 {
+        grid-area: 1/3/2/4;
+        justify-content: flex-end;
+    }
+
 }

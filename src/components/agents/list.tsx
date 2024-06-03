@@ -226,9 +226,9 @@ export function ListAgents({ path, meta }: Parameters) {
                             </div>
                         </a>
                     </div>
-                    <div className='buttonsFixResponsive' style={{ height: '100%', alignContent: 'center', marginLeft: '20px' }}>
+                    <div style={{ height: 'auto', alignContent: 'center', display: 'flex', marginLeft: '20px', width: '80px' }}>
                         <IconButton size='xl' style={{ paddingRight: '10px' }} name={(item.status === AgentState.ACTIVE) ? "pause" : "play"} onClick={() => handleOnClickPausePlay(item)} />
-                        <IconButton size='xl' name='trash-alt' style={{ paddingRight: '10px' }} onClick={() => setIsOpenDelete(item)} />
+                        <IconButton size='xl' name='trash-alt' style={{ paddingRight: '20px' }} onClick={() => setIsOpenDelete(item)} />
                     </div>
                 </div>
             </div>
@@ -305,16 +305,15 @@ export function ListAgents({ path, meta }: Parameters) {
                 </div>
             </div>
             <div className="row">
-                <div className={'col-12 col-sm-12 ' + ((selectedAgent) ? 'col-md-7 col-lg-7' : 'col-md-12 col-lg-12')} style={{ transition: 'all 0.35s ease' }}>
+                <div className={'col-12 col-sm-12 ' + ((selectedAgent) ? 'col-md-7 col-lg-7' : 'col-md-12 col-lg-12')} style={{ transition: 'all 0.25s ease' }}>
                     <div className="row">
                         {(filteredAgents.length > 0) ? agentsMapped : noChildren}
                     </div>
                 </div>
-                <div className='col-12 col-sm-12 col-md-5 col-lg-5' style={{ transformOrigin: 'right', opacity: ((selectedAgent ? '1' : '0')), transform: ((selectedAgent) ? 'scaleX(1)' : 'scaleX(0)'), transition: ('transform 0.35s ease 0.35s' + ((selectedAgent) ? ', opacity 0s ease 0.35s' : '')) }}>
-                    <TextArea rows={25} value={(selectedAgent && selectedAgent.data) ? JSON.stringify(selectedAgent.data, undefined, 2) : ""} readOnly />
+                <div className='col-12 col-sm-12 col-md-5 col-lg-5' style={{ transformOrigin: 'right', opacity: ((selectedAgent ? '1' : '0')), transform: ((selectedAgent) ? 'scaleX(1)' : 'scaleX(0)'), zIndex:1000, transition: ('transform 0.25s ease 0.1s' + ((selectedAgent) ? ', opacity 0s ease 0.25s' : '')) }}>
+                    <TextArea style={{resize: 'none'}} rows={25} value={(selectedAgent && selectedAgent.data) ? JSON.stringify(selectedAgent.data, undefined, 2) : ""} readOnly />
                 </div>
             </div>
         </Fragment>
     );
-
 }

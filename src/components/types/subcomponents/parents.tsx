@@ -1,16 +1,14 @@
-import React, { useContext, useEffect, useState } from 'react'
-import { AppPluginMeta, KeyValue, SelectableValue } from "@grafana/data"
+import React, { ChangeEvent, useContext, useEffect, useState } from 'react'
+import { AppEvents, AppPluginMeta, KeyValue, SelectableValue } from "@grafana/data"
 import { StaticContext } from 'utils/context/staticContext'
 import { getParentOfTypeService } from 'services/types/parent/getParentTypeService'
-import { Button, Form, FormAPI, InlineField, InlineFieldRow, Input, Select, VerticalGroup } from '@grafana/ui'
+import { Button, Form, FormAPI, Icon, InlineLabel, Input, Select, useTheme2 } from '@grafana/ui'
 import { getAllTypesService } from 'services/types/getAllTypesService'
 import { SelectData } from 'utils/interfaces/select'
 import { createOrUpdateTypeToBeChildService } from 'services/types/children/createOrUpdateTypeToBeChildService'
-import { Notification } from 'utils/interfaces/notification'
-import { enumNotification } from 'utils/auxFunctions/general'
-import { CustomNotification } from 'components/auxiliary/general/notification'
 import { unlinkChildrenTypeById } from 'services/types/children/unlinkChildrenTypeByIdService'
 import { IDittoThing } from 'utils/interfaces/dittoThing'
+import { getAppEvents } from '@grafana/runtime'
 
 interface Parameters {
     path: string
@@ -26,47 +24,53 @@ interface FormScheme {
 export function ListParentsType({ path, id, meta }: Parameters) {
 
     const [parents, setParents] = useState<FormScheme[]>([])
+    const [value, setValue] = useState<string>()
     const [types, setTypes] = useState<SelectData[]>([])
     const [selectedType, setSelectedType] = useState<SelectableValue<string>>()
     const [newParent, setNewParent] = useState<FormScheme>({ id: '', num: "1" })
-    const [showNotification, setShowNotification] = useState<Notification>({ state: enumNotification.HIDE, title: "" })
 
     const context = useContext(StaticContext)
-
-    const notificationError: Notification = {
-        state: enumNotification.ERROR,
-        title: `The type ${id} has not been edited correctly.`,
-        description: "Please check the data you have entered."
-    }
-
-    const notificationSuccess: Notification = {
-        state: enumNotification.SUCCESS,
-        title: `The type ${id} has been edited correctly.`,
-        description: "You can leave the page if you don't want to edit any more."
-    }
+    const appEvents = getAppEvents()
 
     const handleOnSubmit = (data: FormScheme) => {
         createOrUpdateTypeToBeChildService(context, data.id, id, Number(data.num)).then(() => {
             console.log("OK")
-            setShowNotification(notificationSuccess)
+            appEvents.publish({
+                type: AppEvents.alertSuccess.name,
+                payload: [`The type ${id} has been edited correctly`],
+            });
             getParents()
         }).catch(() => {
-            console.log("error")
-            setShowNotification(notificationError)
+            appEvents.publish({
+                type: AppEvents.alertError.name,
+                payload: [`The type ${id} has not been edited correctly, please check the data you have entered`],
+            });
+        }).finally(() => {
+            setSelectedType({value: '', label: ''})
+            setNewParent({ id: '', num: "1" })
         })
-        
     }
 
     const handleUnlink = (parent: string) => {
         unlinkChildrenTypeById(context, parent, id).then(() => {
             console.log("OK")
-            setShowNotification(notificationSuccess)
+            appEvents.publish({
+                type: AppEvents.alertSuccess.name,
+                payload: [`The parent ${parent} has been unlinked correctly`],
+            });
             getParents()
         }).catch(() => {
             console.log("error")
-            setShowNotification(notificationError)
+            appEvents.publish({
+                type: AppEvents.alertError.name,
+                payload: [`The parent ${parent} has not been unlinked correctly`],
+            });
         })
-        
+
+    }
+
+    const handleOnChangeSearch = (e: ChangeEvent<HTMLInputElement>) => {
+        setValue(e.target.value)
     }
 
     const handleOnClickCheck = (parent: string) => {
@@ -76,14 +80,11 @@ export function ListParentsType({ path, id, meta }: Parameters) {
     const handleOnChangeInputNum = (event: React.FormEvent<HTMLInputElement>, parent: string) => {
         let newParents = JSON.parse(JSON.stringify(parents))
         const idx: number = newParents.findIndex((v: FormScheme) => v.id === parent)
-        console.log("idx: " + idx)
         newParents[idx] = {
             id: parent,
             num: event.currentTarget.value
         }
-        console.log("parents: " + newParents)
         setParents(newParents)
-
     }
 
     const getParents = () => {
@@ -95,7 +96,9 @@ export function ListParentsType({ path, id, meta }: Parameters) {
                             id: key,
                             num: value as string
                         }
-                    }))
+                    })
+                    .sort((a: FormScheme, b: FormScheme) => a.id.localeCompare(b.id))
+                )
             }
         }).catch(() => console.log("error"))
     }
@@ -122,12 +125,8 @@ export function ListParentsType({ path, id, meta }: Parameters) {
     }, [parents])
 
     useEffect(() => {
-        console.log(showNotification)
-    }, [showNotification])
-
-    useEffect(() => {
-        if(selectedType === undefined) {
-            setNewParent({id: '', num: "1"})
+        if (selectedType === undefined) {
+            setNewParent({ id: '', num: "1" })
         } else {
             setNewParent({
                 ...newParent,
@@ -141,44 +140,65 @@ export function ListParentsType({ path, id, meta }: Parameters) {
         return <Form id={"form_" + pid} onSubmit={handleOnSubmit} maxWidth="none" style={{ marginTop: '0px', paddingTop: '0px' }}>
             {({ register, errors, control }: FormAPI<FormScheme>) => {
                 return (
-                    <InlineFieldRow>
-                        <InlineField label="Parent">
-                            <Input {...register("id")} id={"input_id_" + pid} value={parent.id} width={30} readOnly={true} />
-                        </InlineField>
-                        <InlineField label="Children number" style={{ marginLeft: '10px' }}>
-                            <Input {...register("num")} id={"input_num_" + pid} type="text" value={parent.num} onChange={(e) => handleOnChangeInputNum(e, parent.id)} width={10}/>
-                        </InlineField>
-                        <Button type='button' variant='secondary' icon='external-link-alt' style={{ marginLeft: '10px' }} onClick={() => handleOnClickCheck(parent.id)}></Button>
-                        <Button type='submit' variant='secondary' style={{ marginLeft: '10px', marginRight: '10px' }}>Update</Button>
-                        <Button type='button' variant='destructive' onClick={() => handleUnlink(parent.id)}>Unlink</Button>
-                    </InlineFieldRow>
+                    <div className='row mt-2'>
+                        <div className="col-12 col-xl-5 mt-1">
+                            <div style={{ display: 'flex', alignContent: 'center', width: '100%' }}>
+                                <InlineLabel style={{ width: '80px', backgroundColor: useTheme2().colors.secondary.main }}>Parent</InlineLabel>
+                                <Input {...register("id")} id={"input_id_" + pid} value={parent.id} readOnly={true} />
+                            </div>
+                        </div>
+                        <div className="col-12 col-xl-3 mt-1">
+                            <div style={{ display: 'flex', alignContent: 'center', width: '100%' }}>
+                                <InlineLabel style={{ width: '80px', backgroundColor: useTheme2().colors.secondary.main, overflow: 'hidden', lineHeight: '1em' }}>Children number</InlineLabel>
+                                <Input {...register("num")} id={"input_num_" + pid} type="text" value={parent.num} onChange={(e) => handleOnChangeInputNum(e, parent.id)} />
+                            </div>
+                        </div>
+                        <div className="col-12 col-xl-4 mt-1" style={{ display: 'flex', justifyContent: 'flex-end' }}>
+                            <Button type='submit' variant='secondary' style={{ marginRight: '5px', width: '100%', justifyContent: 'center' }}>Update</Button>
+                            <Button type='button' variant='destructive' style={{ marginRight: '5px' }} onClick={() => handleUnlink(parent.id)}>Unlink</Button>
+                            <Button type='button' variant='secondary' icon='external-link-alt' onClick={() => handleOnClickCheck(parent.id)}></Button>
+                        </div>
+                    </div>
                 )
             }}
-        </Form>
+        </Form >
     })
 
-    const noItems = <h5>There are no items</h5>
+    const noItems = <h5 style={{ textAlign: 'center', marginTop: '20px' }}>There are no parents</h5>
 
-    const newParentForm = <InlineFieldRow>
-        <InlineField label="Parent">
-            <Select
-                options={types}
-                value={selectedType}
-                onChange={(v) => setSelectedType(v)}
-                width={30}
+    const newParentForm = <div className='row mt-3'>
+        <div className="col-12 col-xl-5 mt-1">
+            <div style={{ display: 'flex', alignContent: 'center', width: '100%' }}>
+                <InlineLabel style={{ width: '80px', backgroundColor: useTheme2().colors.secondary.main }}>Parent</InlineLabel>
+                <Select
+                    options={types}
+                    value={selectedType}
+                    onChange={(v) => setSelectedType(v)}
+                />
+            </div>
+        </div>
+        <div className="col-12 col-xl-3 mt-1">
+            <div style={{ display: 'flex', alignContent: 'center', width: '100%' }}>
+                <InlineLabel style={{ width: '80px', backgroundColor: useTheme2().colors.secondary.main, overflow: 'hidden', lineHeight: '1em' }}>Children number</InlineLabel>
+                <Input type="number" value={newParent.num} onChange={(v) => setNewParent({ ...newParent, num: v.currentTarget.value })} />
+            </div>
+        </div>
+        <div className="col-12 col-xl-4 mt-1" style={{ display: 'flex', justifyContent: 'flex-end' }}>
+            <Button type='button' fullWidth onClick={() => { handleOnSubmit(newParent); setSelectedType(undefined) }} disabled={selectedType === undefined || (selectedType.value !== undefined && selectedType.value.trim()) === ''}>Add parent</Button>
+        </div>
+    </div>
+
+    return <div>
+        <div className='mb-1'>
+            <Input
+                value={value}
+                prefix={<Icon name="search" />}
+                onChange={handleOnChangeSearch}
+                placeholder="Search"
             />
-        </InlineField>
-
-        <InlineField label="Children number" style={{ marginLeft: '10px' }}>
-            <Input type="number" value={newParent.num} onChange={(v) => setNewParent({ ...newParent, num: v.currentTarget.value })} width={10} />
-        </InlineField>
-        <Button type='button' onClick={() => {handleOnSubmit(newParent); setSelectedType(undefined)}} style={{ marginLeft: '10px', width: '210px', justifyContent: 'center' }}>Add parent</Button>
-    </InlineFieldRow>
-
-    return <VerticalGroup align="center">
-        <CustomNotification notification={showNotification} setNotificationFunc={setShowNotification} />
-        {(parents.length > 0) ? parentsForm : noItems}
+        </div>
         {newParentForm}
-    </VerticalGroup>
+        {(parents.length > 0) ? parentsForm : noItems}
+    </div>
 
 }

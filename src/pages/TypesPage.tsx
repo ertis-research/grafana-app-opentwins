@@ -18,7 +18,8 @@ export const TypesPage: FC<AppRootProps> = ({ query, path, meta }) => {
   let component = <ListTypes path={path} meta={meta}/> //default
   switch (query["mode"]) {
     case "check":
-      if(id !== undefined) {component = <TypeInfo path={path} id={id} meta={meta}/>}
+      const section = query["section"]
+      if(id !== undefined) {component = <TypeInfo path={path} id={id} meta={meta} section={section}/>}
       break
 
     case "create":

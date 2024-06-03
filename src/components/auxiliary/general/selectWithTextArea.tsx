@@ -1,5 +1,5 @@
 import React, { useState, Fragment, useEffect } from 'react'
-import { Select, TextArea, Button, Icon, HorizontalGroup } from '@grafana/ui'
+import { Select, TextArea, Button, Icon, HorizontalGroup, LinkButton } from '@grafana/ui'
 import { SelectableValue } from '@grafana/data'
 import { SelectData } from 'utils/interfaces/select'
 import { capitalize, enumNotification } from 'utils/auxFunctions/general'
@@ -113,19 +113,22 @@ export const SelectWithTextArea = ({ path, name, getByIdFunc, getAllFunc, delete
         : <div></div>
 //            <LinkButton variant="secondary" href={path + "&id=" + value.value + "&mode=edit"} icon="pen" disabled={showNotification.state !== enumNotification.READY}>Edit</LinkButton>
 
-/*
+
     const createButton = (!disableCreate) ?
-        <HorizontalGroup justify="center">
-            <LinkButton variant="primary" href={path + "&mode=create"} className="m-3" icon="plus" disabled={showNotification.state !== enumNotification.READY}>
+        <div style={{ display: 'flex', alignItems: 'center'}}>
+            <LinkButton variant="primary" href={path + "&mode=create"} icon="plus" disabled={showNotification.state !== enumNotification.READY}>
                 Create new {name}
             </LinkButton>
-        </HorizontalGroup>
+        </div>
         : <div></div>
-*/
+
     return (
         <Fragment>
             <div className='row justify-content-between mb-3'>
-                <div className="col-12 col-sm-12 col-md-7 col-lg-7">
+                <div className={(disableCreate) ? 'col-0' : 'col-12 col-sm-12 col-md-3 col-lg-3'}>
+                    {createButton}
+                </div>
+                <div className="col-12 col-sm-12 col-md-5 col-lg-5">
                     <Select
                         options={objects}
                         value={value}
@@ -135,7 +138,7 @@ export const SelectWithTextArea = ({ path, name, getByIdFunc, getAllFunc, delete
                         disabled={showNotification.state !== enumNotification.READY}
                     />
                 </div>
-                <div className="col-12 col-sm-12 col-md-5 col-lg-5">
+                <div className="col-12 col-sm-12 col-md-4 col-lg-4">
                     {buttons}
                 </div>
             </div>
