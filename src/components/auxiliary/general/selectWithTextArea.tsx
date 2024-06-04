@@ -1,5 +1,5 @@
 import React, { useState, Fragment, useEffect } from 'react'
-import { Select, TextArea, Button, Icon, HorizontalGroup, LinkButton } from '@grafana/ui'
+import { Select, TextArea, Button, Icon, LinkButton } from '@grafana/ui'
 import { SelectableValue } from '@grafana/data'
 import { SelectData } from 'utils/interfaces/select'
 import { capitalize, enumNotification } from 'utils/auxFunctions/general'
@@ -23,7 +23,7 @@ interface Parameters {
     disableCreate?: boolean
 }
 
-export const SelectWithTextArea = ({ path, name, getByIdFunc, getAllFunc, deleteFunc, ExtraButtonComponent, disableCreate=false }: Parameters) => {
+export const SelectWithTextArea = ({ path, name, getByIdFunc, getAllFunc, deleteFunc, ExtraButtonComponent, disableCreate = false }: Parameters) => {
 
     const confirmDelete_title = "Delete " + name
     const confirmDelete_body = (id: any) => "Are you sure you want to delete " + name + " " + id + "?"
@@ -32,19 +32,19 @@ export const SelectWithTextArea = ({ path, name, getByIdFunc, getAllFunc, delete
     const [objects, setObjects] = useState<SelectData[]>([])
     const [value, setValue] = useState<SelectableValue<string>>()
     const [selectedObject, setselectedObject] = useState<any>(undefined)
-    const [showNotification, setShowNotification] = useState<Notification>({state: enumNotification.HIDE, title: ""})
+    const [showNotification, setShowNotification] = useState<Notification>({ state: enumNotification.HIDE, title: "" })
 
     const handleOnConfirmDelete = () => {
-        if(value?.value !== undefined){
-            setShowNotification({state: enumNotification.LOADING, title: ""})
+        if (value?.value !== undefined) {
+            setShowNotification({ state: enumNotification.LOADING, title: "" })
             deleteFunc(value.value).then(() => {
                 setShowNotification({
-                    state: enumNotification.SUCCESS, 
+                    state: enumNotification.SUCCESS,
                     title: capitalize(name) + " successfully deleted!"
                 })
             }).catch(() => {
                 setShowNotification({
-                    state: enumNotification.ERROR, 
+                    state: enumNotification.ERROR,
                     title: "Error deleting " + name
                 })
             })
@@ -53,7 +53,7 @@ export const SelectWithTextArea = ({ path, name, getByIdFunc, getAllFunc, delete
     }
 
     const handleOnClickDelete = () => {
-        if(value?.value){
+        if (value?.value) {
             setShowNotification({
                 state: enumNotification.CONFIRM,
                 title: confirmDelete_title,
@@ -67,12 +67,12 @@ export const SelectWithTextArea = ({ path, name, getByIdFunc, getAllFunc, delete
     }
 
     const getAll = () => {
-        setShowNotification({state: enumNotification.LOADING})
-        getAllFunc(setObjects, () => {setShowNotification({state: enumNotification.READY})})
+        setShowNotification({ state: enumNotification.LOADING })
+        getAllFunc(setObjects, () => { setShowNotification({ state: enumNotification.READY }) })
     }
 
     useEffect(() => {
-        if(value && value.value && showNotification.state === enumNotification.READY){
+        if (value && value.value && showNotification.state === enumNotification.READY) {
             getByIdFunc(value.value).then((item: any) => {
                 setselectedObject(item)
             }).catch(() => {
@@ -93,7 +93,7 @@ export const SelectWithTextArea = ({ path, name, getByIdFunc, getAllFunc, delete
     }, [])
 
     useEffect(() => {
-        if(showNotification.state === enumNotification.HIDE){
+        if (showNotification.state === enumNotification.HIDE) {
             getAll()
             //getAllFunc(setObjects)
             //setShowNotification({state: enumNotification.READY, title: ""})
@@ -105,17 +105,17 @@ export const SelectWithTextArea = ({ path, name, getByIdFunc, getAllFunc, delete
     const extraButtons = (!ExtraButtonComponent) ? <div></div> :
         <ExtraButtonComponent selectedConnection={selectedObject} selectedId={value} isDisabled={isDisabled} setShowNotification={setShowNotification} />
 
-    const buttons = (selectedObject && value !== undefined) ? 
-        <HorizontalGroup justify="flex-end">
+    const buttons = (selectedObject && value !== undefined) ?
+        <div style={{ display: 'flex', justifyItems: 'flex-end', justifyContent: 'flex-end' }}>
             {extraButtons}
             <Button variant="destructive" icon="trash-alt" disabled={isDisabled} onClick={handleOnClickDelete}>Delete</Button>
-        </HorizontalGroup>
+        </div>
         : <div></div>
-//            <LinkButton variant="secondary" href={path + "&id=" + value.value + "&mode=edit"} icon="pen" disabled={showNotification.state !== enumNotification.READY}>Edit</LinkButton>
+    //            <LinkButton variant="secondary" href={path + "&id=" + value.value + "&mode=edit"} icon="pen" disabled={showNotification.state !== enumNotification.READY}>Edit</LinkButton>
 
 
     const createButton = (!disableCreate) ?
-        <div style={{ display: 'flex', alignItems: 'center'}}>
+        <div style={{ display: 'flex', alignItems: 'center' }}>
             <LinkButton variant="primary" href={path + "&mode=create"} icon="plus" disabled={showNotification.state !== enumNotification.READY}>
                 Create new {name}
             </LinkButton>
@@ -133,7 +133,7 @@ export const SelectWithTextArea = ({ path, name, getByIdFunc, getAllFunc, delete
                         options={objects}
                         value={value}
                         onChange={v => setValue(v)}
-                        prefix={<Icon name="search"/>}
+                        prefix={<Icon name="search" />}
                         placeholder="Search"
                         disabled={showNotification.state !== enumNotification.READY}
                     />
@@ -142,8 +142,8 @@ export const SelectWithTextArea = ({ path, name, getByIdFunc, getAllFunc, delete
                     {buttons}
                 </div>
             </div>
-            <CustomNotification notification={showNotification} setNotificationFunc={setShowNotification}/>
-            <TextArea className="mt-3" rows={25} value={(selectedObject) ? JSON.stringify(selectedObject, undefined, 4) : ""} readOnly/>
+            <CustomNotification notification={showNotification} setNotificationFunc={setShowNotification} />
+            <TextArea className="mt-3" rows={25} value={(selectedObject) ? JSON.stringify(selectedObject, undefined, 4) : ""} readOnly />
         </Fragment>
     )
 

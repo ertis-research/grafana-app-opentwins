@@ -1,4 +1,4 @@
-import { Button, ConfirmModal, Modal, Spinner, VerticalGroup } from "@grafana/ui"
+import { Button, ConfirmModal, Modal, Spinner } from "@grafana/ui"
 import React, { useState, useContext, Fragment } from "react"
 import { enumNotification } from "utils/auxFunctions/general"
 import { StaticContext } from "utils/context/staticContext"
@@ -67,10 +67,9 @@ export const ButtonsInfo = ({ path, thingId, isType, funcDelete, funcDeleteChild
                 return <Modal title={messageError} icon='exclamation-triangle' isOpen={true} onDismiss={() => hideNotification(false)}>{descriptionError}</Modal>
             case enumNotification.LOADING:
                 return (
-                    <VerticalGroup align="center">
-                        <h4 className="mb-0 mt-4">Loading...</h4>
+                    <div style={{ display: 'flex', justifyItems: 'center', justifyContent: 'center', alignContent: 'center'}}>
                         <Spinner size={30} />
-                    </VerticalGroup>
+                    </div>
                 )
             default:
                 return <div></div>
@@ -87,6 +86,6 @@ export const ButtonsInfo = ({ path, thingId, isType, funcDelete, funcDeleteChild
             <a href={path + '&mode=edit&element=' + title + '&id=' + thingId} style={{ all: 'unset', marginRight: "10px"}} >
                 <Button icon="pen" tooltip="Edit" variant="secondary">Edit</Button>
             </a>
-            <Button icon="trash-alt" tooltip="Delete" variant="destructive" onClick={(e) => handleOnDelete(e, thingId)}>Delete</Button>
+            <Button icon="trash-alt"  tooltip="Delete" variant="destructive" onClick={(e) => handleOnDelete(e, thingId)}>Delete</Button>
     </Fragment>
 }

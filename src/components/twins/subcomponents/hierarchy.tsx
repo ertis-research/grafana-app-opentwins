@@ -2,13 +2,12 @@ import React, { useContext, useEffect } from 'react'
 import { AppPluginMeta, KeyValue } from "@grafana/data"
 import { useTheme2 } from '@grafana/ui'
 import { ListLabels, ListThingNum } from 'components/auxiliary/dittoThing/list/listThingNum'
-import { getAllTypesService } from 'services/types/getAllTypesService'
-import { StaticContext } from 'utils/context/staticContext'
+import { Context, StaticContext } from 'utils/context/staticContext'
 import { getChildrenOfTypeService } from 'services/types/children/getChildrenOfTypeService'
 import { IDittoThing, LinkData } from 'utils/interfaces/dittoThing'
-import { getParentOfTypeService } from 'services/types/parent/getParentTypeService'
-import { createOrUpdateTypeToBeChildService } from 'services/types/children/createOrUpdateTypeToBeChildService'
-import { unlinkChildrenTypeById } from 'services/types/children/unlinkChildrenTypeByIdService'
+import { getParentOfTwinService } from 'services/twins/parent/getParentOfTwinService'
+import { getAllRootTwinsService } from 'services/twins/getAllRootTwinsService'
+import { createOrUpdateTwinToBeChildService } from 'services/twins/children/createOrUpdateTwinToBeChildService'
 
 interface Parameters {
     path: string
@@ -20,12 +19,6 @@ export function HierarchyType({ path, id, meta }: Parameters) {
 
     const bgcolor = useTheme2().colors.background.secondary
     const context = useContext(StaticContext)
-
-    const parentsLabels: ListLabels = {
-        id: "Parent",
-        number: "Children number",
-        buttonsText: "parent"
-    }
 
     const childrenLabels: ListLabels = {
         id: "Child",
@@ -44,8 +37,8 @@ export function HierarchyType({ path, id, meta }: Parameters) {
         })
     }
 
-    const getParents = async (): Promise<LinkData[]> => {
-        return getParentOfTypeService(context, id).then((res: {[id: string]: number}|undefined) => {
+    const getParent = async (): Promise<LinkData> => {
+        return getParentOfTwinService(context, id).then((res: {[id: string]: number}|undefined) => {
             return (res === undefined) ? [] : Object.entries(res).map(([id, num]) => {
                 return {
                     "id": id,
@@ -56,28 +49,20 @@ export function HierarchyType({ path, id, meta }: Parameters) {
     }
 
     const getTypes = async (): Promise<string[]> => {
-        return getAllTypesService(context).then((res: IDittoThing[]) => {
+        return getAllRootTwinsService(context).then((res: IDittoThing[]) => {
             return res.map((t: IDittoThing) => { 
                 return t.thingId
             })
         })
     }
 
-    const updateChild = async (elemToUpdate: string, newNum: number): Promise<any> => {
+    const updateChild = async (elemToUpdate: string): Promise<any> => {
         console.log("elemToUpdate", elemToUpdate)
-        return createOrUpdateTypeToBeChildService(context, id, elemToUpdate, newNum)
-    }
-
-    const updateParent = async (elemToUpdate: string, newNum: number): Promise<any> => {
-        return createOrUpdateTypeToBeChildService(context, elemToUpdate, id, newNum)
-    }
-
-    const unlinkParent = async (elemToUnlink: string): Promise<any> => {
-        return unlinkChildrenTypeById(context, elemToUnlink, id)
+        return createOrUpdateTwinToBeChildService(context, id, elemToUpdate)
     }
 
     const unlinkChild = async (elemToUnlink: string): Promise<any> => {
-        return unlinkChildrenTypeById(context, id, elemToUnlink)
+        return unlinkChildrenTwinById(context, id, elemToUnlink)
     }
     
     useEffect(() => {
@@ -88,14 +73,13 @@ export function HierarchyType({ path, id, meta }: Parameters) {
             <div className='m-0 mr-md-1' style={{ backgroundColor: bgcolor, padding: '30px', height: '100%' }}>
                 <h5><b>Parents</b></h5>
                 <hr />
-                <ListThingNum path={path} meta={meta} id={id} labels={parentsLabels} isType={true} funcGet={getParents} funcGetOptions={getTypes} funcUpdate={updateParent} funcUnlink={unlinkParent}/>
             </div>
         </div>
         <div className='col-12 col-md-6 mt-2'>
             <div className='m-0 ml-md-1' style={{ backgroundColor: bgcolor, padding: '30px', height: '100%' }}>
                 <h5><b>Children</b></h5>
                 <hr />
-                <ListThingNum path={path} meta={meta} id={id} labels={childrenLabels} isType={true} funcGet={getChildren} funcGetOptions={getTypes} funcUpdate={updateChild} funcUnlink={unlinkChild} hrefCreateButton={path + '&mode=create' + ((id !== undefined) ? '&id=' + id : "")}/>
+                <ListThingNum path={path} meta={meta} id={id} labels={childrenLabels} isType={false} funcGet={getChildren} funcGetOptions={getTypes} funcUpdate={updateChild} funcUnlink={unlinkChild} hrefCreateButton={path + '&mode=create' + ((id !== undefined) ? '&id=' + id : "")}/>
             </div>
         </div>
     </div>
@@ -103,3 +87,7 @@ export function HierarchyType({ path, id, meta }: Parameters) {
 //<ListChildrenType path={path} meta={meta} id={id} />
 
 }
+function unlinkChildrenTwinById(context: Context, id: string, elemToUnlink: string): any {
+    throw new Error('Function not implemented.')
+}
+

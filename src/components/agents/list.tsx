@@ -1,6 +1,6 @@
 import React, { ChangeEvent, Fragment, MouseEvent, useContext, useEffect, useState } from 'react'
 import { AppEvents, AppPluginMeta, KeyValue, SelectableValue } from "@grafana/data"
-import { ConfirmModal, Icon, IconButton, Input, LinkButton, Select, Spinner, TextArea, useTheme2, VerticalGroup } from '@grafana/ui'
+import { ConfirmModal, Icon, IconButton, Input, LinkButton, Select, Spinner, TextArea, useTheme2 } from '@grafana/ui'
 import { enumNotification } from 'utils/auxFunctions/general'
 import { AgentState, ListAgent, Pod, PodState, Types_values } from 'utils/interfaces/agents'
 import { getAllAgentsService } from 'services/agents/getAllAgentsService'
@@ -275,13 +275,12 @@ export function ListAgents({ path, meta }: Parameters) {
     }
 
     const noChildren = (showNotification !== enumNotification.READY) ?
-        <VerticalGroup align="center">
-            <h4 className="mb-0 mt-4">Loading...</h4>
-            <Spinner size={30} />
-        </VerticalGroup> :
-        <VerticalGroup align="center">
+        <div className="mb-0 mt-4" style={{ display: 'flex', justifyItems: 'center', justifyContent: 'center', width: '100%' }}>
+            <Spinner inline={true} size={20} />
+        </div> :
+        <div className="mb-0 mt-4" style={{ display: 'flex', justifyContent: 'center', width: '100%' }}>
             <h5>There are no agents</h5>
-        </VerticalGroup>
+        </div>
 
     return (
         <Fragment>
@@ -310,8 +309,8 @@ export function ListAgents({ path, meta }: Parameters) {
                         {(filteredAgents.length > 0) ? agentsMapped : noChildren}
                     </div>
                 </div>
-                <div className='col-12 col-sm-12 col-md-5 col-lg-5' style={{ transformOrigin: 'right', opacity: ((selectedAgent ? '1' : '0')), transform: ((selectedAgent) ? 'scaleX(1)' : 'scaleX(0)'), zIndex:1000, transition: ('transform 0.25s ease 0.1s' + ((selectedAgent) ? ', opacity 0s ease 0.25s' : '')) }}>
-                    <TextArea style={{resize: 'none'}} rows={25} value={(selectedAgent && selectedAgent.data) ? JSON.stringify(selectedAgent.data, undefined, 2) : ""} readOnly />
+                <div className='col-12 col-sm-12 col-md-5 col-lg-5' style={{ transformOrigin: 'right', opacity: ((selectedAgent ? '1' : '0')), transform: ((selectedAgent) ? 'scaleX(1)' : 'scaleX(0)'), zIndex: 1000, transition: ('transform 0.25s ease 0.1s' + ((selectedAgent) ? ', opacity 0s ease 0.25s' : '')) }}>
+                    <TextArea style={{ resize: 'none' }} rows={25} value={(selectedAgent && selectedAgent.data) ? JSON.stringify(selectedAgent.data, undefined, 2) : ""} readOnly />
                 </div>
             </div>
         </Fragment>

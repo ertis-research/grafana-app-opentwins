@@ -1,7 +1,7 @@
 import React, { useState, Fragment, useEffect, useContext, ChangeEvent } from 'react'
 import { AppPluginMeta, KeyValue, SelectableValue } from '@grafana/data'
 import { IAttribute, IDittoThing, IDittoThingData, IDittoThingForm, IFeature, IThingId } from 'utils/interfaces/dittoThing'
-import { Form, FormAPI, Field, Input, InputControl, Select, Icon, TextArea, Button, HorizontalGroup, RadioButtonGroup, Switch, useTheme2 } from '@grafana/ui'
+import { Form, FormAPI, Field, Input, InputControl, Select, Icon, TextArea, Button, RadioButtonGroup, Switch, useTheme2 } from '@grafana/ui'
 import { SelectData } from 'utils/interfaces/select'
 import { ElementHeader } from 'components/auxiliary/general/elementHeader'
 import { basicAttributesConst, enumOptions, options, restrictedAttributesConst, staticAttributesConst } from 'utils/data/consts'
@@ -367,13 +367,13 @@ export const ThingForm = ({ path, parentId, thingToEdit, isType, funcFromType, f
     const fromRadioButton = (control: Control<IDittoThingForm>) => {
         return (
             <Fragment>
-                <HorizontalGroup justify='center'>
+                <div style={{ display: 'flex', justifyItems: 'center', justifyContent: 'center'}}>
                     <RadioButtonGroup
                         options={options}
                         value={selected}
                         onChange={handleOnChangeFrom}
                     />
-                </HorizontalGroup>
+                </div>
                 {(selected === enumOptions.FROM_TYPE) ? typeForm(control) : (<div></div>)}
             </Fragment>
         )

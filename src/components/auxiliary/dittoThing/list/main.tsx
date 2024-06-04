@@ -1,6 +1,6 @@
 import React, { useState, useEffect, Fragment, useContext } from 'react';
 import { IDittoThing } from 'utils/interfaces/dittoThing';
-import { LinkButton, IconButton, Select, Icon, ConfirmModal, Modal, Spinner, VerticalGroup, InlineSwitch, InlineFieldRow, useTheme2 } from '@grafana/ui'
+import { LinkButton, IconButton, Select, Icon, ConfirmModal, Modal, Spinner, InlineSwitch, InlineFieldRow, useTheme2 } from '@grafana/ui'
 import { AppPluginMeta, KeyValue, SelectableValue } from '@grafana/data';
 import { defaultIfNoExist, enumNotification, imageIsUndefined } from 'utils/auxFunctions/general';
 import { SelectData } from 'utils/interfaces/select';
@@ -56,10 +56,9 @@ export function MainList({ path, meta, isType, funcThings, funcDelete, funcDelet
                 return <Modal title={messageError} icon='exclamation-triangle' isOpen={true} onDismiss={hideNotification}>{descriptionError}</Modal>
             case enumNotification.LOADING:
                 return (
-                    <VerticalGroup align="center">
-                        <h4 className="mb-0 mt-4">Loading...</h4>
-                        <Spinner size={30} />
-                    </VerticalGroup>
+                    <div className="mb-0 mt-4" style={{ display: 'flex', justifyItems: 'center', justifyContent: 'center', width: '100%'}}>
+                        <Spinner inline={true} size={20} />
+                    </div>
                 )
             default:
                 return <div></div>
@@ -160,12 +159,12 @@ export function MainList({ path, meta, isType, funcThings, funcDelete, funcDelet
     }
 
     const getCard = (item: IDittoThing) => {
-        return <div className="p-4" style={{ height: "100%", width: "100%", backgroundColor: useTheme2().colors.background.canvas}}>
+        return <div className="p-4" style={{ height: "100%", width: "100%", backgroundColor: useTheme2().colors.background.canvas }}>
             <a href={path + "&mode=check&id=" + item.thingId}>
-                <div style={{ height: '85%', width: "100%", overflow: "hidden", whiteSpace: 'nowrap', textOverflow: 'ellipsis'}}>
+                <div style={{ height: '85%', width: "100%", overflow: "hidden", whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>
                     <b>{defaultIfNoExist(item.attributes, "name", item.thingId).trim()}</b>
                     <p>{item.thingId}</p>
-                    <p style={{ whiteSpace: 'normal'}}>{defaultIfNoExist(item.attributes, "description", "")}</p>
+                    <p style={{ whiteSpace: 'normal' }}>{defaultIfNoExist(item.attributes, "description", "")}</p>
                 </div>
                 <div className='mt-2' style={{ height: '15%', display: 'flex', justifyContent: 'end' }}>
                     <a href={path + '&mode=edit&element=' + title + '&id=' + item.thingId} style={{ all: 'unset' }}>
@@ -210,9 +209,9 @@ export function MainList({ path, meta, isType, funcThings, funcDelete, funcDelet
         <InlineSwitch value={!noSimulations} onChange={() => setNoSimulations(!noSimulations)} label="Show simulated twins" showLabel={true} />
 
     const noChildren = (showNotification !== enumNotification.READY) ? <div></div> :
-        <VerticalGroup align="center">
+        <div style={{ display: 'flex', justifyItems: 'center', justifyContent: 'center', alignContent: 'center' }}>
             <h5>There are no items</h5>
-        </VerticalGroup>
+        </div>
 
     return (
         <Fragment>
@@ -241,12 +240,12 @@ export function MainList({ path, meta, isType, funcThings, funcDelete, funcDelet
                     />
                 </div>
                 <div className="col-12 col-sm-12 col-md-4 col-lg-4 mb-1">
-                    <VerticalGroup align="flex-end">
+                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
                         <InlineFieldRow>
                             {switchSimulation}
                             <InlineSwitch value={compactMode} onChange={() => setCompactMode(!compactMode)} label="Compact view" showLabel={true} />
                         </InlineFieldRow>
-                    </VerticalGroup>
+                    </div>
                 </div>
             </div>
             {notification()}

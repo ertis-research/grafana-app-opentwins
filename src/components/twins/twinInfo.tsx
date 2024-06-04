@@ -1,17 +1,15 @@
 import React, { Fragment, useState, useEffect, useContext } from 'react'
 import { AppPluginMeta, KeyValue } from '@grafana/data'
-import { FilterPill, HorizontalGroup, VerticalGroup } from '@grafana/ui'
 import { ListChildrenTwin } from './subcomponents/children'
 import { IDittoThing } from 'utils/interfaces/dittoThing'
 import { StaticContext } from 'utils/context/staticContext'
 import { getTwinService } from 'services/twins/crud/getTwinService'
-import { defaultIfNoExist } from 'utils/auxFunctions/general'
 import { InformationTwin } from './subcomponents/information'
 import { SimulationList } from './subcomponents/simulationList'
 import { OtherFunctionsTwin } from './subcomponents/otherFunctions'
-import { ButtonsInfo } from 'components/auxiliary/dittoThing/form/subcomponents/buttonsInfo'
 import { deleteTwinService } from 'services/twins/crud/deleteTwinService'
 import { deleteTwinWithChildrenService } from 'services/twins/children/deleteTwinWithChildrenService'
+import { InfoHeader } from 'components/auxiliary/general/infoHeader'
 
 
 interface Parameters {
@@ -69,20 +67,7 @@ export function TwinInfo({path, id, meta}: Parameters) {
 
     return (
         <Fragment>
-            <div className='mb-3'>
-                <HorizontalGroup justify='center'>
-                    <VerticalGroup align='center' spacing='xs'>
-                        <h3>{defaultIfNoExist(twinInfo.attributes, "name", twinInfo.thingId)}</h3>
-                        <h5>{twinInfo.thingId}</h5>
-                    </VerticalGroup>
-                </HorizontalGroup>
-                <ButtonsInfo path={path} thingId={twinInfo.thingId} isType={false} funcDelete={deleteTwinService} funcDeleteChildren={deleteTwinWithChildrenService} />
-            </div>
-            <HorizontalGroup justify='center'>
-                {Object.values(Sections).map((item) => (
-                    <FilterPill key={item} label={item} selected={item === selected} onClick={() => setSelected(item)} />
-                ))}
-            </HorizontalGroup>
+            <InfoHeader path={path} thing={twinInfo} isType={false} sections={Object.values(Sections)} selected={selected} setSelected={setSelected} funcDelete={deleteTwinService} funcDeleteChildren={deleteTwinWithChildrenService}/>
             <hr/>
             {getComponent()}
         </Fragment>
