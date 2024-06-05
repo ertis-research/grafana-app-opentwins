@@ -286,11 +286,6 @@ export function ListAgents({ path, meta }: Parameters) {
         <Fragment>
             {deleteConfirmModal()}
             <div className='row justify-content-between mb-3'>
-                <div className='col-12 col-sm-12 col-md-3 col-lg-3'>
-                    <LinkButton icon="plus" variant="primary" href={path + '&mode=create'}>
-                        Create new agent
-                    </LinkButton>
-                </div>
                 <div className="col-12 col-sm-12 col-md-5 col-lg-5">
                     <Input
                         value={value}
@@ -299,8 +294,13 @@ export function ListAgents({ path, meta }: Parameters) {
                         placeholder="Search"
                     />
                 </div>
-                <div className="col-12 col-sm-12 col-md-4 col-lg-4" style={{ justifyContent: 'flex-end', display: 'flex' }}>
+                <div className="col-12 col-sm-12 col-md-4 col-lg-4" style={{ justifyContent: 'flex-start', display: 'flex' }}>
                     {selectType}
+                </div>
+                <div className='col-12 col-sm-12 col-md-3 col-lg-3' style={{ justifyContent: 'flex-end', display: 'flex' }}>
+                    <LinkButton icon="plus" variant="primary" href={path + '&mode=create'}>
+                        Create new agent
+                    </LinkButton>
                 </div>
             </div>
             <div className="row">

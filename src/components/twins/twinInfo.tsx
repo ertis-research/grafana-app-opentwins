@@ -16,40 +16,42 @@ interface Parameters {
     path: string
     id: string
     meta: AppPluginMeta<KeyValue<any>>
+    section?: string
+}
+enum Sections {
+    information = "information",
+    children = "children",
+    simulations = "simulations",
+    agents = "agents",
+    others = "others",
 }
 
-const Sections = {
-    Information : "Information",
-    Children : "Children", 
-    Simulations : "Simulations",
-    Other : "Other"
-}
+export function TwinInfo({ path, id, meta, section }: Parameters) {
 
-export function TwinInfo({path, id, meta}: Parameters) {
-
-    const [selected, setSelected] = useState('Information');
-    const [twinInfo, setTwinInfo] = useState<IDittoThing>({thingId: "", policyId: ""})
+    const [selected, setSelected] = useState<string>((section !== undefined) ? section : Sections.information);
+    const [twinInfo, setTwinInfo] = useState<IDittoThing>({ thingId: "", policyId: "" })
 
     const context = useContext(StaticContext)
 
     const getComponent = () => {
         switch (selected) {
-            case Sections.Information:
-                return <InformationTwin path={path} twinInfo={twinInfo} meta={meta}/>
-            case Sections.Children:
+            case Sections.children:
                 return <ListChildrenTwin path={path} id={id} meta={meta} />
-            case Sections.Simulations:
-                return <SimulationList path={path} id={id} twinInfo={twinInfo} meta={meta} />
-            case Sections.Other:
+            case Sections.simulations:
+                return <SimulationList path={path} id={id} meta={meta} twinInfo={twinInfo} />
+            case Sections.agents:
+                return <OtherFunctionsTwin path={path} id={id} meta={meta} />
+            case Sections.others:
                 return <OtherFunctionsTwin path={path} id={id} meta={meta} />
             default:
-                return <div>Default</div>
+                return <InformationTwin path={path} twinInfo={twinInfo} meta={meta} />
         }
     }
 
     const getTwinInfo = () => {
         getTwinService(context, id).then(res => {
             setTwinInfo(res)
+            console.log("res", res)
         }).catch(() => console.log("error"))
     }
 
@@ -58,17 +60,25 @@ export function TwinInfo({path, id, meta}: Parameters) {
     }, [])
 
     useEffect(() => {
+        if (section !== undefined) {
+            setSelected(section)
+        } else {
+            setSelected(Sections.information)
+        }
+    }, [section])
+
+    useEffect(() => {
         getTwinInfo()
-        setSelected(Sections.Information)
     }, [id])
 
     useEffect(() => {
+        getTwinInfo()
     }, [selected])
 
     return (
         <Fragment>
-            <InfoHeader path={path} thing={twinInfo} isType={false} sections={Object.values(Sections)} selected={selected} setSelected={setSelected} funcDelete={deleteTwinService} funcDeleteChildren={deleteTwinWithChildrenService}/>
-            <hr/>
+            <InfoHeader path={path} thing={twinInfo} isType={false} sections={Object.values(Sections)} selected={selected} setSelected={setSelected} funcDelete={deleteTwinService} funcDeleteChildren={deleteTwinWithChildrenService} />
+            <hr />
             {getComponent()}
         </Fragment>
     )

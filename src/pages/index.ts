@@ -36,17 +36,17 @@ export const pages: PageDefinition[] = [
     showIf: ((meta: AppRootProps['meta']) => {return meta.jsonData !== undefined && meta.jsonData.agentsURL !== undefined && meta.jsonData.agentsURL.trim() !== ''})
   },
   {
-    component: PoliciesPage,
-    icon: 'shield',
-    id: 'policies',
-    text: 'Policies',
-    showIf: (meta: AppRootProps['meta']) => true
-  },
-  {
     component: ConnectionsPage,
     icon: 'plug',
     id: 'connections',
     text: 'Connections',
+    showIf: (meta: AppRootProps['meta']) => true
+  },
+  {
+    component: PoliciesPage,
+    icon: 'shield',
+    id: 'policies',
+    text: 'Policies',
     showIf: (meta: AppRootProps['meta']) => true
   }
 ];

@@ -1,5 +1,6 @@
-import { AppPluginMeta, KeyValue } from '@grafana/data'
-import { Button, Card, Checkbox, Field, FieldSet, FileUpload, Form, FormAPI, Input, InputControl, LinkButton, List, Modal, Spinner, useTheme2 } from '@grafana/ui'
+import { AppEvents, AppPluginMeta, KeyValue } from '@grafana/data'
+import { getAppEvents } from '@grafana/runtime'
+import { Button, Card, Checkbox, Field, FieldSet, FileUpload, Form, FormAPI, Input, InputControl, LinkButton, List, Spinner, useTheme2 } from '@grafana/ui'
 import React, { Fragment, useState, useContext, useEffect, ChangeEvent } from 'react'
 import { duplicateTwinService } from 'services/twins/duplicateTwinService'
 import { deleteSimulationService } from 'services/twins/simulation/deleteSimulationService'
@@ -7,16 +8,19 @@ import { sendSimulationRequest } from 'services/twins/simulation/sendSimulationR
 import { defaultIfNoExist, enumNotification, removeEmptyEntries } from 'utils/auxFunctions/general'
 import { StaticContext } from 'utils/context/staticContext'
 import { TypesOfField } from 'utils/data/consts'
+import { IDittoThing } from 'utils/interfaces/dittoThing'
 import { SimulationAttributes, SimulationContent } from 'utils/interfaces/simulation'
 
 interface Parameters {
     path: string
     meta: AppPluginMeta<KeyValue<any>>
     id: string
-    twinInfo: any
+    twinInfo: IDittoThing
 }
 
 export const SimulationList = ({ path, meta, id, twinInfo }: Parameters) => {
+
+    const appEvents = getAppEvents()
 
     const [selectedSimulation, setselectedSimulation] = useState<SimulationAttributes | undefined>()
     const [simulations, setSimulations] = useState<SimulationAttributes[]>([])
@@ -25,10 +29,8 @@ export const SimulationList = ({ path, meta, id, twinInfo }: Parameters) => {
     const [duplicateTwin, setDuplicateTwin] = useState<boolean>(false)
     const [otherValues, setOtherValues] = useState<{ [id: string]: any }>({})
 
-    const messageSuccess = `Simulated twin successfully created and simulation request sent.`
-    const descriptionSuccess = `aa`
-    const messageError = `Error`
-    const descriptionError = "Please check the data you have entered."
+
+    console.log("que pasa no tengo twin info", twinInfo)
 
     const simulationOfAttribute = {
         attributes: {
@@ -38,15 +40,21 @@ export const SimulationList = ({ path, meta, id, twinInfo }: Parameters) => {
 
     const context = useContext(StaticContext)
 
-    const sendSimulation = (data: any) => {
+    const sendSimulation = async (data: any) => {
         if (selectedSimulation !== undefined) {
             sendSimulationRequest(selectedSimulation, data).then(() => {
                 console.log("OK simulacion")
-                setShowNotification(enumNotification.SUCCESS)
+                appEvents.publish({
+                    type: AppEvents.alertSuccess.name,
+                    payload: ["Simulation request successfully submitted"]
+                });
 
             }).catch(() => {
                 console.log("error simulacion")
-                setShowNotification(enumNotification.ERROR)
+                appEvents.publish({
+                    type: AppEvents.alertError.name,
+                    payload: ["Error when calling the simulation. Please check the data you have entered."]
+                });
             })
         }
     }
@@ -67,17 +75,26 @@ export const SimulationList = ({ path, meta, id, twinInfo }: Parameters) => {
                 data = removeEmptyEntries(data)
                 let ps: Array<Promise<any>> = thingIds.split(",").map((newId: string) => duplicateTwinService(context, id, newId.trim(), simulationOfAttribute))
                 Promise.all(ps).then(() => {
-                    console.log("OK duplicar")
+                    appEvents.publish({
+                        type: AppEvents.alertSuccess.name,
+                        payload: ["Simulated digital twins successfully created"]
+                    });
                     sendSimulation(data)
                 }).catch(() => {
-                    console.log("error duplicar")
-                    setShowNotification(enumNotification.ERROR)
+                    appEvents.publish({
+                        type: AppEvents.alertError.name,
+                        payload: ["Error when duplicating digital twin"]
+                    });
+                }).finally(() => {
+                    setShowNotification(enumNotification.HIDE)
                 })
             }
         } else {
             delete data.thingId
             data = removeEmptyEntries(data)
-            sendSimulation(data)
+            sendSimulation(data).finally(() => {
+                setShowNotification(enumNotification.HIDE)
+            })
         }
 
     }
@@ -104,10 +121,6 @@ export const SimulationList = ({ path, meta, id, twinInfo }: Parameters) => {
         })
     }
 
-    const hideNotification = () => {
-        setShowNotification(enumNotification.HIDE)
-    }
-
     const getAndSetSimulations = () => {
         setSimulations(simulationsToArray(defaultIfNoExist(twinInfo.attributes, "_simulations", {}))
             .map((item: SimulationAttributes) => {
@@ -132,18 +145,6 @@ export const SimulationList = ({ path, meta, id, twinInfo }: Parameters) => {
     useEffect(() => {
         getAndSetSimulations()
     }, [])
-
-    const notification = () => {
-        switch (showNotification) {
-            case enumNotification.SUCCESS:
-                return <Modal title={messageSuccess} icon='check-circle' isOpen={true} onDismiss={() => hideNotification()}>{descriptionSuccess}</Modal>
-            //return <Alert title={messageSuccess} severity={"success"} elevated />
-            case enumNotification.ERROR:
-                return <Modal title={messageError} icon='exclamation-triangle' isOpen={true} onDismiss={() => hideNotification()}>{descriptionError}</Modal>
-            default:
-                return <div></div>
-        }
-    }
 
     const loadingSpinner = () => {
         return (showNotification === enumNotification.LOADING) ? <Spinner size={30} /> : <div></div>
@@ -247,7 +248,7 @@ export const SimulationList = ({ path, meta, id, twinInfo }: Parameters) => {
                             }}
                         </Form>
                     </div>
-                    <div style={{ display: 'flex', justifyItems: 'flex-end', justifyContent: 'flex-end', alignContent: 'flex-start'}} className="mt-3">
+                    <div style={{ display: 'flex', justifyItems: 'flex-end', justifyContent: 'flex-end', alignContent: 'flex-start' }} className="mt-3">
                         <LinkButton
                             icon="pen"
                             variant="secondary"
@@ -264,20 +265,30 @@ export const SimulationList = ({ path, meta, id, twinInfo }: Parameters) => {
         }
     }
 
+    const buttonAdd = <LinkButton icon="plus" variant="primary" href={path + '&mode=create&id=' + id + "&element=simulation"}>
+        Add simulation
+    </LinkButton>
+
     const noSimulations =
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
             <h5>This twin has no simulations</h5>
+            {buttonAdd}
         </div>
 
     const twinSimulated =
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
             <h5>This twin has been created from a simulation. Access the original twin to perform simulations.</h5>
-            <LinkButton icon="external-link-alt" variant="primary" href={path + '&mode=check&id=' + twinInfo.attributes.simulationOf + "&element=simulation"}>
+            {(twinInfo.attributes !== undefined && twinInfo.attributes.hasOwnProperty("simulationOf")) ? 
+                <LinkButton icon="external-link-alt" variant="primary" href={path + '&mode=check&id=' + twinInfo.attributes.simulationOf + "&element=simulation"}>
                 Go to {twinInfo.attributes.simulationOf}
-            </LinkButton>
+            </LinkButton> : <div></div>
+            }
         </div>
 
-    const simulationsList =
+    const simulationsList = <Fragment>
+        <div style={{ display: 'flex', justifyContent: 'flex-end', width: '100%' }}>
+            {buttonAdd}
+        </div>
         <div className="row mt-4">
             <div className="col-12 col-md-6">
                 <h5>Simulations available</h5>
@@ -291,17 +302,9 @@ export const SimulationList = ({ path, meta, id, twinInfo }: Parameters) => {
                 {(selectedSimulation !== undefined) ? getForm() : <div></div>}
             </div>
         </div>
+    </Fragment>
 
-    const twinNoSimulated =
-        <Fragment>
-            {notification()}
-            <div style={{ display: 'flex', justifyContent: 'center', width: '100%' }}>
-                <LinkButton icon="plus" variant="primary" href={path + '&mode=create&id=' + id + "&element=simulation"} className="m-3">
-                    Add simulation
-                </LinkButton>
-            </div>
-            {(simulations.length > 0) ? simulationsList : noSimulations}
-        </Fragment>
+    const twinNoSimulated = (simulations.length > 0) ? simulationsList : noSimulations
 
-    return (twinInfo.attributes && twinInfo.attributes.simulationOf) ? twinSimulated : twinNoSimulated
+    return (twinInfo.hasOwnProperty("attributes") && twinInfo.attributes.hasOwnProperty("simulationOf")) ? twinSimulated : twinNoSimulated
 }

@@ -30,12 +30,10 @@ export function TypeInfo({ path, id, meta, section }: Parameters) {
 
     const getComponent = () => {
         switch (selected) {
-            case Sections.information:
-                return <InformationType path={path} twinInfo={typeInfo} meta={meta} />
             case Sections.hierarchy:
                 return <HierarchyType path={path} id={id} meta={meta} />
             default:
-                return <div>Default</div>
+                return <InformationType path={path} twinInfo={typeInfo} meta={meta} />
         }
     }
 

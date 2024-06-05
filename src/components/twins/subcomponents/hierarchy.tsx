@@ -5,7 +5,6 @@ import { ListLabels, ListThingNum } from 'components/auxiliary/dittoThing/list/l
 import { Context, StaticContext } from 'utils/context/staticContext'
 import { getChildrenOfTypeService } from 'services/types/children/getChildrenOfTypeService'
 import { IDittoThing, LinkData } from 'utils/interfaces/dittoThing'
-import { getParentOfTwinService } from 'services/twins/parent/getParentOfTwinService'
 import { getAllRootTwinsService } from 'services/twins/getAllRootTwinsService'
 import { createOrUpdateTwinToBeChildService } from 'services/twins/children/createOrUpdateTwinToBeChildService'
 
@@ -36,7 +35,7 @@ export function HierarchyType({ path, id, meta }: Parameters) {
             })
         })
     }
-
+/*
     const getParent = async (): Promise<LinkData> => {
         return getParentOfTwinService(context, id).then((res: {[id: string]: number}|undefined) => {
             return (res === undefined) ? [] : Object.entries(res).map(([id, num]) => {
@@ -46,7 +45,7 @@ export function HierarchyType({ path, id, meta }: Parameters) {
                 }
             })
         })
-    }
+    }*/
 
     const getTypes = async (): Promise<string[]> => {
         return getAllRootTwinsService(context).then((res: IDittoThing[]) => {

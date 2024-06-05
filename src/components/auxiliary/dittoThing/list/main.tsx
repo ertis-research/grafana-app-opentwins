@@ -1,9 +1,8 @@
-import React, { useState, useEffect, Fragment, useContext } from 'react';
+import React, { useState, useEffect, Fragment, useContext, ChangeEvent } from 'react';
 import { IDittoThing } from 'utils/interfaces/dittoThing';
-import { LinkButton, IconButton, Select, Icon, ConfirmModal, Modal, Spinner, InlineSwitch, InlineFieldRow, useTheme2 } from '@grafana/ui'
-import { AppPluginMeta, KeyValue, SelectableValue } from '@grafana/data';
+import { LinkButton, IconButton, Icon, ConfirmModal, Modal, Spinner, InlineSwitch, useTheme2, Input } from '@grafana/ui'
+import { AppPluginMeta, KeyValue } from '@grafana/data';
 import { defaultIfNoExist, enumNotification, imageIsUndefined } from 'utils/auxFunctions/general';
-import { SelectData } from 'utils/interfaces/select';
 import { StaticContext } from 'utils/context/staticContext';
 import { attributeSimulationOf } from 'utils/data/consts';
 
@@ -22,9 +21,8 @@ interface Parameters {
 export function MainList({ path, meta, isType, funcThings, funcDelete, funcDeleteChildren, parentId, iniCompactMode = false, iniNoSimulations = false }: Parameters) {
 
     const [things, setThings] = useState<IDittoThing[]>([])
-    const [values, setValues] = useState<SelectData[]>([])
     const [filteredThings, setFilteredThings] = useState<IDittoThing[]>([])
-    const [value, setValue] = useState<SelectableValue<string>>()
+    const [value, setValue] = useState<string>()
     const [showNotification, setShowNotification] = useState<string>(enumNotification.HIDE)
     const [showDeleteModal, setShowDeleteModal] = useState<string>()
     const [compactMode, setCompactMode] = useState<boolean>(iniCompactMode)
@@ -56,7 +54,7 @@ export function MainList({ path, meta, isType, funcThings, funcDelete, funcDelet
                 return <Modal title={messageError} icon='exclamation-triangle' isOpen={true} onDismiss={hideNotification}>{descriptionError}</Modal>
             case enumNotification.LOADING:
                 return (
-                    <div className="mb-0 mt-4" style={{ display: 'flex', justifyItems: 'center', justifyContent: 'center', width: '100%'}}>
+                    <div className="mb-4 mt-4" style={{ display: 'flex', justifyItems: 'center', justifyContent: 'center', width: '100%' }}>
                         <Spinner inline={true} size={20} />
                     </div>
                 )
@@ -94,14 +92,6 @@ export function MainList({ path, meta, isType, funcThings, funcDelete, funcDelet
         funcThings().then((res: any) => {
             if (res.hasOwnProperty("items")) { res = res.items }
             setThings(res)
-            if (res !== undefined) {
-                setValues(res.map((item: IDittoThing) => {
-                    return {
-                        label: item.thingId,
-                        value: item.thingId
-                    }
-                }))
-            }
             setShowNotification(enumNotification.READY)
         }).catch(() => console.log("error"))
     }
@@ -111,8 +101,12 @@ export function MainList({ path, meta, isType, funcThings, funcDelete, funcDelet
         if (value === null || value === undefined) {
             setFilteredThings(filterThings)
         } else {
-            setFilteredThings(filterThings.filter(thing => { return (value.value !== undefined) ? thing.thingId.includes(value.value) : true }))
+            setFilteredThings(filterThings.filter(thing => { return (value !== undefined) ? thing.thingId.includes(value) : true }))
         }
+    }
+
+    const handleOnChangeSearch = (e: ChangeEvent<HTMLInputElement>) => {
+        setValue(e.target.value)
     }
 
     const handleOnDelete = (e: any, thingId: string) => {
@@ -146,7 +140,7 @@ export function MainList({ path, meta, isType, funcThings, funcDelete, funcDelet
     }, [value, things])
 
     useEffect(() => {
-    }, [values, showNotification, showDeleteModal])
+    }, [showNotification, showDeleteModal])
 
     const numberChildren = (item: IDittoThing) => {
         console.log("Child", item)
@@ -177,15 +171,15 @@ export function MainList({ path, meta, isType, funcThings, funcDelete, funcDelet
     }
 
     const fullCard = (item: IDittoThing) => {
-        return <div className="col-12 col-sm-6 col-md-6 col-lg-3 mb-3" key={item.thingId}>
+        return <div className="col-12 col-sm-6 col-md-6 col-lg-4 col-xl-3 mb-3" key={item.thingId}>
             {numberChildren(item)}
             <div style={{ display: "block", width: "100%" }}>
-                <div style={{ display: "inline-block", height: "180px", width: "35%", verticalAlign: "top" }}>
+                <div style={{ display: "inline-block", height: "200px", width: "35%", verticalAlign: "top" }}>
                     <a href={path + "&mode=check&id=" + item.thingId}>
                         <img src={imageIsUndefined(defaultIfNoExist(item.attributes, "image", undefined))} style={{ height: "100%", width: "100%", objectFit: "cover", objectPosition: "center" }} />
                     </a>
                 </div>
-                <div style={{ height: "180px", width: "65%", display: "inline-block", verticalAlign: "top" }}>
+                <div style={{ height: "200px", width: "65%", display: "inline-block", verticalAlign: "top" }}>
                     {getCard(item)}
                 </div>
             </div>
@@ -208,50 +202,49 @@ export function MainList({ path, meta, isType, funcThings, funcDelete, funcDelet
     const switchSimulation = (!things.some((item: any) => item.hasOwnProperty("attributes") && item.attributes.hasOwnProperty(attributeSimulationOf))) ? <div></div> :
         <InlineSwitch value={!noSimulations} onChange={() => setNoSimulations(!noSimulations)} label="Show simulated twins" showLabel={true} />
 
-    const noChildren = (showNotification !== enumNotification.READY) ? <div></div> :
+    const buttonAdd = <LinkButton icon="plus" variant="primary" href={path + '&mode=create' + ((parentId !== undefined) ? '&id=' + parentId : "")}>
+        Create new {title}
+    </LinkButton>
+
+    const noFilteredThings = (showNotification !== enumNotification.READY) ? <div></div> :
         <div style={{ display: 'flex', justifyItems: 'center', justifyContent: 'center', alignContent: 'center' }}>
-            <h5>There are no items</h5>
+            <h5>There are no items which match the filters</h5>
         </div>
 
-    return (
-        <Fragment>
-            <div className='row justify-content-between mb-3'>
-                <div className='col-12 col-sm-12 col-md-3 col-lg-3 mb-1'>
-                    <LinkButton icon="plus" variant="primary" href={path + '&mode=create' + ((parentId !== undefined) ? '&id=' + parentId : "")}>
-                        Create new {title}
-                    </LinkButton>
-                </div>
-                <div className="col-12 col-sm-12 col-md-5 col-lg-5 mb-1">
-                    <Select
-                        options={values}
-                        value={value}
-                        onChange={v => setValue(v)}
-                        prefix={<Icon name="search" />}
-                        onInputChange={(v, action) => {
-                            if (action.action === 'set-value' || action.action === 'input-change') {
-                                setValue({
-                                    label: v,
-                                    value: v
-                                })
-                            }
-                        }
-                        }
-                        placeholder="Search"
-                    />
-                </div>
-                <div className="col-12 col-sm-12 col-md-4 col-lg-4 mb-1">
-                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                        <InlineFieldRow>
-                            {switchSimulation}
-                            <InlineSwitch value={compactMode} onChange={() => setCompactMode(!compactMode)} label="Compact view" showLabel={true} />
-                        </InlineFieldRow>
-                    </div>
+    const noThings = (showNotification !== enumNotification.READY) ? <div></div> :
+        <div style={{ display: 'flex', justifyItems: 'center', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', alignContent: 'center' }}>
+            <h5>{(parentId !== undefined) ? ("This " + title + " has no children") : ("There are no " + title + "s")}</h5>
+            {buttonAdd}
+        </div>
+
+    const listThing = <Fragment>
+        <div className='row justify-content-between mb-3'>
+            <div className="col-12 col-sm-12 col-md-12 col-lg-5 mb-1 mr-0">
+                <Input
+                    value={value}
+                    prefix={<Icon name="search" />}
+                    onChange={handleOnChangeSearch}
+                    placeholder="Search"
+                    style={{ width: '100%' }}
+                />
+            </div>
+            <div className="col-12 col-sm-12 col-md-12 col-lg-4 ml-0">
+                <div style={{ display: 'flex', justifyContent: 'flex-start' }}>
+                    <InlineSwitch value={compactMode} onChange={() => setCompactMode(!compactMode)} label="Compact view" showLabel={true} />
+                    {switchSimulation}
                 </div>
             </div>
-            {notification()}
-            <div className="row">
-                {(filteredThings.length > 0) ? thingsMapped() : noChildren}
+            <div className='col-12 col-sm-12 col-md-12 col-lg-3 mb-1'>
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end' }}>
+                    {buttonAdd}
+                </div>
             </div>
-        </Fragment>
-    );
+        </div>
+        {notification()}
+        <div className="row">
+            {(filteredThings.length > 0) ? thingsMapped() : noFilteredThings}
+        </div>
+    </Fragment>
+
+    return (things.length < 1) ? noThings : listThing
 }

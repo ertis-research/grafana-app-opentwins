@@ -103,10 +103,12 @@ export const SelectWithTextArea = ({ path, name, getByIdFunc, getAllFunc, delete
     const isDisabled = !selectedObject || showNotification.state !== enumNotification.READY
 
     const extraButtons = (!ExtraButtonComponent) ? <div></div> :
-        <ExtraButtonComponent selectedConnection={selectedObject} selectedId={value} isDisabled={isDisabled} setShowNotification={setShowNotification} />
-
+        <div style={{ marginRight: '10px' }}>
+            <ExtraButtonComponent selectedConnection={selectedObject} selectedId={value} isDisabled={isDisabled} setShowNotification={setShowNotification} />
+        </div>
+        
     const buttons = (selectedObject && value !== undefined) ?
-        <div style={{ display: 'flex', justifyItems: 'flex-end', justifyContent: 'flex-end' }}>
+        <div style={{ display: 'flex', justifyItems: 'flex-start', justifyContent: 'flex-start' }}>
             {extraButtons}
             <Button variant="destructive" icon="trash-alt" disabled={isDisabled} onClick={handleOnClickDelete}>Delete</Button>
         </div>
@@ -125,9 +127,6 @@ export const SelectWithTextArea = ({ path, name, getByIdFunc, getAllFunc, delete
     return (
         <Fragment>
             <div className='row justify-content-between mb-3'>
-                <div className={(disableCreate) ? 'col-0' : 'col-12 col-sm-12 col-md-3 col-lg-3'}>
-                    {createButton}
-                </div>
                 <div className="col-12 col-sm-12 col-md-5 col-lg-5">
                     <Select
                         options={objects}
@@ -140,6 +139,9 @@ export const SelectWithTextArea = ({ path, name, getByIdFunc, getAllFunc, delete
                 </div>
                 <div className="col-12 col-sm-12 col-md-4 col-lg-4">
                     {buttons}
+                </div>
+                <div className={(disableCreate) ? 'col-0' : 'col-12 col-sm-12 col-md-3 col-lg-3'} style={{ display: 'flex', justifyContent: 'flex-end' }}>
+                    {createButton}
                 </div>
             </div>
             <CustomNotification notification={showNotification} setNotificationFunc={setShowNotification} />

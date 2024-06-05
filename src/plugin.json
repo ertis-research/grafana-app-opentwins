@@ -51,19 +51,19 @@
     },
     {
       "type": "page",
-      "name": "Policies",
-      "path": "/a/ertis-opentwins/?tab=policies",
-      "role": "Editor",
-      "addToNav": true,
-      "icon": "shield"
-    },
-    {
-      "type": "page",
       "name": "Connections",
       "path": "/a/ertis-opentwins/?tab=connections",
       "role": "Editor",
       "addToNav": true,
       "icon": "plug"
+    },
+    {
+      "type": "page",
+      "name": "Policies",
+      "path": "/a/ertis-opentwins/?tab=policies",
+      "role": "Editor",
+      "addToNav": true,
+      "icon": "shield"
     },
     {
       "type": "page",
