@@ -10,6 +10,7 @@ import { OtherFunctionsTwin } from './subcomponents/otherFunctions'
 import { deleteTwinService } from 'services/twins/crud/deleteTwinService'
 import { deleteTwinWithChildrenService } from 'services/twins/children/deleteTwinWithChildrenService'
 import { InfoHeader } from 'components/auxiliary/general/infoHeader'
+import { ListAgentsTwin } from './subcomponents/agents'
 
 
 interface Parameters {
@@ -21,8 +22,8 @@ interface Parameters {
 enum Sections {
     information = "information",
     children = "children",
-    simulations = "simulations",
     agents = "agents",
+    simulations = "simulations",
     others = "others",
 }
 
@@ -40,7 +41,9 @@ export function TwinInfo({ path, id, meta, section }: Parameters) {
             case Sections.simulations:
                 return <SimulationList path={path} id={id} meta={meta} twinInfo={twinInfo} />
             case Sections.agents:
-                return <OtherFunctionsTwin path={path} id={id} meta={meta} />
+                if (context.agent_endpoint !== undefined && context.agent_endpoint.trim() !== '') {
+                    return <ListAgentsTwin path={path} id={id} meta={meta} />
+                }
             case Sections.others:
                 return <OtherFunctionsTwin path={path} id={id} meta={meta} />
             default:
@@ -77,7 +80,7 @@ export function TwinInfo({ path, id, meta, section }: Parameters) {
 
     return (
         <Fragment>
-            <InfoHeader path={path} thing={twinInfo} isType={false} sections={Object.values(Sections)} selected={selected} setSelected={setSelected} funcDelete={deleteTwinService} funcDeleteChildren={deleteTwinWithChildrenService} />
+            <InfoHeader path={path} thing={twinInfo} isType={false} sections={Object.values(Sections).filter((section: string) => (section !== Sections.agents || context.agent_endpoint.trim() !== ''))} selected={selected} setSelected={setSelected} funcDelete={deleteTwinService} funcDeleteChildren={deleteTwinWithChildrenService} />
             <hr />
             {getComponent()}
         </Fragment>

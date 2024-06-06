@@ -1,11 +1,13 @@
 import { AppEvents, AppPluginMeta, KeyValue, SelectableValue } from '@grafana/data'
-import { Button, Field, Form, FormAPI, Input, RadioButtonGroup, TextArea } from '@grafana/ui'
+import { Button, Field, Form, FormAPI, Input, MultiSelect, RadioButtonGroup, TextArea } from '@grafana/ui'
 import React, { ChangeEvent, Fragment, useContext, useEffect, useState } from 'react'
 import { createAgentService } from 'services/agents/createAgentService'
 import { setNestedKey } from 'utils/auxFunctions/general'
 import { StaticContext } from 'utils/context/staticContext'
 import yaml from 'js-yaml'
 import { getAppEvents } from '@grafana/runtime'
+import { SelectData } from 'utils/interfaces/select'
+import { getAllTwinsIdsService } from 'services/twins/getAllTwinsIdsService'
 
 interface Parameters {
     path: string
@@ -16,7 +18,8 @@ interface FormData {
     id: string,
     namespace: string,
     data: string,
-    name: string
+    name: string,
+    twins: string[]
 }
 
 enum Formats {
@@ -31,18 +34,33 @@ const FormatsOptions = [
 
 export function CreateFormAgent({ path, meta }: Parameters) {
 
-    const InvalidMsg = "Blank spaces and uppercase letters are not allowed"
-    
+    const InvalidMsg = "Blank spaces, uppercase letters and underscores are not allowed"
+
     const context = useContext(StaticContext)
     const hasSetContext: boolean = context.agent_context !== undefined && context.agent_context.trim() !== ''
 
     const appEvents = getAppEvents()
 
-    const [currentAgent, setCurrentAgent] = useState<FormData>({ id: '', namespace: '', data: '', name: '' })
+    const [currentAgent, setCurrentAgent] = useState<FormData>({ id: '', namespace: '', data: '', twins: [], name: '' })
     const [selectedFormat, setSelectedFormat] = useState<SelectableValue<Formats>>(FormatsOptions[0])
+    const [value, setValue] = useState<Array<SelectableValue<string>>>([]);
+    const [twins, setTwins] = useState<SelectData[]>()
 
     const isInvalid = (value: string) => {
-        return value.includes(" ") || value.toLowerCase() !== value
+        return value.includes(" ") || value.toLowerCase() !== value || value.includes("_")
+    }
+
+    const getTwins = () => {
+        getAllTwinsIdsService(context).then((res: string[]) => {
+            setTwins(res.map((id: string) => {
+                return { value: id, label: id }
+            }))
+        }).catch(() => {
+            appEvents.publish({
+                type: AppEvents.alertError.name,
+                payload: ["Error getting the identifiers of digital twins"],
+            });
+        })
     }
 
     const handleOnSubmitFinal = () => {
@@ -68,7 +86,7 @@ export function CreateFormAgent({ path, meta }: Parameters) {
             return
         }
         json_data = setNestedKey(json_data, ['metadata', 'labels', 'opentwins.agents/name'], currentAgent.name)
-       //json_data = setNestedKey(json_data, ['metadata', 'labels', 'opentwins.agents/twins'], JSON.stringify(["example:aaa", "asasa:rerer"]))
+        json_data = setNestedKey(json_data, ['metadata', 'labels', 'opentwins.agents/twins'], value.map((v) => v.value))
         console.log(JSON.stringify(json_data))
         createAgentService(context, currentAgent.id, currentAgent.namespace, json_data).then((res: any) => {
             appEvents.publish({
@@ -86,12 +104,16 @@ export function CreateFormAgent({ path, meta }: Parameters) {
     }
 
     useEffect(() => {
+        getTwins()
+    }, [])
+
+    useEffect(() => {
         setCurrentAgent({
             ...currentAgent,
             namespace: context.agent_context
         })
     }, [context])
-    
+
 
     const handleOnChangeInput = (event: ChangeEvent<HTMLInputElement>) => {
         setCurrentAgent({
@@ -125,6 +147,13 @@ export function CreateFormAgent({ path, meta }: Parameters) {
 
                             <Field label="Name" description="A readable name for the agent that does not need to be unique" required={true} invalid={currentAgent.name.includes(" ")} error={currentAgent.name.includes(" ") ? 'Blank spaces are not allowed' : ''}>
                                 <Input {...register("name", { required: true })} type="text" value={currentAgent.name} onChange={handleOnChangeInput} />
+                            </Field>
+
+                            <Field style={{ width: '100%' }} label="Related digital twins" description="Digital twins to which this agent is related. This field is optional, but recommended to keep a reference with involved digital twins" required={false} invalid={currentAgent.name.includes(" ")} error={currentAgent.name.includes(" ") ? 'Blank spaces are not allowed' : ''}>
+                                <MultiSelect
+                                    options={twins}
+                                    value={value}
+                                    onChange={v => setValue(v)} />
                             </Field>
 
                             <Field style={{ marginBottom: '5px' }} label="Kubernetes agent definition" description="Kubernetes object that will be executed to simulate the behavior of the agent. It can be a deployment or a cronjob and can be specified in JSON or YAML format." required={true}>

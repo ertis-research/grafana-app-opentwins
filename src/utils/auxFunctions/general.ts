@@ -41,7 +41,7 @@ export const enumToISelectList = (e: any) => {
     return Object.entries(e).map(([key, value]) => ({ label: value as string, value: value}))
 }
 
-export const setNestedKey = (obj: any, keys: string[], value: string) => {
+export const setNestedKey = (obj: any, keys: string[], value: any) => {
     keys.reduce((o, k, i) => {
         if (i === keys.length - 1) {
             o[k] = value;

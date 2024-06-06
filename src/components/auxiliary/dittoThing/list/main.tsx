@@ -1,10 +1,11 @@
 import React, { useState, useEffect, Fragment, useContext, ChangeEvent } from 'react';
 import { IDittoThing } from 'utils/interfaces/dittoThing';
-import { LinkButton, IconButton, Icon, ConfirmModal, Modal, Spinner, InlineSwitch, useTheme2, Input } from '@grafana/ui'
-import { AppPluginMeta, KeyValue } from '@grafana/data';
+import { LinkButton, Icon, ConfirmModal, Spinner, InlineSwitch, useTheme2, Input } from '@grafana/ui'
+import { AppEvents, AppPluginMeta, KeyValue } from '@grafana/data';
 import { defaultIfNoExist, enumNotification, imageIsUndefined } from 'utils/auxFunctions/general';
 import { StaticContext } from 'utils/context/staticContext';
 import { attributeSimulationOf } from 'utils/data/consts';
+import { getAppEvents } from '@grafana/runtime';
 
 interface Parameters {
     path: string
@@ -29,56 +30,33 @@ export function MainList({ path, meta, isType, funcThings, funcDelete, funcDelet
     const [noSimulations, setNoSimulations] = useState<boolean>(iniNoSimulations)
 
     const context = useContext(StaticContext)
+    const appEvents = getAppEvents()
 
     const title = (isType) ? "type" : "twin"
     const messageDelete = `Delete ${title}`
     const descriptionDelete = `Are you sure you want to remove the ${title} with id `
     const descriptionDeleteChildren = "Choose if you want to remove the twin alone, unlinking its children, or remove the twin and all its children."
     const messageSuccess = `The ${title} has been deleted correctly.`
-    const messageError = `The ${title} has not been deleted correctly.`
-    const descriptionError = "Refresh the page or check for errors."
-
-    const notification = () => {
-        if (showDeleteModal !== undefined) {
-            const thingId = showDeleteModal
-            if (!isType && funcDeleteChildren !== undefined) {
-                return <ConfirmModal isOpen={true} title={messageDelete} body={descriptionDelete + `${thingId}?`} description={descriptionDeleteChildren} confirmationText={thingId} confirmText={"With children"} alternativeText={"Without children"} dismissText={"Cancel"} onAlternative={() => deleteThing(funcDelete, context, thingId)} onDismiss={hideNotification} onConfirm={() => deleteThing(funcDeleteChildren, context, thingId)} />
-            } else {
-                return <ConfirmModal isOpen={true} title={messageDelete} body={descriptionDelete + `${thingId}?`} confirmText={"Delete"} onConfirm={() => deleteThing(funcDelete, context, thingId)} onDismiss={hideNotification} />
-            }
-        }
-        switch (showNotification) {
-            case enumNotification.SUCCESS:
-                return <Modal title={messageSuccess} icon='check' isOpen={true} onDismiss={hideNotification} />
-            case enumNotification.ERROR:
-                return <Modal title={messageError} icon='exclamation-triangle' isOpen={true} onDismiss={hideNotification}>{descriptionError}</Modal>
-            case enumNotification.LOADING:
-                return (
-                    <div className="mb-4 mt-4" style={{ display: 'flex', justifyItems: 'center', justifyContent: 'center', width: '100%' }}>
-                        <Spinner inline={true} size={20} />
-                    </div>
-                )
-            default:
-                return <div></div>
-        }
-    }
+    const messageError = `The ${title} has not been deleted correctly. Refresh the page or check for errors.`
 
     const deleteThing = (funcToExecute: any, context: any, thingId: string) => {
         setShowDeleteModal(undefined)
         setShowNotification(enumNotification.LOADING)
-        try {
-            funcToExecute(context, thingId).then(() => {
-                console.log("OK")
-                setShowNotification(enumNotification.SUCCESS)
-            }).catch(() => {
-                console.log("error")
-                setShowNotification(enumNotification.ERROR)
-            })
-        } catch (e) {
+        funcToExecute(context, thingId).then(() => {
+            console.log("OK")
+            appEvents.publish({
+                type: AppEvents.alertSuccess.name,
+                payload: [messageSuccess]
+            });
+        }).catch(() => {
             console.log("error")
-            setShowNotification(enumNotification.ERROR)
-            updateThings()
-        }
+            appEvents.publish({
+                type: AppEvents.alertError.name,
+                payload: [messageError]
+            });
+        }).finally(() => {
+            setShowNotification(enumNotification.HIDE)
+        })
 
     }
 
@@ -142,6 +120,27 @@ export function MainList({ path, meta, isType, funcThings, funcDelete, funcDelet
     useEffect(() => {
     }, [showNotification, showDeleteModal])
 
+    const notification = () => {
+        if (showDeleteModal !== undefined) {
+            const thingId = showDeleteModal
+            if (!isType && funcDeleteChildren !== undefined) {
+                return <ConfirmModal isOpen={true} title={messageDelete} body={descriptionDelete + `${thingId}?`} description={descriptionDeleteChildren} confirmationText={thingId} confirmText={"With children"} alternativeText={"Without children"} dismissText={"Cancel"} onAlternative={() => deleteThing(funcDelete, context, thingId)} onDismiss={hideNotification} onConfirm={() => deleteThing(funcDeleteChildren, context, thingId)} />
+            } else {
+                return <ConfirmModal isOpen={true} title={messageDelete} body={descriptionDelete + `${thingId}?`} confirmText={"Delete"} onConfirm={() => deleteThing(funcDelete, context, thingId)} onDismiss={hideNotification} />
+            }
+        }
+        switch (showNotification) {
+            case enumNotification.LOADING:
+                return (
+                    <div className="mb-4 mt-4" style={{ display: 'flex', justifyItems: 'center', justifyContent: 'center', width: '100%' }}>
+                        <Spinner inline={true} size={20} />
+                    </div>
+                )
+            default:
+                return <div></div>
+        }
+    }
+
     const numberChildren = (item: IDittoThing) => {
         console.log("Child", item)
         if (isType && parentId !== undefined && item.attributes.hasOwnProperty("_parents") && item.attributes._parents.hasOwnProperty(parentId)) {
@@ -160,11 +159,9 @@ export function MainList({ path, meta, isType, funcThings, funcDelete, funcDelet
                     <p>{item.thingId}</p>
                     <p style={{ whiteSpace: 'normal' }}>{defaultIfNoExist(item.attributes, "description", "")}</p>
                 </div>
-                <div className='mt-2' style={{ height: '15%', display: 'flex', justifyContent: 'end' }}>
-                    <a href={path + '&mode=edit&element=' + title + '&id=' + item.thingId} style={{ all: 'unset' }}>
-                        <IconButton key="edit" name="pen" tooltip="Edit" />
-                    </a>
-                    <IconButton key="delete" name="trash-alt" tooltip="Delete" onClick={(e) => handleOnDelete(e, item.thingId)} />
+                <div className='mt-2' style={{ height: '10%', display: 'flex', justifyContent: 'flex-end', alignItems: 'center' }}>
+                    <LinkButton fill='text' variant='secondary' key="edit" icon="pen" tooltip="Edit" href={path + '&mode=edit&element=' + title + '&id=' + item.thingId} />
+                    <LinkButton fill='text' variant='destructive' key="delete" icon="trash-alt" tooltip="Delete" onClick={(e) => handleOnDelete(e, item.thingId)} />
                 </div>
             </a>
         </div>

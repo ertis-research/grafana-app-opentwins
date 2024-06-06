@@ -1,0 +1,29 @@
+{
+    "id": "example-connection-123",
+    "name": "example-connection-123",
+    "connectionType": "amqp-10",
+    "connectionStatus": "open",
+    "failoverEnabled": true,
+    "uri": "amqps://user:password@hono.eclipse.org:5671",
+    "sources": [
+        {
+            "addresses": [
+                "telemetry/FOO"
+            ],
+            "authorizationContext": [
+                "nginx:ditto"
+            ]
+        }
+    ],
+    "targets": [
+        {
+            "address": "events/twin",
+            "topics": [
+                "_/_/things/twin/events"
+            ],
+            "authorizationContext": [
+                "nginx:ditto"
+            ]
+        }
+    ]
+}
