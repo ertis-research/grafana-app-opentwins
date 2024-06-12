@@ -1,5 +1,4 @@
 {
-    "id": "example-connection-123",
     "name": "example-connection-123",
     "connectionType": "amqp-10",
     "connectionStatus": "open",

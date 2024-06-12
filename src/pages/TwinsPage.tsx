@@ -2,7 +2,7 @@ import React, { FC } from 'react'
 import { AppRootProps } from '@grafana/data'
 //import { TwinForm } from 'components/twins/form/main';
 import { ListTwins } from 'components/twins/list'
-import { StaticContext } from 'utils/context/staticContext'
+import { Context, StaticContext } from 'utils/context/staticContext'
 import { fromMetaToValues } from 'utils/auxFunctions/dittoThing'
 import { TwinInfo } from 'components/twins/twinInfo'
 import { CreateFormTwin } from 'components/twins/createForm'
@@ -12,14 +12,14 @@ import { EditFormTwin } from 'components/twins/editForm'
 export const TwinsPage: FC<AppRootProps> = ({ query, path, meta }) => {
 
   const id = query["id"]
-  const valueMeta = fromMetaToValues(meta)
+  let valueMeta: Context = fromMetaToValues(meta)
   path = path + "?tab=twins"
 
   let component = <ListTwins path={path} meta={meta} /> //default
   switch (query["mode"]) {
     case "check":
       const section = query["section"]
-      if (id !== undefined) { component = <TwinInfo path={path} id={id} meta={meta} section={section}/> }
+      if (id !== undefined) { component = <TwinInfo path={path} id={id} meta={meta} section={section} /> }
       break
 
     case "create":

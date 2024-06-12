@@ -15,6 +15,7 @@ import { capitalize, enumNotification } from 'utils/auxFunctions/general'
 import { StaticContext } from 'utils/context/staticContext'
 import { CustomNotification } from 'components/auxiliary/general/notification'
 import { Notification } from 'utils/interfaces/notification'
+import { checkIsEditor } from 'utils/auxFunctions/auth'
 
 interface Parameters {
     path: string
@@ -304,6 +305,11 @@ export const ThingForm = ({ path, parentId, thingToEdit, isType, funcFromType, f
     }, [currentThing])
 
     useEffect(() => {
+        checkIsEditor().then((res) => {
+            if(!res){
+                window.location.replace(path)
+            } 
+        })
         if (!allowFromType) {
             setSelected(enumOptions.FROM_ZERO)
         } else {

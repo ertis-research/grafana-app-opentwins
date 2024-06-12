@@ -6,6 +6,7 @@ import { defaultIfNoExist, enumNotification, imageIsUndefined } from 'utils/auxF
 import { StaticContext } from 'utils/context/staticContext';
 import { attributeSimulationOf } from 'utils/data/consts';
 import { getAppEvents } from '@grafana/runtime';
+import { getCurrentUserRole, isEditor, Roles } from 'utils/auxFunctions/auth';
 
 interface Parameters {
     path: string
@@ -28,6 +29,7 @@ export function MainList({ path, meta, isType, funcThings, funcDelete, funcDelet
     const [showDeleteModal, setShowDeleteModal] = useState<string>()
     const [compactMode, setCompactMode] = useState<boolean>(iniCompactMode)
     const [noSimulations, setNoSimulations] = useState<boolean>(iniNoSimulations)
+    const [userRole, setUserRole] = useState<string>(Roles.VIEWER)
 
     const context = useContext(StaticContext)
     const appEvents = getAppEvents()
@@ -94,6 +96,7 @@ export function MainList({ path, meta, isType, funcThings, funcDelete, funcDelet
 
     useEffect(() => { //https://www.smashingmagazine.com/2020/06/rest-api-react-fetch-axios/
         updateThings()
+        getCurrentUserRole().then((role: string) => setUserRole(role))
     }, [])
 
     useEffect(() => {
@@ -142,7 +145,6 @@ export function MainList({ path, meta, isType, funcThings, funcDelete, funcDelet
     }
 
     const numberChildren = (item: IDittoThing) => {
-        console.log("Child", item)
         if (isType && parentId !== undefined && item.attributes.hasOwnProperty("_parents") && item.attributes._parents.hasOwnProperty(parentId)) {
             return <div style={{ backgroundColor: useTheme2().colors.text.secondary, width: "100%", color: useTheme2().colors.background.primary, textAlign: 'end', paddingRight: '10px' }}>
                 x{item.attributes._parents[parentId]}
@@ -154,14 +156,14 @@ export function MainList({ path, meta, isType, funcThings, funcDelete, funcDelet
     const getCard = (item: IDittoThing) => {
         return <div className="p-4" style={{ height: "100%", width: "100%", backgroundColor: useTheme2().colors.background.canvas }}>
             <a href={path + "&mode=check&id=" + item.thingId}>
-                <div style={{ height: '85%', width: "100%", overflow: "hidden", whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>
+                <div style={{ height: (isEditor(userRole)) ? '85%' : '100%', width: "100%", overflow: "hidden", whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>
                     <b>{defaultIfNoExist(item.attributes, "name", item.thingId).trim()}</b>
                     <p>{item.thingId}</p>
                     <p style={{ whiteSpace: 'normal' }}>{defaultIfNoExist(item.attributes, "description", "")}</p>
                 </div>
-                <div className='mt-2' style={{ height: '10%', display: 'flex', justifyContent: 'flex-end', alignItems: 'center' }}>
-                    <LinkButton fill='text' variant='secondary' key="edit" icon="pen" tooltip="Edit" href={path + '&mode=edit&element=' + title + '&id=' + item.thingId} />
-                    <LinkButton fill='text' variant='destructive' key="delete" icon="trash-alt" tooltip="Delete" onClick={(e) => handleOnDelete(e, item.thingId)} />
+                <div className='mt-2' style={{ height: '10%', display: (isEditor(userRole)) ? 'flex' : 'none', justifyContent: 'flex-end', alignItems: 'center' }}>
+                    <LinkButton fill='text' variant='secondary' hidden={!isEditor(userRole)} key="edit" icon="pen" tooltip="Edit" href={path + '&mode=edit&element=' + title + '&id=' + item.thingId} />
+                    <LinkButton fill='text' variant='destructive' hidden={!isEditor(userRole)}key="delete" icon="trash-alt" tooltip="Delete" onClick={(e) => handleOnDelete(e, item.thingId)} />
                 </div>
             </a>
         </div>
@@ -199,7 +201,7 @@ export function MainList({ path, meta, isType, funcThings, funcDelete, funcDelet
     const switchSimulation = (!things.some((item: any) => item.hasOwnProperty("attributes") && item.attributes.hasOwnProperty(attributeSimulationOf))) ? <div></div> :
         <InlineSwitch value={!noSimulations} onChange={() => setNoSimulations(!noSimulations)} label="Show simulated twins" showLabel={true} />
 
-    const buttonAdd = <LinkButton icon="plus" variant="primary" href={path + '&mode=create' + ((parentId !== undefined) ? '&id=' + parentId : "")}>
+    const buttonAdd = <LinkButton icon="plus" hidden={!isEditor(userRole)} variant="primary" href={path + '&mode=create' + ((parentId !== undefined) ? '&id=' + parentId : "")}>
         Create new {title}
     </LinkButton>
 

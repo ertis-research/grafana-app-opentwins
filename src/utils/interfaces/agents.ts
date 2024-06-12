@@ -39,6 +39,7 @@ interface BasicAgent {
     namespace: string,
     status: AgentState,
     pods: Pod[]
+    twins: string[]
 }
 
 interface DeployAgent extends BasicAgent{

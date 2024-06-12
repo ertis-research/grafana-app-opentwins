@@ -8,10 +8,12 @@ import yaml from 'js-yaml'
 import { getAppEvents } from '@grafana/runtime'
 import { SelectData } from 'utils/interfaces/select'
 import { getAllTwinsIdsService } from 'services/twins/getAllTwinsIdsService'
+import { checkIsEditor } from 'utils/auxFunctions/auth'
 
 interface Parameters {
     path: string
     meta: AppPluginMeta<KeyValue<any>>
+    id?: string
 }
 
 interface FormData {
@@ -32,7 +34,7 @@ const FormatsOptions = [
     { label: Formats.yaml, value: Formats.yaml }
 ]
 
-export function CreateFormAgent({ path, meta }: Parameters) {
+export function CreateFormAgent({ path, meta, id }: Parameters) {
 
     const InvalidMsg = "Blank spaces, uppercase letters and underscores are not allowed"
 
@@ -44,7 +46,7 @@ export function CreateFormAgent({ path, meta }: Parameters) {
     const [currentAgent, setCurrentAgent] = useState<FormData>({ id: '', namespace: '', data: '', twins: [], name: '' })
     const [selectedFormat, setSelectedFormat] = useState<SelectableValue<Formats>>(FormatsOptions[0])
     const [value, setValue] = useState<Array<SelectableValue<string>>>([]);
-    const [twins, setTwins] = useState<SelectData[]>()
+    const [twins, setTwins] = useState<SelectData[]>([])
 
     const isInvalid = (value: string) => {
         return value.includes(" ") || value.toLowerCase() !== value || value.includes("_")
@@ -104,6 +106,11 @@ export function CreateFormAgent({ path, meta }: Parameters) {
     }
 
     useEffect(() => {
+        checkIsEditor().then((res) => {
+            if(!res){
+                window.location.replace(path + "?tab=agents")
+            } 
+        })
         getTwins()
     }, [])
 
@@ -113,6 +120,15 @@ export function CreateFormAgent({ path, meta }: Parameters) {
             namespace: context.agent_context
         })
     }, [context])
+
+    useEffect(() => {
+        if(!value.some((s) => s.value === id)){
+            setValue([
+                ...value,
+                {label: id, value: id}
+            ])
+        }
+    }, [id])
 
 
     const handleOnChangeInput = (event: ChangeEvent<HTMLInputElement>) => {

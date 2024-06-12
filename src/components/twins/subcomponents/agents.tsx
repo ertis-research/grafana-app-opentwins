@@ -15,6 +15,6 @@ export function ListAgentsTwin({ path, id, meta }: Parameters) {
     useEffect(() => {
     }, [id])
 
-    return <ListAgents path={path} meta={meta}/>
+    return <ListAgents path={path} meta={meta} twinId={id}/>
 
 }

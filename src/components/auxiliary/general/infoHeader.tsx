@@ -20,7 +20,7 @@ export const InfoHeader = ({ path, thing, isType, sections, selected, setSelecte
     const IfImage = (thing.attributes !== undefined && thing.attributes.hasOwnProperty("image") && thing.attributes.image) ?
         <img src={defaultIfNoExist(thing.attributes, "image", '')} width='100px' height='100px' style={{ objectFit: 'cover' }} />
         : <div></div>
-    
+
     return (
         <Fragment>
             <div className='headerInfo'>
@@ -47,8 +47,8 @@ export const InfoHeader = ({ path, thing, isType, sections, selected, setSelecte
                         </div>
                     </div>
                 </div>
-                <div className='div3'> 
-                    <ButtonsInfo path={path} thingId={thing.thingId} isType={isType} funcDelete={funcDelete} funcDeleteChildren={funcDeleteChildren}/>
+                <div className='div3'>
+                    <ButtonsInfo path={path} thingId={thing.thingId} isType={isType} funcDelete={funcDelete} funcDeleteChildren={funcDeleteChildren} />
                 </div>
             </div>
         </Fragment>

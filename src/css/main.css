@@ -3,6 +3,12 @@
     box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
 }
 
+.multiselect-agent {
+    width: 100% !important;
+    margin-right: 5px;
+    min-height: 36px
+}
+
 .searchAndButton {
     display: block;
 }

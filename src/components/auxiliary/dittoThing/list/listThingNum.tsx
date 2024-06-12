@@ -76,7 +76,6 @@ export function ListThingNum({ path, id, meta, isType, labels, funcGet, funcUpda
 
     const getThings = () => {
         funcGet().then((res: LinkData[]) => {
-            console.log("Hola?", res)
             setThings(res)
         }).catch(() => {
             console.log("error")

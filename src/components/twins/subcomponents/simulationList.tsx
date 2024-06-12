@@ -29,9 +29,6 @@ export const SimulationList = ({ path, meta, id, twinInfo }: Parameters) => {
     const [duplicateTwin, setDuplicateTwin] = useState<boolean>(false)
     const [otherValues, setOtherValues] = useState<{ [id: string]: any }>({})
 
-
-    console.log("que pasa no tengo twin info", twinInfo)
-
     const simulationOfAttribute = {
         attributes: {
             simulationOf: id

@@ -1,10 +1,12 @@
 import React, { useState, Fragment, useEffect } from 'react'
 import { Select, TextArea, Button, Icon, LinkButton } from '@grafana/ui'
-import { SelectableValue } from '@grafana/data'
+import { AppEvents, SelectableValue } from '@grafana/data'
 import { SelectData } from 'utils/interfaces/select'
 import { capitalize, enumNotification } from 'utils/auxFunctions/general'
 import { Notification } from 'utils/interfaces/notification'
 import { CustomNotification } from './notification'
+import { getAppEvents } from '@grafana/runtime'
+import { getCurrentUserRole, hasAuth, Roles } from 'utils/auxFunctions/auth'
 
 export interface ParametersExtraButtons {
     selectedConnection: any
@@ -21,9 +23,12 @@ interface Parameters {
     deleteFunc: any
     ExtraButtonComponent?: React.FC<ParametersExtraButtons>
     disableCreate?: boolean
+    minRole?: Roles
 }
 
-export const SelectWithTextArea = ({ path, name, getByIdFunc, getAllFunc, deleteFunc, ExtraButtonComponent, disableCreate = false }: Parameters) => {
+export const SelectWithTextArea = ({ path, name, getByIdFunc, getAllFunc, deleteFunc, ExtraButtonComponent, disableCreate = false, minRole = Roles.VIEWER }: Parameters) => {
+
+    const appEvents = getAppEvents()
 
     const confirmDelete_title = "Delete " + name
     const confirmDelete_body = (id: any) => "Are you sure you want to delete " + name + " " + id + "?"
@@ -33,20 +38,28 @@ export const SelectWithTextArea = ({ path, name, getByIdFunc, getAllFunc, delete
     const [value, setValue] = useState<SelectableValue<string>>()
     const [selectedObject, setselectedObject] = useState<any>(undefined)
     const [showNotification, setShowNotification] = useState<Notification>({ state: enumNotification.HIDE, title: "" })
+    const [userRole, setUserRole] = useState<string>(Roles.VIEWER)
 
     const handleOnConfirmDelete = () => {
         if (value?.value !== undefined) {
             setShowNotification({ state: enumNotification.LOADING, title: "" })
             deleteFunc(value.value).then(() => {
-                setShowNotification({
-                    state: enumNotification.SUCCESS,
-                    title: capitalize(name) + " successfully deleted!"
-                })
-            }).catch(() => {
-                setShowNotification({
-                    state: enumNotification.ERROR,
-                    title: "Error deleting " + name
-                })
+                appEvents.publish({
+                    type: AppEvents.alertSuccess.name,
+                    payload: [capitalize(name) + " successfully deleted!"]
+                });
+            }).catch((e: Error) => {
+                let msg = ""
+                try {
+                    const response = JSON.parse(e.message)
+                    msg = response.message
+                } catch (e) { }
+                appEvents.publish({
+                    type: AppEvents.alertError.name,
+                    payload: ["Error deleting " + name + ". " + msg]
+                });
+            }).finally(() => {
+                setShowNotification({ state: enumNotification.HIDE, title: "" })
             })
             setValue(undefined)
         }
@@ -90,6 +103,7 @@ export const SelectWithTextArea = ({ path, name, getByIdFunc, getAllFunc, delete
     useEffect(() => {
         //getAllFunc(setObjects)
         getAll()
+        getCurrentUserRole().then((role: string) => setUserRole(role))
     }, [])
 
     useEffect(() => {
@@ -106,7 +120,7 @@ export const SelectWithTextArea = ({ path, name, getByIdFunc, getAllFunc, delete
         <div style={{ marginRight: '10px' }}>
             <ExtraButtonComponent selectedConnection={selectedObject} selectedId={value} isDisabled={isDisabled} setShowNotification={setShowNotification} />
         </div>
-        
+
     const buttons = (selectedObject && value !== undefined) ?
         <div style={{ display: 'flex', justifyItems: 'flex-start', justifyContent: 'flex-start' }}>
             {extraButtons}
@@ -124,7 +138,7 @@ export const SelectWithTextArea = ({ path, name, getByIdFunc, getAllFunc, delete
         </div>
         : <div></div>
 
-    return (
+    const component =
         <Fragment>
             <div className='row justify-content-between mb-3'>
                 <div className="col-12 col-sm-12 col-md-5 col-lg-5">
@@ -147,6 +161,10 @@ export const SelectWithTextArea = ({ path, name, getByIdFunc, getAllFunc, delete
             <CustomNotification notification={showNotification} setNotificationFunc={setShowNotification} />
             <TextArea className="mt-3" rows={25} value={(selectedObject) ? JSON.stringify(selectedObject, undefined, 4) : ""} readOnly />
         </Fragment>
-    )
 
+    const noAllow = <div style={{ display: 'flex', justifyItems: 'center', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', alignContent: 'center' }}>
+        <h5>You do not have sufficient permissions to access this content</h5>
+    </div>
+
+    return (hasAuth(userRole, minRole)) ? component : noAllow
 }

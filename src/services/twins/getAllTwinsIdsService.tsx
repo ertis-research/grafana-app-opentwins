@@ -6,7 +6,7 @@ export const getAllTwinsIdsService = async (context: Context): Promise<string[]>
 
   let res: string[] = []
 
-  let twins = await fetchDittoAPIService(context, "/things?fields=thingId&option=size(200)", {
+  let twins = await fetchDittoAPIService(context, "/search/things?filter=ne(attributes/_isType,true)&fields=thingId&option=size(200)", {
     method: 'GET',
     headers: {
       "Authorization": 'Basic ' + btoa('ditto:ditto'),
@@ -19,7 +19,7 @@ export const getAllTwinsIdsService = async (context: Context): Promise<string[]>
       ...res,
       ...twins.items.map((item: { thingId: string }) => item.thingId)
     ]
-    twins = await fetchDittoAPIService(context, "/things?fields=thingId&option=size(200),cursor(" + twins.cursor + ")", {
+    twins = await fetchDittoAPIService(context, "/search/things?filter=ne(attributes/_isType,true)&fields=thingId&option=size(200),cursor(" + twins.cursor + ")", {
       method: 'GET',
       headers: {
         "Authorization": 'Basic ' + btoa('ditto:ditto'),

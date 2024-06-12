@@ -42,7 +42,7 @@ export function TwinInfo({ path, id, meta, section }: Parameters) {
                 return <SimulationList path={path} id={id} meta={meta} twinInfo={twinInfo} />
             case Sections.agents:
                 if (context.agent_endpoint !== undefined && context.agent_endpoint.trim() !== '') {
-                    return <ListAgentsTwin path={path} id={id} meta={meta} />
+                    return <ListAgentsTwin path={path.split("?")[0]} id={id} meta={meta} />
                 }
             case Sections.others:
                 return <OtherFunctionsTwin path={path} id={id} meta={meta} />
@@ -54,7 +54,6 @@ export function TwinInfo({ path, id, meta, section }: Parameters) {
     const getTwinInfo = () => {
         getTwinService(context, id).then(res => {
             setTwinInfo(res)
-            console.log("res", res)
         }).catch(() => console.log("error"))
     }
 

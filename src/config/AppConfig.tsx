@@ -183,7 +183,7 @@ export const AppConfig = ({ plugin }: Props) => {
                     />
                 </Field>
 
-                <Field label="Agents API URL" description="">
+                <Field label="Agents API URL" description="OPTIONAL (Beta functionality)">
                     <Input
                         width={60}
                         id="agentsURL"
@@ -193,12 +193,11 @@ export const AppConfig = ({ plugin }: Props) => {
                     />
                 </Field>
 
-                <Field label="Agents context" description="">
+                <Field label="Agents context" description="OPTIONAL (Beta functionality)">
                     <Input
                         width={60}
                         id="agentsContext"
                         value={state.agentsContext}
-                        placeholder={`test`}
                         onChange={onChangeAgentsContext}
                     />
                 </Field>

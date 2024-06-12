@@ -27,42 +27,42 @@
     {
       "type": "page",
       "name": "Twins",
+      "addToNav": true,
       "path": "/a/ertis-opentwins",
       "role": "Viewer",
-      "addToNav": true,
       "defaultNav": true,
       "icon": "file-alt"
     },
     {
       "type": "page",
       "name": "Twins",
+      "addToNav": true,
       "path": "/a/ertis-opentwins/?tab=twins",
       "role": "Viewer",
-      "addToNav": true,
       "icon": "file-alt"
     },
     {
       "type": "page",
       "name": "Types",
+      "addToNav": true,
       "path": "/a/ertis-opentwins/?tab=types",
       "role": "Viewer",
-      "addToNav": true,
       "icon": "folder-plus"
     },
     {
       "type": "page",
       "name": "Connections",
+      "addToNav": true,
       "path": "/a/ertis-opentwins/?tab=connections",
       "role": "Editor",
-      "addToNav": true,
       "icon": "plug"
     },
     {
       "type": "page",
       "name": "Policies",
+      "addToNav": true,
       "path": "/a/ertis-opentwins/?tab=policies",
       "role": "Editor",
-      "addToNav": true,
       "icon": "shield"
     },
     {

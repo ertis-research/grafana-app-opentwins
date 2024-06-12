@@ -1,5 +1,6 @@
 import { Button, ConfirmModal, Modal, Spinner } from "@grafana/ui"
-import React, { useState, useContext, Fragment } from "react"
+import React, { useState, useContext, Fragment, useEffect } from "react"
+import { getCurrentUserRole, isEditor, Roles } from "utils/auxFunctions/auth"
 import { enumNotification } from "utils/auxFunctions/general"
 import { StaticContext } from "utils/context/staticContext"
 
@@ -22,8 +23,13 @@ export const ButtonsInfo = ({ path, thingId, isType, funcDelete, funcDeleteChild
 
     const context = useContext(StaticContext)
 
+    const [userRole, setUserRole] = useState<string>(Roles.VIEWER)
     const [showDeleteModal, setShowDeleteModal] = useState<string>()
     const [showNotification, setShowNotification] = useState<string>(enumNotification.HIDE)
+
+    useEffect(() => {
+        getCurrentUserRole().then((role: string) => setUserRole(role))
+    }, [])
 
     const hideNotification = (success: boolean) => {
         setShowDeleteModal(undefined)
@@ -84,8 +90,8 @@ export const ButtonsInfo = ({ path, thingId, isType, funcDelete, funcDeleteChild
     return <Fragment>
         {notification()}
             <a href={path + '&mode=edit&element=' + title + '&id=' + thingId} style={{ all: 'unset', marginRight: "10px"}} >
-                <Button icon="pen" tooltip="Edit" variant="secondary">Edit</Button>
+                <Button icon="pen" tooltip="Edit" variant="secondary" hidden={!isEditor(userRole)}>Edit</Button>
             </a>
-            <Button icon="trash-alt"  tooltip="Delete" variant="destructive" onClick={(e) => handleOnDelete(e, thingId)}>Delete</Button>
+            <Button icon="trash-alt"  tooltip="Delete" variant="destructive" hidden={!isEditor(userRole)} onClick={(e) => handleOnDelete(e, thingId)}>Delete</Button>
     </Fragment>
 }

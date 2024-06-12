@@ -3,6 +3,7 @@ import React, { useContext } from 'react'
 import { deleteConnectionByIdService } from 'services/connections/deleteConnectionByIdService'
 import { getAllConnectionIdsService } from 'services/connections/getAllConnectionsService'
 import { getConnectionByIdService } from 'services/connections/getConnectionByIdService'
+import { Roles } from 'utils/auxFunctions/auth'
 import { StaticContext } from 'utils/context/staticContext'
 import { ExtraButtonsConnection } from '../extraButtons'
 
@@ -45,6 +46,7 @@ export const ListConnections = ({path}: Parameters) => {
             getAllFunc={updateConnections}
             deleteFunc={deleteConnection}
             ExtraButtonComponent={ExtraButtonsConnection}
+            minRole={Roles.EDITOR}
         />
     )
     

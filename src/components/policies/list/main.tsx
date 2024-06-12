@@ -3,6 +3,7 @@ import React, { useContext } from 'react'
 import { deletePolicyService } from 'services/policies/deletePolicy'
 import { getAllPoliciesService } from 'services/policies/getAllPoliciesService'
 import { getPolicyByIdService } from 'services/policies/getPolicyByIdService'
+import { Roles } from 'utils/auxFunctions/auth'
 import { StaticContext } from 'utils/context/staticContext'
 
 interface Parameters {
@@ -15,7 +16,6 @@ export const ListPolicies = ({path}: Parameters) => {
 
     const updatePolicy = (setObjects: any, thenFunction?: any) => {
         getAllPoliciesService(context).then((res: string[]) => {
-            console.log("RES", res)
             setObjects(res.map((item: string) => {
                 return {
                     label : item,
@@ -36,7 +36,7 @@ export const ListPolicies = ({path}: Parameters) => {
     const deletePolicy = (id: string) => {
         return deletePolicyService(context, id)
     }
-    
+
     return (
         <SelectWithTextArea 
             path={path}
@@ -45,6 +45,7 @@ export const ListPolicies = ({path}: Parameters) => {
             getAllFunc={updatePolicy}
             deleteFunc={deletePolicy}
             disableCreate={true}
+            minRole={Roles.EDITOR}
         />
     )
 }

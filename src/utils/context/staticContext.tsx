@@ -13,7 +13,7 @@ export interface Context {
     agent_context: string
 }
 
-export const StaticContext = React.createContext<Context>({
+export const emptyContext = {
     ditto_endpoint: '',
     ditto_username : '',
     ditto_password : '',
@@ -24,4 +24,6 @@ export const StaticContext = React.createContext<Context>({
     hono_tenant: '',
     agent_endpoint: '',
     agent_context: ''
-})
+}
+
+export const StaticContext = React.createContext<Context>(emptyContext)

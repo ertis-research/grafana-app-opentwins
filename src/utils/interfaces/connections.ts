@@ -1,11 +1,15 @@
+import { SelectableValue } from "@grafana/data"
+
 export interface ConnectionData {
     id: string,
     initStatus: boolean
     uri: string
-    payloadMapping: PayloadMapping[],
-    sources: DataSource[]
-    targets: DataTarget[]
-    kafkaData?: KafkaData
+    ssl: boolean
+    sslData: SSLData
+    payloadMapping: PayloadMapping[]
+    sources: SourceData[]
+    targets: TargetData[]
+    kafkaData: KafkaData
 }
 
 export interface PayloadMapping {
@@ -13,24 +17,31 @@ export interface PayloadMapping {
     code: string
 }
 
-export interface DataSource {
-    addresses: string,
-    authorizationContext: string
-    qos: 0|1|2
-    payloadMapping?: PayloadMapping
-    others: any
+export interface SSLData {
+    ca: string
+    cert: string
+    key: string
 }
 
-export interface DataTarget {
+export interface CommonDataSourceTarget {
+    payloadMapping?: SelectableValue<string>
+    qos: SelectableValue<number>
+    others: string
+}
+
+export interface SourceData extends CommonDataSourceTarget {
+    addresses: string,
+    authorizationContext: string
+}
+
+export interface TargetData extends CommonDataSourceTarget {
     address: string,
     topics: string,
     authorizationContext: string
-    qos: 0|1|2
-    payloadMapping?: PayloadMapping
-    others: any
+    
 }
 
 export interface KafkaData {
     bootstrapServers: string, 
-    saslMechanism: string
+    saslMechanism: SelectableValue<number>
 }
