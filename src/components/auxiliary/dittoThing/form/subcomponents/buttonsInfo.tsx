@@ -1,5 +1,6 @@
-import { ConfirmModal, IconButton, Modal, Spinner, VerticalGroup } from "@grafana/ui"
-import React, { useState, useContext } from "react"
+import { Button, ConfirmModal, Modal, Spinner } from "@grafana/ui"
+import React, { useState, useContext, Fragment, useEffect } from "react"
+import { getCurrentUserRole, isEditor, Roles } from "utils/auxFunctions/auth"
 import { enumNotification } from "utils/auxFunctions/general"
 import { StaticContext } from "utils/context/staticContext"
 
@@ -22,8 +23,13 @@ export const ButtonsInfo = ({ path, thingId, isType, funcDelete, funcDeleteChild
 
     const context = useContext(StaticContext)
 
+    const [userRole, setUserRole] = useState<string>(Roles.VIEWER)
     const [showDeleteModal, setShowDeleteModal] = useState<string>()
     const [showNotification, setShowNotification] = useState<string>(enumNotification.HIDE)
+
+    useEffect(() => {
+        getCurrentUserRole().then((role: string) => setUserRole(role))
+    }, [])
 
     const hideNotification = (success: boolean) => {
         setShowDeleteModal(undefined)
@@ -67,10 +73,9 @@ export const ButtonsInfo = ({ path, thingId, isType, funcDelete, funcDeleteChild
                 return <Modal title={messageError} icon='exclamation-triangle' isOpen={true} onDismiss={() => hideNotification(false)}>{descriptionError}</Modal>
             case enumNotification.LOADING:
                 return (
-                    <VerticalGroup align="center">
-                        <h4 className="mb-0 mt-4">Loading...</h4>
+                    <div style={{ display: 'flex', justifyItems: 'center', justifyContent: 'center', alignContent: 'center'}}>
                         <Spinner size={30} />
-                    </VerticalGroup>
+                    </div>
                 )
             default:
                 return <div></div>
@@ -82,13 +87,11 @@ export const ButtonsInfo = ({ path, thingId, isType, funcDelete, funcDeleteChild
         setShowDeleteModal(thingId)
     }
 
-    return <div>
+    return <Fragment>
         {notification()}
-        <div style={{ display: "flex", width: "100%", justifyContent: "center"}} className="m-2">
             <a href={path + '&mode=edit&element=' + title + '&id=' + thingId} style={{ all: 'unset', marginRight: "10px"}} >
-                <IconButton key="edit" name="pen" tooltip="Edit" />
+                <Button icon="pen" tooltip="Edit" variant="secondary" hidden={!isEditor(userRole)}>Edit</Button>
             </a>
-            <IconButton key="delete" name="trash-alt" tooltip="Delete" onClick={(e) => handleOnDelete(e, thingId)} />
-        </div>
-    </div>
+            <Button icon="trash-alt"  tooltip="Delete" variant="destructive" hidden={!isEditor(userRole)} onClick={(e) => handleOnDelete(e, thingId)}>Delete</Button>
+    </Fragment>
 }

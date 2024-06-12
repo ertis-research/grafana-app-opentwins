@@ -1,6 +1,6 @@
 import { enumNotification } from 'utils/auxFunctions/general';
 
-export interface INotification {
+export interface Notification {
     state: enumNotification
     title?: string
     description?: string

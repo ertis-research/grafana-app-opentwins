@@ -1,8 +1,8 @@
 import { Context } from "utils/context/staticContext"
-import { ISimulationAttributes } from "utils/interfaces/simulation"
+import { SimulationAttributes } from "utils/interfaces/simulation"
 import { patchTwinService } from "../crud/patchTwinService"
 
-export const createOrUpdateSimulationService = (context: Context, twinId: string, simulation: ISimulationAttributes ) => {
+export const createOrUpdateSimulationService = (context: Context, twinId: string, simulation: SimulationAttributes ) => {
     return patchTwinService(context, twinId, {
         attributes: {
             _simulations: {

@@ -1,8 +1,6 @@
 export const APP_TITLE = 'OpenTwins';
 export const APP_SUBTITLE = 'Digital Twins Open Source Platform';
 
-export const KUBERNETES_NAMESPACE = 'cloud2edge'
-
 export const DEFAULT_IMAGE_TWIN = 'https://i.imgur.com/DhxyHBc.png' //'https://cdn.pixabay.com/photo/2020/10/31/19/25/robot-5702074_960_720.png'
 
 export const initResources = [

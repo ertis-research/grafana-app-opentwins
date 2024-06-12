@@ -7,6 +7,8 @@ import { getBackendSrv } from '@grafana/runtime';
 export type JsonData = {
     dittoURL?: string;
     extendedURL?: string;
+    agentsURL?: string;
+    agentsContext?: string;
     dittoUsername?: string;
     dittoPassword?: string;
 };
@@ -14,6 +16,8 @@ export type JsonData = {
 type State = {
     dittoURL: string;
     extendedURL: string;
+    agentsURL: string;
+    agentsContext: string;
     dittoUsername?: string;
     dittoPassword?: string;
 };
@@ -25,10 +29,13 @@ export const AppConfig = ({ plugin }: Props) => {
     const [state, setState] = useState<State>({
         dittoURL: (jsonData && jsonData.dittoURL) ? jsonData.dittoURL : '',
         extendedURL: (jsonData && jsonData.extendedURL) ? jsonData.extendedURL : '',
+        agentsURL: (jsonData && jsonData.agentsURL) ? jsonData.agentsURL : '',
+        agentsContext: (jsonData && jsonData.agentsContext) ? jsonData.agentsContext : '',
         dittoUsername: (jsonData && jsonData.dittoUsername) ? jsonData.dittoUsername : '',
         dittoPassword: (jsonData && jsonData.dittoPassword) ? jsonData.dittoPassword : ''
     });
 
+    console.log(state)
 
     const onChangeDittoURL = (event: ChangeEvent<HTMLInputElement>) => {
         let url = event.target.value
@@ -49,6 +56,24 @@ export const AppConfig = ({ plugin }: Props) => {
         setState({
             ...state,
             extendedURL: url.trim(),
+        });
+    };
+
+    const onChangeAgentsAPI = (event: ChangeEvent<HTMLInputElement>) => {
+        let url = event.target.value
+        if (url.endsWith("/")) { 
+            event.target.value.slice(0, -1)
+        }
+        setState({
+            ...state,
+            agentsURL: url.trim(),
+        });
+    };
+
+    const onChangeAgentsContext = (event: ChangeEvent<HTMLInputElement>) => {
+        setState({
+            ...state,
+            agentsContext: event.target.value.trim(),
         });
     };
 
@@ -113,9 +138,10 @@ export const AppConfig = ({ plugin }: Props) => {
             {/* CUSTOM SETTINGS */}
             <FieldSet label="API Settings" className={useTheme2().spacing(6)}>
                 {/* API Key */}
-                <Field label="Eclipse Ditto URL" description="">
+                <Field label="Eclipse Ditto URL" description="" required>
                     <Input
                         width={60}
+                        required
                         id="dittoURL"
                         value={state.dittoURL}
                         placeholder={`E.g.: http://mywebsite.com/api/v1`}
@@ -123,10 +149,11 @@ export const AppConfig = ({ plugin }: Props) => {
                     />
                 </Field>
 
-                <Field label="Eclipse Ditto Extended API URL" description="">
+                <Field label="Eclipse Ditto Extended API URL" description="" required>
                     <Input
                         width={60}
                         id="extendedURL"
+                        required
                         value={state.extendedURL}
                         placeholder={`E.g.: http://mywebsite.com/api/v1`}
                         onChange={onChangeExtendedAPI}
@@ -134,23 +161,44 @@ export const AppConfig = ({ plugin }: Props) => {
                 </Field>
 
                 {/* API Url */}
-                <Field label="Ditto username" description="" className={useTheme2().spacing(3)}>
+                <Field label="Ditto username" description="" className={useTheme2().spacing(3)} required>
                     <Input
                         width={60}
                         id="dittoUsername"
                         value={state.dittoUsername}
                         placeholder={`E.g.: http://mywebsite.com/api/v1`}
                         onChange={onChangeDittoUsername}
+                        required
                     />
                 </Field>
 
-                <Field label="Ditto password" description="">
+                <Field label="Ditto password" description="" required>
                     <Input
                         width={60}
                         id="dittoURL"
                         value={state.dittoPassword}
                         placeholder={'Your secret API key'}
-                        onChange={onChangeDittoPassword}            
+                        onChange={onChangeDittoPassword}   
+                        required         
+                    />
+                </Field>
+
+                <Field label="Agents API URL" description="OPTIONAL (Beta functionality)">
+                    <Input
+                        width={60}
+                        id="agentsURL"
+                        value={state.agentsURL}
+                        placeholder={`E.g.: http://mywebsite.com`}
+                        onChange={onChangeAgentsAPI}
+                    />
+                </Field>
+
+                <Field label="Agents context" description="OPTIONAL (Beta functionality)">
+                    <Input
+                        width={60}
+                        id="agentsContext"
+                        value={state.agentsContext}
+                        onChange={onChangeAgentsContext}
                     />
                 </Field>
 
@@ -165,7 +213,9 @@ export const AppConfig = ({ plugin }: Props) => {
                                     dittoURL: state.dittoURL,
                                     extendedURL: state.extendedURL,
                                     dittoUsername: state.dittoUsername,
-                                    dittoPassword: state.dittoPassword
+                                    dittoPassword: state.dittoPassword,
+                                    agentsURL: state.agentsURL,
+                                    agentsContext: state.agentsContext
                                 }
                             })
                         }

@@ -1,9 +1,10 @@
 import React, { useEffect, useContext, useState, Fragment } from 'react'
-import { AppPluginMeta, KeyValue } from '@grafana/data'
+import { AppEvents, AppPluginMeta, KeyValue } from '@grafana/data'
 import { StaticContext } from 'utils/context/staticContext'
-import { Button, Field, FieldSet, Form, FormAPI, Input, Modal, Spinner } from '@grafana/ui'
+import { Button, Field, FieldSet, Form, FormAPI, Input, Spinner, useTheme2 } from '@grafana/ui'
 import { duplicateTwinService } from 'services/twins/duplicateTwinService'
 import { enumNotification } from 'utils/auxFunctions/general'
+import { getAppEvents } from '@grafana/runtime'
 
 
 interface Parameters {
@@ -19,24 +20,16 @@ interface DuplicateForm {
 
 export function OtherFunctionsTwin({ path, id, meta }: Parameters) {
 
+    const bgcolor = useTheme2().colors.background.secondary
     const context = useContext(StaticContext)
-    const [notificationText, setNotificationText] = useState({title: "", description: ""})
-    const [showNotification, setShowNotification] = useState(enumNotification.HIDE)
+    const appEvents = getAppEvents()
 
-    const descriptionDuplicate = "Enter the id and namespace you want the duplicate twin to have."
-    const duplicateSuccess = {
-        title: "Successful duplication!",
-        description: "The twin has been duplicated successfully. You can access it from the main twins tab."
-    }
-    const duplicateError = {
-        title: "Duplication error",
-        description: "The twin could not be duplicated. Check the fields entered and the API connection."
-    }
+    const [showNotification, setShowNotification] = useState(enumNotification.HIDE)
+    const descriptionDuplicate = "Enter the id and namespace you want the duplicate twin to have"
+
 
     const notification = () => {
         switch(showNotification) {
-            case enumNotification.SUCCESS || enumNotification.ERROR:
-                return <Modal title={notificationText.title} isOpen={true} onDismiss={() => setShowNotification(enumNotification.HIDE)}>{notificationText.description}</Modal>
             case enumNotification.LOADING:
                 return <Spinner size={30}/> 
             default:
@@ -47,11 +40,17 @@ export function OtherFunctionsTwin({ path, id, meta }: Parameters) {
     const handleDuplicateTwin = (data: DuplicateForm) => {
         setShowNotification(enumNotification.LOADING)
         duplicateTwinService(context, id, data.namespace + ":" + data.id).then(() => {
-            setNotificationText(duplicateSuccess)
-            setShowNotification(enumNotification.SUCCESS)
+            appEvents.publish({
+                type: AppEvents.alertSuccess.name,
+                payload: ["The twin has been duplicated successfully. You can access it from the main twins tab."]
+            });
         }).catch(()=> {
-            setNotificationText(duplicateError)
-            setShowNotification(enumNotification.ERROR)
+            appEvents.publish({
+                type: AppEvents.alertError.name,
+                payload: ["The twin could not be duplicated. Check the fields entered and the API connection."]
+            });
+        }).finally(() => {
+            setShowNotification(enumNotification.HIDE)
         })
     }
 
@@ -60,7 +59,9 @@ export function OtherFunctionsTwin({ path, id, meta }: Parameters) {
 
     const duplicateForm = 
     <Fragment>
-            <h5>Duplicate twin</h5>
+            <h5><b>Duplicate twin</b></h5>
+            
+            <hr />
             <p>{descriptionDuplicate}</p>
             <Form id="formDuplicate" onSubmit={handleDuplicateTwin} maxWidth="none">
                 {({register, errors, control}: FormAPI<DuplicateForm>) => {
@@ -82,9 +83,13 @@ export function OtherFunctionsTwin({ path, id, meta }: Parameters) {
     return (
         <Fragment>
             <div className="row">
-                <div className="col-6">
-                    {duplicateForm}
+                <div className="col-0 col-md-0 col-lg-3"></div>
+                <div className="col-12 col-md-12 col-lg-6">
+                    <div style={{ backgroundColor: bgcolor, padding: '30px', marginBottom: '10px', height: '100%' }}>
+                        {duplicateForm}
+                    </div>
                 </div>
+                <div className="col-0 col-md-0 col-lg-3"></div>
             </div>
         </Fragment>
     )

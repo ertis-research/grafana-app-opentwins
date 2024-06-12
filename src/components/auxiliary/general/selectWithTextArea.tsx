@@ -1,10 +1,12 @@
 import React, { useState, Fragment, useEffect } from 'react'
-import { Select, TextArea, Button, Icon, HorizontalGroup } from '@grafana/ui'
-import { SelectableValue } from '@grafana/data'
-import { ISelect } from 'utils/interfaces/select'
+import { Select, TextArea, Button, Icon, LinkButton } from '@grafana/ui'
+import { AppEvents, SelectableValue } from '@grafana/data'
+import { SelectData } from 'utils/interfaces/select'
 import { capitalize, enumNotification } from 'utils/auxFunctions/general'
-import { INotification } from 'utils/interfaces/notification'
+import { Notification } from 'utils/interfaces/notification'
 import { CustomNotification } from './notification'
+import { getAppEvents } from '@grafana/runtime'
+import { getCurrentUserRole, hasAuth, Roles } from 'utils/auxFunctions/auth'
 
 export interface ParametersExtraButtons {
     selectedConnection: any
@@ -21,39 +23,50 @@ interface Parameters {
     deleteFunc: any
     ExtraButtonComponent?: React.FC<ParametersExtraButtons>
     disableCreate?: boolean
+    minRole?: Roles
 }
 
-export const SelectWithTextArea = ({ path, name, getByIdFunc, getAllFunc, deleteFunc, ExtraButtonComponent, disableCreate=false }: Parameters) => {
+export const SelectWithTextArea = ({ path, name, getByIdFunc, getAllFunc, deleteFunc, ExtraButtonComponent, disableCreate = false, minRole = Roles.VIEWER }: Parameters) => {
+
+    const appEvents = getAppEvents()
 
     const confirmDelete_title = "Delete " + name
     const confirmDelete_body = (id: any) => "Are you sure you want to delete " + name + " " + id + "?"
     const confirmDelete_description = "This action cannot be undone."
 
-    const [objects, setObjects] = useState<ISelect[]>([])
+    const [objects, setObjects] = useState<SelectData[]>([])
     const [value, setValue] = useState<SelectableValue<string>>()
     const [selectedObject, setselectedObject] = useState<any>(undefined)
-    const [showNotification, setShowNotification] = useState<INotification>({state: enumNotification.HIDE, title: ""})
+    const [showNotification, setShowNotification] = useState<Notification>({ state: enumNotification.HIDE, title: "" })
+    const [userRole, setUserRole] = useState<string>(Roles.VIEWER)
 
     const handleOnConfirmDelete = () => {
-        if(value?.value !== undefined){
-            setShowNotification({state: enumNotification.LOADING, title: ""})
+        if (value?.value !== undefined) {
+            setShowNotification({ state: enumNotification.LOADING, title: "" })
             deleteFunc(value.value).then(() => {
-                setShowNotification({
-                    state: enumNotification.SUCCESS, 
-                    title: capitalize(name) + " successfully deleted!"
-                })
-            }).catch(() => {
-                setShowNotification({
-                    state: enumNotification.ERROR, 
-                    title: "Error deleting " + name
-                })
+                appEvents.publish({
+                    type: AppEvents.alertSuccess.name,
+                    payload: [capitalize(name) + " successfully deleted!"]
+                });
+            }).catch((e: Error) => {
+                let msg = ""
+                try {
+                    const response = JSON.parse(e.message)
+                    msg = response.message
+                } catch (e) { }
+                appEvents.publish({
+                    type: AppEvents.alertError.name,
+                    payload: ["Error deleting " + name + ". " + msg]
+                });
+            }).finally(() => {
+                setShowNotification({ state: enumNotification.HIDE, title: "" })
             })
             setValue(undefined)
         }
     }
 
     const handleOnClickDelete = () => {
-        if(value?.value){
+        if (value?.value) {
             setShowNotification({
                 state: enumNotification.CONFIRM,
                 title: confirmDelete_title,
@@ -67,12 +80,12 @@ export const SelectWithTextArea = ({ path, name, getByIdFunc, getAllFunc, delete
     }
 
     const getAll = () => {
-        setShowNotification({state: enumNotification.LOADING})
-        getAllFunc(setObjects, () => {setShowNotification({state: enumNotification.READY})})
+        setShowNotification({ state: enumNotification.LOADING })
+        getAllFunc(setObjects, () => { setShowNotification({ state: enumNotification.READY }) })
     }
 
     useEffect(() => {
-        if(value && value.value && showNotification.state === enumNotification.READY){
+        if (value && value.value && showNotification.state === enumNotification.READY) {
             getByIdFunc(value.value).then((item: any) => {
                 setselectedObject(item)
             }).catch(() => {
@@ -90,10 +103,11 @@ export const SelectWithTextArea = ({ path, name, getByIdFunc, getAllFunc, delete
     useEffect(() => {
         //getAllFunc(setObjects)
         getAll()
+        getCurrentUserRole().then((role: string) => setUserRole(role))
     }, [])
 
     useEffect(() => {
-        if(showNotification.state === enumNotification.HIDE){
+        if (showNotification.state === enumNotification.HIDE) {
             getAll()
             //getAllFunc(setObjects)
             //setShowNotification({state: enumNotification.READY, title: ""})
@@ -103,45 +117,54 @@ export const SelectWithTextArea = ({ path, name, getByIdFunc, getAllFunc, delete
     const isDisabled = !selectedObject || showNotification.state !== enumNotification.READY
 
     const extraButtons = (!ExtraButtonComponent) ? <div></div> :
-        <ExtraButtonComponent selectedConnection={selectedObject} selectedId={value} isDisabled={isDisabled} setShowNotification={setShowNotification} />
+        <div style={{ marginRight: '10px' }}>
+            <ExtraButtonComponent selectedConnection={selectedObject} selectedId={value} isDisabled={isDisabled} setShowNotification={setShowNotification} />
+        </div>
 
-    const buttons = (selectedObject && value !== undefined) ? 
-        <HorizontalGroup justify="flex-end">
+    const buttons = (selectedObject && value !== undefined) ?
+        <div style={{ display: 'flex', justifyItems: 'flex-start', justifyContent: 'flex-start' }}>
             {extraButtons}
             <Button variant="destructive" icon="trash-alt" disabled={isDisabled} onClick={handleOnClickDelete}>Delete</Button>
-        </HorizontalGroup>
+        </div>
         : <div></div>
-//            <LinkButton variant="secondary" href={path + "&id=" + value.value + "&mode=edit"} icon="pen" disabled={showNotification.state !== enumNotification.READY}>Edit</LinkButton>
+    //            <LinkButton variant="secondary" href={path + "&id=" + value.value + "&mode=edit"} icon="pen" disabled={showNotification.state !== enumNotification.READY}>Edit</LinkButton>
 
-/*
+
     const createButton = (!disableCreate) ?
-        <HorizontalGroup justify="center">
-            <LinkButton variant="primary" href={path + "&mode=create"} className="m-3" icon="plus" disabled={showNotification.state !== enumNotification.READY}>
+        <div style={{ display: 'flex', alignItems: 'center' }}>
+            <LinkButton variant="primary" href={path + "&mode=create"} icon="plus" disabled={showNotification.state !== enumNotification.READY}>
                 Create new {name}
             </LinkButton>
-        </HorizontalGroup>
+        </div>
         : <div></div>
-*/
-    return (
+
+    const component =
         <Fragment>
             <div className='row justify-content-between mb-3'>
-                <div className="col-12 col-sm-12 col-md-7 col-lg-7">
+                <div className="col-12 col-sm-12 col-md-5 col-lg-5">
                     <Select
                         options={objects}
                         value={value}
                         onChange={v => setValue(v)}
-                        prefix={<Icon name="search"/>}
+                        prefix={<Icon name="search" />}
                         placeholder="Search"
                         disabled={showNotification.state !== enumNotification.READY}
                     />
                 </div>
-                <div className="col-12 col-sm-12 col-md-5 col-lg-5">
+                <div className="col-12 col-sm-12 col-md-4 col-lg-4">
                     {buttons}
                 </div>
+                <div className={(disableCreate) ? 'col-0' : 'col-12 col-sm-12 col-md-3 col-lg-3'} style={{ display: 'flex', justifyContent: 'flex-end' }}>
+                    {createButton}
+                </div>
             </div>
-            <CustomNotification notification={showNotification} setNotificationFunc={setShowNotification}/>
-            <TextArea className="mt-3" rows={25} value={(selectedObject) ? JSON.stringify(selectedObject, undefined, 4) : ""} readOnly/>
+            <CustomNotification notification={showNotification} setNotificationFunc={setShowNotification} />
+            <TextArea className="mt-3" rows={25} value={(selectedObject) ? JSON.stringify(selectedObject, undefined, 4) : ""} readOnly />
         </Fragment>
-    )
 
+    const noAllow = <div style={{ display: 'flex', justifyItems: 'center', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', alignContent: 'center' }}>
+        <h5>You do not have sufficient permissions to access this content</h5>
+    </div>
+
+    return (hasAuth(userRole, minRole)) ? component : noAllow
 }

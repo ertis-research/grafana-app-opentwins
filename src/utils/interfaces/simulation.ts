@@ -1,7 +1,7 @@
 import { TypesOfField } from './../data/consts';
 import { ContentType, MethodRequest } from "utils/data/consts"
 
-export interface ISimulationAttributesForm {
+export interface SimulationAttributesForm {
     id: string
     description?: string
     method: MethodRequest
@@ -10,16 +10,16 @@ export interface ISimulationAttributesForm {
     contentType?: ContentType
 }
 
-export interface ISimulationAttributes {
+export interface SimulationAttributes {
     id: string
     description?: string
     method: MethodRequest
     url: string
     contentType?: ContentType
-    content?: ISimulationContent[]
+    content?: SimulationContent[]
 }
 
-export interface ISimulationContent {
+export interface SimulationContent {
     name: string,
     type: TypesOfField,
     required: boolean,

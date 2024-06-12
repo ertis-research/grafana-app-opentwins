@@ -5,7 +5,7 @@
   "id": "ertis-opentwins",
 
   "info": {
-    "description": "Grafana App Plugin For Digital Twins",
+    "description": "Grafana app plugin for digital twins",
     "author": {
       "name": "ERTIS"
     },
@@ -19,7 +19,7 @@
       { "name": "License", "url": "https://github.com/ertis-research/OpenTwins?tab=Apache-2.0-1-ov-file#readme" }
     ],
     "screenshots": [],
-    "version": "%VERSION%",
+    "version": "1.1.0",
     "updated": "%TODAY%"
   },
 
@@ -27,35 +27,43 @@
     {
       "type": "page",
       "name": "Twins",
+      "addToNav": true,
       "path": "/a/ertis-opentwins",
       "role": "Viewer",
-      "addToNav": true,
       "defaultNav": true,
       "icon": "file-alt"
     },
     {
       "type": "page",
+      "name": "Twins",
+      "addToNav": true,
+      "path": "/a/ertis-opentwins/?tab=twins",
+      "role": "Viewer",
+      "icon": "file-alt"
+    },
+    {
+      "type": "page",
       "name": "Types",
+      "addToNav": true,
       "path": "/a/ertis-opentwins/?tab=types",
       "role": "Viewer",
-      "addToNav": true,
       "icon": "folder-plus"
     },
     {
       "type": "page",
-      "name": "Policies",
-      "path": "/a/ertis-opentwins/?tab=policies",
-      "role": "Viewer",
+      "name": "Connections",
       "addToNav": true,
-      "icon": "shield"
+      "path": "/a/ertis-opentwins/?tab=connections",
+      "role": "Editor",
+      "icon": "plug"
     },
     {
       "type": "page",
-      "name": "Connections",
-      "path": "/a/ertis-opentwins/?tab=connections",
-      "role": "Viewer",
+      "name": "Policies",
       "addToNav": true,
-      "icon": "plug"
+      "path": "/a/ertis-opentwins/?tab=policies",
+      "role": "Editor",
+      "icon": "shield"
     },
     {
       "type": "page",

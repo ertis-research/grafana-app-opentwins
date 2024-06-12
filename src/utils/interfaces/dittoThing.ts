@@ -1,3 +1,8 @@
+export interface LinkData {
+    id: string,
+    num: number
+}
+
 export interface IThingId {
     id: string,
     namespace: string

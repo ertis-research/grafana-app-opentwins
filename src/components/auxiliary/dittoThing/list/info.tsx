@@ -1,8 +1,9 @@
 import React from 'react'
 import { AppPluginMeta, KeyValue } from '@grafana/data'
 import { IDittoThing } from 'utils/interfaces/dittoThing'
-import { capitalize, defaultIfNoExist} from 'utils/auxFunctions/general'
+import { capitalize, defaultIfNoExist } from 'utils/auxFunctions/general'
 import { basicAttributesConst } from 'utils/data/consts'
+import { useTheme2 } from '@grafana/ui'
 
 interface Parameters {
     path: string
@@ -14,6 +15,7 @@ interface Parameters {
 export function InformationThing({ path, thingInfo, meta, isType }: Parameters) {
 
     const tab = '\u00A0\u00A0\u00A0'
+    const bgcolor = useTheme2().colors.background.secondary
 
     const arrayToJSXElement = (array: any, str = "", isCapitalize = true) => {
         return array.map((item: any, index: number) => {
@@ -76,23 +78,14 @@ export function InformationThing({ path, thingInfo, meta, isType }: Parameters) 
         return objectToJSXElement(Object.assign({}, defaultIfNoExist(thingInfo, "features", {})), "", false)
     }
 
-    const attributeIfExist = (object: any, nameAttribute: string, isImage = false) => {
+    const attributeIfExist = (object: any, nameAttribute: string) => {
         if (defaultIfNoExist(object, nameAttribute, undefined) !== undefined) {
-            if(isImage) {
-                return (
-                    <div>
-                        <h6 className='mb-0'>{capitalize(nameAttribute)}</h6>
-                        <img src={object[nameAttribute]} style={{ height: "200px", width: "100%", objectFit: "cover", objectPosition: "center" }} />
-                    </div>
-                )
-            } else {
-                return (
-                    <div>
-                        <h6 className='mb-0'>{capitalize(nameAttribute)}</h6>
-                        <p style={{ wordWrap: 'break-word', overflowWrap: 'break-word' }}>{object[nameAttribute]}</p>
-                    </div>
-                )
-            }
+            return (
+                <div>
+                    <h6 className='mb-0'>{capitalize(nameAttribute)}</h6>
+                    <p style={{ wordWrap: 'break-word', overflowWrap: 'break-word' }}>{object[nameAttribute]}</p>
+                </div>
+            )
         } else {
             return <div></div>
         }
@@ -100,22 +93,25 @@ export function InformationThing({ path, thingInfo, meta, isType }: Parameters) 
 
     return (
         <div className="row">
-            <div className="col-4">
-                <h5>Basic information</h5>
-                {attributeIfExist(thingInfo, "thingId", false)}
-                {attributeIfExist(thingInfo.attributes, "name", false)}
-                {attributeIfExist(thingInfo, "policyId", false)}
-                {attributeIfExist(thingInfo.attributes, "description", false)}
-                {attributeIfExist(thingInfo.attributes, "image", true)}
+            <div className="col-0 col-xl-2"></div>
+            <div className="col-12 col-md-6 col-xl-4 mt-2">
+                <div style={{ backgroundColor: bgcolor, padding: '30px', marginBottom: '10px', height: '100%' }}>
+                    <h5><b>Static data</b></h5>
+                    <hr />
+                    {attributeIfExist(thingInfo.attributes, "name")}
+                    {attributeIfExist(thingInfo, "policyId")}
+                    {attributeIfExist(thingInfo.attributes, "description")}
+                    {attributes()}
+                </div>
             </div>
-            <div className="col-4">
-                <h5>Attributes</h5>
-                {attributes()}
+            <div className="col-12 col-md-6 col-xl-4 mt-2">
+                <div style={{ backgroundColor: bgcolor, padding: '30px', marginBottom: '10px', height: '100%' }}>
+                    <h5><b>Dynamic data</b></h5>
+                    <hr />
+                    {features()}
+                </div>
             </div>
-            <div className="col-4">
-                <h5>Features</h5>
-                {features()}
-            </div>
-        </div>
+            <div className="col-0 col-xl-2"></div>
+        </div >
     )
 }
