@@ -33,7 +33,7 @@ export const pages: PageDefinition[] = [
     icon: 'users-alt',
     id: 'agents',
     text: 'Agents',
-    showIf: ((meta: AppRootProps['meta']) => {return meta.jsonData !== undefined && meta.jsonData.agentsURL !== undefined && meta.jsonData.agentsURL !== null && meta.jsonData.agentsURL.trim() !== ''})
+    showIf: ((meta: AppRootProps['meta']) => {return meta.jsonData !== undefined && meta.jsonData.agentsURL !== undefined && meta.jsonData.agentsURL && meta.jsonData.agentsURL.trim() !== ''})
   },
   {
     component: ConnectionsPage,

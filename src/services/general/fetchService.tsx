@@ -1,4 +1,5 @@
 export const fetchService = async (url: string, init: RequestInit, allowNotFound = false) => {
+    console.log("url", url)
     const res = await fetch(url, init)
     console.log("res", res)
     if (!res.ok && !(allowNotFound && res.status === 404)) {

@@ -73,14 +73,14 @@ export function MainList({ path, meta, isType, funcThings, funcDelete, funcDelet
             if (res.hasOwnProperty("items")) { res = res.items }
             setThings(res)
         })
-        .catch(() => {
-            console.log("error")
-            appEvents.publish({
-                type: AppEvents.alertError.name,
-                payload: ['Error when getting the things']
-            });
-        })
-        .finally(() => setShowNotification(enumNotification.READY))
+            .catch(() => {
+                console.log("error")
+                appEvents.publish({
+                    type: AppEvents.alertError.name,
+                    payload: ['Error when getting the things']
+                });
+            })
+            .finally(() => setShowNotification(enumNotification.READY))
     }
 
     const updateFilteredThings = () => {
@@ -164,13 +164,13 @@ export function MainList({ path, meta, isType, funcThings, funcDelete, funcDelet
         return <div className="p-4" style={{ height: "100%", width: "100%", backgroundColor: useTheme2().colors.background.canvas }}>
             <a href={path + "&mode=check&id=" + item.thingId}>
                 <div style={{ height: (isEditor(userRole)) ? '85%' : '100%', width: "100%", overflow: "hidden", whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>
-                    <b>{defaultIfNoExist(item.attributes, "name", item.thingId).trim()}</b>
+                    <b>{defaultIfNoExist(item.attributes, "name", ((item.thingId) ? item.thingId : '')).trim()}</b>
                     <p>{item.thingId}</p>
                     <p style={{ whiteSpace: 'normal' }}>{defaultIfNoExist(item.attributes, "description", "")}</p>
                 </div>
                 <div className='mt-2' style={{ height: '10%', display: (isEditor(userRole)) ? 'flex' : 'none', justifyContent: 'flex-end', alignItems: 'center' }}>
                     <LinkButton fill='text' variant='secondary' hidden={!isEditor(userRole)} key="edit" icon="pen" tooltip="Edit" href={path + '&mode=edit&element=' + title + '&id=' + item.thingId} />
-                    <LinkButton fill='text' variant='destructive' hidden={!isEditor(userRole)}key="delete" icon="trash-alt" tooltip="Delete" onClick={(e) => handleOnDelete(e, item.thingId)} />
+                    <LinkButton fill='text' variant='destructive' hidden={!isEditor(userRole)} key="delete" icon="trash-alt" tooltip="Delete" onClick={(e) => handleOnDelete(e, item.thingId)} />
                 </div>
             </a>
         </div>
@@ -217,7 +217,10 @@ export function MainList({ path, meta, isType, funcThings, funcDelete, funcDelet
             <h5>There are no items which match the filters</h5>
         </div>
 
-    const noThings = (showNotification !== enumNotification.READY) ? <div></div> :
+    const noThings = (showNotification !== enumNotification.READY) ?
+        <div className="mb-0 mt-4" style={{ display: 'flex', justifyItems: 'center', justifyContent: 'center', width: '100%' }}>
+            <Spinner inline={true} size={20} />
+        </div> :
         <div style={{ display: 'flex', justifyItems: 'center', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', alignContent: 'center' }}>
             <h5>{(parentId !== undefined) ? ("This " + title + " has no children") : ("There are no " + title + "s")}</h5>
             {buttonAdd}

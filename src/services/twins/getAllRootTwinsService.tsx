@@ -13,6 +13,7 @@ export const getAllRootTwinsService = async (context: Context) => {
   })
 
   while (twins.hasOwnProperty('cursor')) {
+    console.log("tiene")
     res = [
       ...res,
       ...twins.items
@@ -32,10 +33,12 @@ export const getAllRootTwinsService = async (context: Context) => {
       ...twins.items
     ]
   } else {
-    res = [
-      ...res,
-      ...twins
-    ]
+    if(Array.isArray(twins) && twins.some((t: any) => t.hasOwnProperty("thingId"))){
+      res = [
+        ...res,
+        ...twins
+      ]
+    }
   }
 
   return res
