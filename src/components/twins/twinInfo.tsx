@@ -11,6 +11,7 @@ import { deleteTwinService } from 'services/twins/crud/deleteTwinService'
 import { deleteTwinWithChildrenService } from 'services/twins/children/deleteTwinWithChildrenService'
 import { InfoHeader } from 'components/auxiliary/general/infoHeader'
 import { ListAgentsTwin } from './subcomponents/agents'
+import { getCurrentUserRole, isEditor, Roles } from 'utils/auxFunctions/auth'
 
 
 interface Parameters {
@@ -31,6 +32,7 @@ export function TwinInfo({ path, id, meta, section }: Parameters) {
 
     const [selected, setSelected] = useState<string>((section !== undefined) ? section : Sections.information);
     const [twinInfo, setTwinInfo] = useState<IDittoThing>({ thingId: "", policyId: "" })
+    const [userRole, setUserRole] = useState<string>(Roles.VIEWER)
 
     const context = useContext(StaticContext)
 
@@ -45,7 +47,9 @@ export function TwinInfo({ path, id, meta, section }: Parameters) {
                     return <ListAgentsTwin path={path.split("?")[0]} id={id} meta={meta} />
                 }
             case Sections.others:
-                return <OtherFunctionsTwin path={path} id={id} meta={meta} />
+                if(isEditor(userRole)){
+                    return <OtherFunctionsTwin path={path} id={id} meta={meta} />
+                }
             default:
                 return <InformationTwin path={path} twinInfo={twinInfo} meta={meta} />
         }
@@ -59,6 +63,7 @@ export function TwinInfo({ path, id, meta, section }: Parameters) {
 
     useEffect(() => {
         getTwinInfo()
+        getCurrentUserRole().then((role: string) => setUserRole(role))
     }, [])
 
     useEffect(() => {
@@ -77,9 +82,13 @@ export function TwinInfo({ path, id, meta, section }: Parameters) {
         getTwinInfo()
     }, [selected])
 
+    const filter = (section: string) => 
+        (section !== Sections.agents || context.agent_endpoint.trim() !== '') 
+        && (section !== Sections.others || isEditor(userRole))
+
     return (
         <Fragment>
-            <InfoHeader path={path} thing={twinInfo} isType={false} sections={Object.values(Sections).filter((section: string) => (section !== Sections.agents || context.agent_endpoint.trim() !== ''))} selected={selected} setSelected={setSelected} funcDelete={deleteTwinService} funcDeleteChildren={deleteTwinWithChildrenService} />
+            <InfoHeader path={path} thing={twinInfo} isType={false} sections={Object.values(Sections).filter(filter)} selected={selected} setSelected={setSelected} funcDelete={deleteTwinService} funcDeleteChildren={deleteTwinWithChildrenService} />
             <hr />
             {getComponent()}
         </Fragment>

@@ -386,14 +386,13 @@ export function ListAgents({ path, meta, twinId }: Parameters) {
         <div className="mb-0 mt-4" style={{ display: 'flex', justifyItems: 'center', justifyContent: 'center', width: '100%' }}>
             <Spinner inline={true} size={20} />
         </div> :
-        <div className="mb-0 mt-4" style={{ display: 'flex', width: '100%', flexDirection: 'column', alignItems: 'center' }}>
-            <h5>There are no agents</h5>
+        <div className="mb-0" style={{ display: 'flex', width: '100%', flexDirection: 'column', alignItems: 'center' }}>
+            <h5>{(twinId) ? 'This twin has no agents' : 'There are no agents'}</h5>
             {buttonAdd}
         </div>
 
 
     const agentsList = <Fragment>
-        {deleteConfirmModal()}
         <div className='row justify-content-between mb-3'>
             <div className="col-12 col-sm-12 col-md-5 col-lg-5">
                 <Input
@@ -423,6 +422,7 @@ export function ListAgents({ path, meta, twinId }: Parameters) {
                 {agentInfo}
             </div>
         </div>
+        {deleteConfirmModal()}
     </Fragment>
 
     return (agents.length > 0) ? agentsList : noChildren

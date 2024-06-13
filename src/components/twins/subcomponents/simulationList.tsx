@@ -5,6 +5,7 @@ import React, { Fragment, useState, useContext, useEffect, ChangeEvent } from 'r
 import { duplicateTwinService } from 'services/twins/duplicateTwinService'
 import { deleteSimulationService } from 'services/twins/simulation/deleteSimulationService'
 import { sendSimulationRequest } from 'services/twins/simulation/sendSimulationRequestService'
+import { getCurrentUserRole, isEditor, Roles } from 'utils/auxFunctions/auth'
 import { defaultIfNoExist, enumNotification, removeEmptyEntries } from 'utils/auxFunctions/general'
 import { StaticContext } from 'utils/context/staticContext'
 import { TypesOfField } from 'utils/data/consts'
@@ -28,6 +29,7 @@ export const SimulationList = ({ path, meta, id, twinInfo }: Parameters) => {
     const [showNotification, setShowNotification] = useState<string>(enumNotification.HIDE)
     const [duplicateTwin, setDuplicateTwin] = useState<boolean>(false)
     const [otherValues, setOtherValues] = useState<{ [id: string]: any }>({})
+    const [userRole, setUserRole] = useState<string>(Roles.VIEWER)
 
     const simulationOfAttribute = {
         attributes: {
@@ -141,6 +143,7 @@ export const SimulationList = ({ path, meta, id, twinInfo }: Parameters) => {
 
     useEffect(() => {
         getAndSetSimulations()
+        getCurrentUserRole().then((role: string) => setUserRole(role))
     }, [])
 
     const loadingSpinner = () => {
@@ -262,7 +265,7 @@ export const SimulationList = ({ path, meta, id, twinInfo }: Parameters) => {
         }
     }
 
-    const buttonAdd = <LinkButton icon="plus" variant="primary" href={path + '&mode=create&id=' + id + "&element=simulation"}>
+    const buttonAdd = <LinkButton hidden={!isEditor(userRole)} icon="plus" variant="primary" href={path + '&mode=create&id=' + id + "&element=simulation"}>
         Add simulation
     </LinkButton>
 
