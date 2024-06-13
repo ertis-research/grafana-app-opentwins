@@ -16,8 +16,8 @@ export type JsonData = {
 type State = {
     dittoURL: string;
     extendedURL: string;
-    agentsURL: string;
-    agentsContext: string;
+    agentsURL?: string;
+    agentsContext?: string;
     dittoUsername?: string;
     dittoPassword?: string;
 };

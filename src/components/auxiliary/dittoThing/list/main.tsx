@@ -72,8 +72,15 @@ export function MainList({ path, meta, isType, funcThings, funcDelete, funcDelet
         funcThings().then((res: any) => {
             if (res.hasOwnProperty("items")) { res = res.items }
             setThings(res)
-            setShowNotification(enumNotification.READY)
-        }).catch(() => console.log("error"))
+        })
+        .catch(() => {
+            console.log("error")
+            appEvents.publish({
+                type: AppEvents.alertError.name,
+                payload: ['Error when getting the things']
+            });
+        })
+        .finally(() => setShowNotification(enumNotification.READY))
     }
 
     const updateFilteredThings = () => {
