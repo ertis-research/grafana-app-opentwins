@@ -286,7 +286,7 @@ export function ListAgents({ path, meta, twinId }: Parameters) {
             <div style={{ height: '12px', width: '100%', backgroundColor: getColor(item), paddingRight: '15px', color: useTheme2().colors.background.primary }}></div>
             <div className={(selectedAgent !== undefined && selectedAgent.id === item.id) ? 'listSelected' : ''} style={{ display: "block", width: "100%", height: '95px', backgroundColor: useTheme2().colors.background.canvas }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', height: '100%' }}>
-                    <div style={{ width: 'calc(100% - 110px)' }}>
+                    <div style={{ width: 'calc(100% - 120px)' }}>
                         <a onClick={(e) => handleOnClickCard(e, item)} style={{ margin: '0px', padding: '0px', display: 'block', height: '100%' }}>
                             <div style={{ display: 'flex', height: '100%' }}>
                                 <div className='px-3' style={{ height: '100%', width: 'fit-content', justifyContent: 'center', alignContent: 'center', backgroundColor: useTheme2().colors.text.primary }}>
@@ -308,9 +308,9 @@ export function ListAgents({ path, meta, twinId }: Parameters) {
                             </div>
                         </a>
                     </div>
-                    <div style={{ height: 'auto', alignContent: 'center', display: 'flex', marginLeft: '20px', width: '80px' }}>
-                        <IconButton size='xl' hidden={!isEditor(userRole)} style={{ paddingRight: '10px' }} name={(item.status === AgentState.ACTIVE) ? "pause" : "play"} onClick={() => handleOnClickPausePlay(item)} />
-                        <IconButton size='xl' hidden={!isEditor(userRole)} name='trash-alt' style={{ paddingRight: '20px' }} onClick={() => setIsOpenDelete(item)} />
+                    <div style={{ height: 'auto', alignContent: 'center', display: 'flex', marginLeft: '20px', width: '90px', flexWrap: 'wrap' }}>
+                        <IconButton size='xl' hidden={!isEditor(userRole)} style={{ marginRight: '20px' }} name={(item.status === AgentState.ACTIVE) ? "pause" : "play"} onClick={() => handleOnClickPausePlay(item)} />
+                        <IconButton size='xl' hidden={!isEditor(userRole)} name='trash-alt' style={{ marginRight: '20px' }} onClick={() => setIsOpenDelete(item)} />
                     </div>
                 </div>
             </div>

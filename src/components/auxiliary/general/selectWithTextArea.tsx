@@ -151,7 +151,7 @@ export const SelectWithTextArea = ({ path, name, getByIdFunc, getAllFunc, delete
                         disabled={showNotification.state !== enumNotification.READY}
                     />
                 </div>
-                <div className="col-12 col-sm-12 col-md-4 col-lg-4">
+                <div className={(disableCreate) ? 'col-12 col-sm-12 col-md-7 col-lg-7' : 'col-12 col-sm-12 col-md-4 col-lg-4'} >
                     {buttons}
                 </div>
                 <div className={(disableCreate) ? 'col-0' : 'col-12 col-sm-12 col-md-3 col-lg-3'} style={{ display: 'flex', justifyContent: 'flex-end' }}>

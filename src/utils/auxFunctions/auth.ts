@@ -1,16 +1,18 @@
 import { getBackendSrv } from '@grafana/runtime';
 
 export enum Roles {
-    VIEWER = 'viewer',
-    ADMIN = 'admin',
-    EDITOR = 'editor'
+    VIEWER = 'Viewer',
+    ADMIN = 'Admin',
+    EDITOR = 'Editor'
 }
 
 export const getCurrentUserRole = async (): Promise<string> => {
     try {
-        const user = await getBackendSrv().get('/api/user');
-        console.log('Current User:', user);
-        return (user.login) ? user.login : Roles.VIEWER;
+        const currentOrg: any = await getBackendSrv().get('/api/org');
+        const currentUserOrgs: any[] = await getBackendSrv().get('/api/user/orgs');
+        const currentInfo = currentUserOrgs.find((org: any) => org.orgId === currentOrg.id)
+        console.log('Current info:', currentInfo);
+        return (currentInfo.role) ? currentInfo.role : Roles.VIEWER;
     } catch (error) {
         console.error('Error fetching user role:', error);
         return Roles.VIEWER;
