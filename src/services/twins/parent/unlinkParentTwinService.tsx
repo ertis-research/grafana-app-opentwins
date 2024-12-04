@@ -2,7 +2,7 @@ import { fetchExtendedApiForDittoService } from "services/general/fetchExtendedA
 import { Context } from "utils/context/staticContext"
 
 export const unlinkParentTwinService = ( context: Context, twinId: string ) => {
-  return fetchExtendedApiForDittoService(context, "/twins/" + twinId + '/parent/unlink', {
+  return fetchExtendedApiForDittoService(context, "/things/" + twinId + '/parent/unlink', {
     method: 'PATCH',
     headers: {
       "Authorization": 'Basic '+btoa('ditto:ditto'),

@@ -4,7 +4,7 @@ import { Context } from "utils/context/staticContext"
 export const getAllRootTwinsService = async (context: Context) => {
   let res: any[] = []
   
-  let twins = await fetchExtendedApiForDittoService(context, "/twins?option=size(200)", {
+  let twins = await fetchExtendedApiForDittoService(context, "/things?option=size(200)", {
     method: 'GET',
     headers: {
       "Authorization": 'Basic '+btoa('ditto:ditto'),
@@ -18,7 +18,7 @@ export const getAllRootTwinsService = async (context: Context) => {
       ...res,
       ...twins.items
     ]
-    twins = await fetchExtendedApiForDittoService(context, "/twins?option=size(200),cursor(" + twins.cursor + ")", {
+    twins = await fetchExtendedApiForDittoService(context, "/things?option=size(200),cursor(" + twins.cursor + ")", {
       method: 'GET',
       headers: {
         "Authorization": 'Basic ' + btoa('ditto:ditto'),

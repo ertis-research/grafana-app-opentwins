@@ -2,7 +2,7 @@ import { fetchExtendedApiForDittoService } from "services/general/fetchExtendedA
 import { Context } from "utils/context/staticContext"
 
 export const deleteTwinService = (context: Context, twinId: string ) => {
-  return fetchExtendedApiForDittoService(context, "/twins/" + twinId, {
+  return fetchExtendedApiForDittoService(context, "/things/" + twinId, {
     method: 'DELETE',
     headers: {
       "Authorization": 'Basic '+btoa('ditto:ditto'),

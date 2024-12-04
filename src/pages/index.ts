@@ -1,9 +1,9 @@
 import { AppRootProps, IconName } from '@grafana/data'
-import { TwinsPage } from './twinsPage'
-import { PoliciesPage } from './policiesPage'
-import { TypesPage } from './typesPage'
+import { TwinsPage } from './TwinsPage'
+// import { PoliciesPage } from './PoliciesPage'
+// import { TypesPage } from './TypesPage'
 import { ConnectionsPage } from './connectionsPage'
-import { AgentsPage } from './agentsPage'
+// import { AgentsPage } from './agentsPage'
 
 export type PageDefinition = {
   component: React.FC<AppRootProps>;
@@ -21,20 +21,20 @@ export const pages: PageDefinition[] = [
     text: 'Twins',
     showIf: (meta: AppRootProps['meta']) => true
   },
-  {
-    component: TypesPage,
-    icon: 'folder-plus',
-    id: 'types',
-    text: 'Types',
-    showIf: (meta: AppRootProps['meta']) => true
-  },
-  {
-    component: AgentsPage,
-    icon: 'users-alt',
-    id: 'agents',
-    text: 'Agents',
-    showIf: ((meta: AppRootProps['meta']) => {return meta.jsonData !== undefined && meta.jsonData.agentsURL !== undefined && meta.jsonData.agentsURL && meta.jsonData.agentsURL.trim() !== ''})
-  },
+  // {
+  //   component: TypesPage,
+  //   icon: 'folder-plus',
+  //   id: 'types',
+  //   text: 'Types',
+  //   showIf: (meta: AppRootProps['meta']) => true
+  // },
+  // {
+  //   component: AgentsPage,
+  //   icon: 'users-alt',
+  //   id: 'agents',
+  //   text: 'Agents',
+  //   showIf: ((meta: AppRootProps['meta']) => {return meta.jsonData !== undefined && meta.jsonData.agentsURL !== undefined && meta.jsonData.agentsURL && meta.jsonData.agentsURL.trim() !== ''})
+  // },
   {
     component: ConnectionsPage,
     icon: 'plug',
@@ -42,11 +42,11 @@ export const pages: PageDefinition[] = [
     text: 'Connections',
     showIf: (meta: AppRootProps['meta']) => true
   },
-  {
-    component: PoliciesPage,
-    icon: 'shield',
-    id: 'policies',
-    text: 'Policies',
-    showIf: (meta: AppRootProps['meta']) => true
-  }
+  // {
+  //   component: PoliciesPage,
+  //   icon: 'shield',
+  //   id: 'policies',
+  //   text: 'Policies',
+  //   showIf: (meta: AppRootProps['meta']) => true
+  // }
 ];

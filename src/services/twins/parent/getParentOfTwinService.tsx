@@ -2,7 +2,7 @@ import { fetchExtendedApiForDittoService } from "services/general/fetchExtendedA
 import { Context } from "utils/context/staticContext"
 
 export const getParentOfTwinService = ( context: Context, twinId: string ) => {
-  return fetchExtendedApiForDittoService(context, "/twins/" + twinId + "/parent", {
+  return fetchExtendedApiForDittoService(context, "/things/" + twinId + "/parent", {
     method: 'GET',
     headers: {
       "Authorization": 'Basic '+btoa('ditto:ditto'),

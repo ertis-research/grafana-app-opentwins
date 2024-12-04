@@ -3,7 +3,7 @@ import { Context } from "utils/context/staticContext"
 import { IDittoThingData } from "utils/interfaces/dittoThing"
 
 export const createOrUpdateTwinService = ( context: Context, twinId: string, twin: IDittoThingData ) => {
-  return fetchExtendedApiForDittoService(context, "/twins/" + twinId, {
+  return fetchExtendedApiForDittoService(context, "/things/" + twinId, {
     method: 'PUT',
     headers: {
       "Authorization": 'Basic '+btoa('ditto:ditto'),
