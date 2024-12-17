@@ -20,13 +20,15 @@ export class DataSource extends DataSourceApi<MyQuery, MyDataSourceOptions> {
 
   constructor(instanceSettings: DataSourceInstanceSettings<MyDataSourceOptions>) {
     super(instanceSettings);
-
-    const info = instanceSettings.meta.info
-    console.log(info)
-    this.baseUrl = info.keywords;
-    this.user = process.env.REACT_APP_DITTO_API_USER!;
-    this.password = process.env.REACT_APP_DITTO_API_PASSWORD!;
-  }
+  
+    const keywordMap = Object.fromEntries(
+      (instanceSettings.meta.info as any)?.keywords.map((k: string) => k.split('=')) || []
+    );    
+  
+    this.baseUrl = keywordMap['DITTO_API_URL'] || '';
+    this.user = keywordMap['DITTO_API_USER'] || '';
+    this.password = keywordMap['DITTO_API_PASSWORD'] || '';
+  }  
 
   getDefaultQuery(_: CoreApp): Partial<MyQuery> {
     return defaultQuery;
@@ -40,7 +42,6 @@ export class DataSource extends DataSourceApi<MyQuery, MyDataSourceOptions> {
     const data = await Promise.all(
       options.targets.map(async target => {
         const fullUrl = `${this.baseUrl}${target.queryText}`;
-        console.log('Fetching data from:', fullUrl);
 
         // Fetch the latest data
         const response = await getBackendSrv().datasourceRequest({
@@ -50,7 +51,6 @@ export class DataSource extends DataSourceApi<MyQuery, MyDataSourceOptions> {
             Authorization: `Basic ${btoa(`${this.user}:${this.password}`)}`,
           },
         });
-        console.log(response)
 
         // Extract the value from the API response
         const newValue = response.data; // Ensure the API returns a numeric value
