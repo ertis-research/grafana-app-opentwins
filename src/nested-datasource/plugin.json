@@ -1,8 +1,8 @@
 {
   "$schema": "https://raw.githubusercontent.com/grafana/grafana/main/docs/sources/developers/plugins/plugin.schema.json",
   "type": "datasource",
-  "name": "HTTP",
-  "id": "example-http-datasource",
+  "name": "eclipse-ditto-datasource",
+  "id": "eclipse-ditto-datasource",
   "metrics": true,
   "info": {
     "description": "",
@@ -11,7 +11,9 @@
       "url": "https://grafana.com"
     },
     "keywords": [
-      "example"
+      "DITTO_API_URL=http://10.255.41.221:8080/api/2",
+      "DITTO_API_USER=ditto",
+      "DITTO_API_PASSWORD=ditto"
     ],
     "logos": {
       "small": "img/logo.svg",

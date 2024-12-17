@@ -12,21 +12,20 @@ import { DataSourceResponse, defaultQuery, MyDataSourceOptions, MyQuery } from '
 import { lastValueFrom } from 'rxjs';
 
 export class DataSource extends DataSourceApi<MyQuery, MyDataSourceOptions> {
-  //baseUrl: string;
+  baseUrl: string;
   user: string;
   password: string;
-  path: string;
 
-  // In-memory cache to store previous values for each query
   private cache: Record<string, Array<{ timestamp: number; value: number }>> = {};
 
   constructor(instanceSettings: DataSourceInstanceSettings<MyDataSourceOptions>) {
     super(instanceSettings);
 
-    //this.baseUrl = "http://10.255.41.221:8080";
-    this.user = "ditto";
-    this.password = "ditto";
-    this.path = instanceSettings.jsonData.path!;
+    const info = instanceSettings.meta.info
+    console.log(info)
+    this.baseUrl = info.keywords;
+    this.user = process.env.REACT_APP_DITTO_API_USER!;
+    this.password = process.env.REACT_APP_DITTO_API_PASSWORD!;
   }
 
   getDefaultQuery(_: CoreApp): Partial<MyQuery> {
@@ -40,10 +39,8 @@ export class DataSource extends DataSourceApi<MyQuery, MyDataSourceOptions> {
   async query(options: DataQueryRequest<MyQuery>): Promise<DataQueryResponse> {
     const data = await Promise.all(
       options.targets.map(async target => {
-        const fullUrl = `${this.baseUrl}${this.path}${target.queryText}`;
+        const fullUrl = `${this.baseUrl}${target.queryText}`;
         console.log('Fetching data from:', fullUrl);
-        console.log(this.components)
-        console.log(this.meta)
 
         // Fetch the latest data
         const response = await getBackendSrv().datasourceRequest({
@@ -53,21 +50,11 @@ export class DataSource extends DataSourceApi<MyQuery, MyDataSourceOptions> {
             Authorization: `Basic ${btoa(`${this.user}:${this.password}`)}`,
           },
         });
-        
-        const resp = getBackendSrv().fetch<DataSourceResponse>({
-          url: fullUrl,
-          method: 'GET',
-          headers: {
-            Authorization: `Basic ${btoa(`${this.user}:${this.password}`)}`,
-          },
-        });
-        const val = lastValueFrom(resp)
-        console.log(val)
+        console.log(response)
 
         // Extract the value from the API response
         const newValue = response.data; // Ensure the API returns a numeric value
         const timestamp = Date.now(); // Use the current time as the timestamp
-        console.log('Received new value:', newValue);
 
         // Update the in-memory cache for this target
         const refId = target.refId || 'default';
@@ -104,6 +91,9 @@ export class DataSource extends DataSourceApi<MyQuery, MyDataSourceOptions> {
     return lastValueFrom(response);
   }
 
+  /**
+   * Checks whether we can connect to the API.
+   */
   async testDatasource() {
     const defaultErrorMessage = 'Cannot connect to API';
 

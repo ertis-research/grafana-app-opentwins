@@ -23,7 +23,6 @@ export interface DataSourceResponse {
  */
 export interface MyDataSourceOptions extends DataSourceJsonData {
   path?: string;
-  baseUrl?: string;
 }
 
 /**
