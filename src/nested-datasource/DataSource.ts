@@ -28,7 +28,19 @@ export class DataSource extends DataSourceApi<MyQuery, MyDataSourceOptions> {
     this.baseUrl = keywordMap['DITTO_API_URL'] || '';
     this.user = keywordMap['DITTO_API_USER'] || '';
     this.password = keywordMap['DITTO_API_PASSWORD'] || '';
-  }  
+  }
+  
+  getBaseUrl() {
+    return this.baseUrl;
+  }
+
+  getUser() {
+    return this.user;
+  }
+
+  getPassword() {
+    return this.password;
+  }
 
   getDefaultQuery(_: CoreApp): Partial<MyQuery> {
     return defaultQuery;
@@ -41,7 +53,7 @@ export class DataSource extends DataSourceApi<MyQuery, MyDataSourceOptions> {
   async query(options: DataQueryRequest<MyQuery>): Promise<DataQueryResponse> {
     const data = await Promise.all(
       options.targets.map(async target => {
-        const fullUrl = `${this.baseUrl}${target.queryText}`;
+        const fullUrl = `${this.baseUrl}/things/${target.thingID}/${target.queryText}`;
 
         // Fetch the latest data
         const response = await getBackendSrv().datasourceRequest({

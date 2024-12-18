@@ -3,6 +3,7 @@ import type { DataQuery } from '@grafana/schema';
 
 export interface MyQuery extends DataQuery {
   queryText?: string;
+  thingID?: string;
   constant: number;
 }
 
