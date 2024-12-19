@@ -53,7 +53,7 @@ export class DataSource extends DataSourceApi<MyQuery, MyDataSourceOptions> {
   async query(options: DataQueryRequest<MyQuery>): Promise<DataQueryResponse> {
     const data = await Promise.all(
       options.targets.map(async target => {
-        const fullUrl = `${this.baseUrl}/things/${target.thingID}/${target.queryText}`;
+        const fullUrl = `${this.baseUrl}/things/${target.thingID}/features/${target.queryText}`;
 
         // Fetch the latest data
         const response = await getBackendSrv().datasourceRequest({

@@ -1,5 +1,5 @@
-import React, { ChangeEvent } from 'react';
-import { InlineField, Input } from '@grafana/ui';
+import React, { ChangeEvent, useEffect, useState } from 'react';
+import { InlineField, Input, Select } from '@grafana/ui';
 import { QueryEditorProps } from '@grafana/data';
 import { DataSource } from './DataSource';
 import { MyDataSourceOptions, MyQuery } from './types';
@@ -13,8 +13,8 @@ export function QueryEditor({ query, onChange, onRunQuery, datasource }: Props) 
     onChange({ ...query, queryText: event.target.value });
   };
 
-  const onThingIDChange = (event: ChangeEvent<HTMLInputElement>) => {
-    onChange({ ...query, thingID: event.target.value });
+  const onThingIDChange = (value: string | undefined) => {
+    onChange({ ...query, thingID: value });
   };
 
   const onConstantChange = (event: ChangeEvent<HTMLInputElement>) => {
@@ -24,19 +24,35 @@ export function QueryEditor({ query, onChange, onRunQuery, datasource }: Props) 
   };
 
   const { queryText, constant, thingID } = query;
+  const [ids, setIds] = useState<Array<{ label: string; value: string }>>([]);
+  
+  useEffect(() => {
+    const fetchThingIds = async () => {
+      let context = { ...emptyContext };
+      context.ditto_extended_endpoint = datasource.getBaseUrl();
 
-  let context = emptyContext
-  context.ditto_extended_endpoint = datasource.getBaseUrl()
+      try {
+        let twins = await fetchExtendedApiForDittoService(context, "/things?option=size(200)", {
+          method: 'GET',
+          headers: {
+            Authorization: 'Basic ' + btoa(`${datasource.getUser()}:${datasource.getPassword()}`),
+            Accept: "application/json",
+          },
+        });
 
-  let twins = fetchExtendedApiForDittoService(context, "/things?option=size(200)", {
-      method: 'GET',
-      headers: {
-        "Authorization": 'Basic '+btoa(`${datasource.getUser()}:${datasource.getPassword()}`),
-        "Accept": "application/json"
+        let res = twins.map((item: any) => ({
+          label: item.thingId, // Displayed text
+          value: item.thingId, // Actual value
+        }));
+        setIds(res);
+
+      } catch (error) {
+        console.error("Error fetching thing IDs:", error);
       }
-    })
+    };
 
-  console.log(twins)
+    fetchThingIds();
+  }, []);
 
   return (
     <>
@@ -44,11 +60,11 @@ export function QueryEditor({ query, onChange, onRunQuery, datasource }: Props) 
         <Input id="query-editor-constant" onChange={onConstantChange} value={constant} type="number" step="0.1" />
       </InlineField>
       <InlineField label="Thing ID" labelWidth={14} tooltip="Not used yet">
-        <Input
+        <Select
           id="query-editor-thing-id"
-          onChange={onThingIDChange}
+          options={ids}
+          onChange={(option) => onThingIDChange(option.value)}
           value={thingID || ''}
-          required
           placeholder="Enter a query"
         />
       </InlineField>
