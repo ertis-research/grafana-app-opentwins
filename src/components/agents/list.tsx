@@ -1,6 +1,6 @@
 import React, { ChangeEvent, Fragment, MouseEvent, useContext, useEffect, useState } from 'react'
 import { AppEvents, AppPluginMeta, KeyValue, SelectableValue } from "@grafana/data"
-import { Button, ConfirmModal, Field, Icon, IconButton, Input, LinkButton, MultiSelect, Select, Spinner, TextArea, useTheme2 } from '@grafana/ui'
+import { Button, ConfirmModal, ControlledCollapse, Divider, Field, Icon, IconButton, Input, LinkButton, MultiSelect, Select, Spinner, TextArea, useTheme2 } from '@grafana/ui'
 import { enumNotification } from 'utils/auxFunctions/general'
 import { AgentState, ListAgent, Pod, PodState, Types_values } from 'utils/interfaces/agents'
 import { getAllAgentsService } from 'services/agents/getAllAgentsService'
@@ -17,11 +17,23 @@ import { getAllTwinsIdsService } from 'services/twins/getAllTwinsIdsService'
 import { linkTwinToAgentService } from 'services/agents/linkTwinToAgentService'
 import { unlinkTwinToAgentService } from 'services/agents/unlinkTwinToAgentService'
 import { getCurrentUserRole, isEditor, Roles } from 'utils/auxFunctions/auth'
+import { getLogByPodService } from 'services/agents/getLogByPodService'
 
 interface Parameters {
     path: string
     meta: AppPluginMeta<KeyValue<any>>
     twinId?: string
+}
+
+interface AgentInfo {
+    id: string
+    info: ListAgent
+    data: any
+}
+
+interface Log {
+    text: string,
+    timestamp: number
 }
 
 export function ListAgents({ path, meta, twinId }: Parameters) {
@@ -31,7 +43,7 @@ export function ListAgents({ path, meta, twinId }: Parameters) {
     const bgcolor = useTheme2().colors.background.secondary
 
     const [agents, setAgents] = useState<ListAgent[]>([])
-    const [selectedAgent, setSelectedAgent] = useState<{ id: string, info: ListAgent, data: any } | undefined>(undefined)
+    const [selectedAgent, setSelectedAgent] = useState<AgentInfo | undefined>(undefined)
     //const [values, setValues] = useState<SelectData[]>([])
     const [value, setValue] = useState<string>()
     const [type, setType] = useState<SelectableValue<string>>(Types_values[0])
@@ -41,6 +53,8 @@ export function ListAgents({ path, meta, twinId }: Parameters) {
     const [selectedTwins, setSelectedTwins] = useState<Array<SelectableValue<string>>>([]);
     const [twins, setTwins] = useState<SelectData[]>([])
     const [userRole, setUserRole] = useState<string>(Roles.VIEWER)
+    const [latestLogs, setLatestLogs] = useState<Log[]>([])
+    const [chargingLog, setChargingLog] = useState<boolean>(false)
 
     const stringDateToLocal = (dt: string) => {
         return new Date(dt).toLocaleString()
@@ -78,6 +92,23 @@ export function ListAgents({ path, meta, twinId }: Parameters) {
                 type: AppEvents.alertError.name,
                 payload: ["Error getting the identifiers of digital twins"],
             });
+        })
+    }
+
+    const getLog = (podId: string, idx: number) => {
+        let timestamp = Date.now()
+        setChargingLog(true)
+        getLogByPodService(context, podId).then((res: string) => {
+            let aux = { ...latestLogs }
+            aux[idx] = { timestamp: timestamp, text: res }
+            setLatestLogs(aux)
+        }).catch(() => {
+            appEvents.publish({
+                type: AppEvents.alertError.name,
+                payload: ["Error getting the logs of pod with id " + podId],
+            });
+        }).finally(() => {
+            setChargingLog(false)
         })
     }
 
@@ -244,6 +275,10 @@ export function ListAgents({ path, meta, twinId }: Parameters) {
     }, [filteredAgents])
 
     useEffect(() => {
+        setLatestLogs(Array(selectedAgent?.info.pods.length).fill(undefined))
+    }, [selectedAgent])
+
+    useEffect(() => {
         updateAgents()
         getTwins()
         getCurrentUserRole().then((role: string) => setUserRole(role))
@@ -262,6 +297,30 @@ export function ListAgents({ path, meta, twinId }: Parameters) {
             clearInterval(intervalId);
         };
     }, []);
+
+    const showLog = (log: Log) => {
+        const date = new Date(log.timestamp)
+        return <div style={{ width: '100%', marginTop: '10px'}}>
+            <p style={{ width: '100%', textAlign: 'end', marginBottom: '0px'}}>Last update at {date.toLocaleDateString() + " " + date.toLocaleTimeString()}</p>
+            <TextArea style={{ resize: 'none' }} rows={15} value={log.text} readOnly />
+        </div>
+    }
+
+    const showPodsLogsInInfo = (item: AgentInfo) => {
+        return <div>
+            {
+                item.info.pods.map((pod: Pod, idx: number) => {
+                    return <div style={{ width: '100%'}}>
+                        <p><b>{pod.id}</b> - {(pod.phase === PodState.RUNNING && !pod.status) ? 'Crashed' : pod.phase}
+                        <br/>Creation at {stringDateToLocal(pod.creation_timestamp)}</p>
+                        <Button style={{ width: '100%'}} fullWidth variant='secondary' disabled={chargingLog} icon={(chargingLog) ? "spinner" : "history"} onClick={() => getLog(pod.podId, idx)}>Load logs</Button>
+                        {(latestLogs[idx]) ? showLog(latestLogs[idx]) : <div></div>}
+                        <Divider/>
+                    </div>
+                })
+            }
+        </div>
+    }
 
     const showPods = (item: ListAgent) => {
         const isSelected: boolean = selectedAgent !== undefined && selectedAgent.id === item.id
@@ -309,8 +368,8 @@ export function ListAgents({ path, meta, twinId }: Parameters) {
                         </a>
                     </div>
                     <div style={{ height: 'auto', alignContent: 'center', display: 'flex', marginLeft: '20px', width: '90px', flexWrap: 'wrap' }}>
-                        <IconButton size='xl' hidden={!isEditor(userRole)} style={{ marginRight: '20px' }} name={(item.status === AgentState.ACTIVE) ? "pause" : "play"} onClick={() => handleOnClickPausePlay(item)} />
-                        <IconButton size='xl' hidden={!isEditor(userRole)} name='trash-alt' style={{ marginRight: '20px' }} onClick={() => setIsOpenDelete(item)} />
+                        <IconButton aria-label="" size='xl' hidden={!isEditor(userRole)} style={{ marginRight: '20px' }} name={(item.status === AgentState.ACTIVE) ? "pause" : "play"} onClick={() => handleOnClickPausePlay(item)} />
+                        <IconButton aria-label="" size='xl' hidden={!isEditor(userRole)} name='trash-alt' style={{ marginRight: '20px' }} onClick={() => setIsOpenDelete(item)} />
                     </div>
                 </div>
             </div>
@@ -372,9 +431,12 @@ export function ListAgents({ path, meta, twinId }: Parameters) {
                 </div>
             </div>
         </Field>
-        <Field label="Kubernetes definition">
+        <ControlledCollapse label="Kubernetes definition">
             <TextArea style={{ resize: 'none' }} rows={15} value={(selectedAgent && selectedAgent.data) ? JSON.stringify(selectedAgent.data, undefined, 2) : ""} readOnly />
-        </Field>
+        </ControlledCollapse>
+        <ControlledCollapse label="Pods logs" isOpen={true}>
+            {(selectedAgent && selectedAgent.data) ? showPodsLogsInInfo(selectedAgent) : <div></div>}
+        </ControlledCollapse>
     </div>
 
 

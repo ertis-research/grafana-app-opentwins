@@ -53,7 +53,7 @@ export const Resource_permissions = ({resource, resources, setResources}: Parame
         <div className="d-flex justify-content-between">
             <h5 className="text-capitalize mb-0">{resource.name}</h5>
             { resource.erasable ? 
-                <IconButton name="trash-alt" onClick={handleOnClickDelete}></IconButton>   
+                <IconButton name="trash-alt" aria-label="" onClick={handleOnClickDelete}></IconButton>   
                 : <div></div> 
             }
         </div>

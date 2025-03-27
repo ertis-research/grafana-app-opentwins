@@ -28,6 +28,7 @@ export const Types_values = [
 
 export interface Pod {
     id: string,
+    podId: string,
     phase: PodState,
     status: boolean,
     creation_timestamp: string
