@@ -1,15 +1,15 @@
 import {
+  arrayToDataFrame,
   CoreApp,
   DataQueryRequest,
   DataQueryResponse,
   DataSourceApi,
   DataSourceInstanceSettings,
   FieldType,
-  MutableDataFrame,
 } from '@grafana/data';
-import { getBackendSrv, isFetchError } from '@grafana/runtime';
+import { FetchResponse, getBackendSrv, isFetchError } from '@grafana/runtime';
 import { DataSourceResponse, defaultQuery, MyDataSourceOptions, MyQuery } from './types';
-import { lastValueFrom } from 'rxjs';
+import { firstValueFrom, lastValueFrom } from 'rxjs';
 
 export class DataSource extends DataSourceApi<MyQuery, MyDataSourceOptions> {
   baseUrl: string;
@@ -56,16 +56,16 @@ export class DataSource extends DataSourceApi<MyQuery, MyDataSourceOptions> {
         const fullUrl = `${this.baseUrl}/things/${target.thingID}/features/${target.queryText}`;
 
         // Fetch the latest data
-        const response = await getBackendSrv().datasourceRequest({
+        const response = await firstValueFrom(getBackendSrv().fetch({
           url: fullUrl,
           method: 'GET',
           headers: {
             Authorization: `Basic ${btoa(`${this.user}:${this.password}`)}`,
           },
-        });
+        })) as FetchResponse<{ value: number }>;
 
         // Extract the value from the API response
-        const newValue = response.data; // Ensure the API returns a numeric value
+        const newValue = response.data.value; // Ensure the API returns a numeric value
         const timestamp = Date.now(); // Use the current time as the timestamp
 
         // Update the in-memory cache for this target
@@ -76,18 +76,47 @@ export class DataSource extends DataSourceApi<MyQuery, MyDataSourceOptions> {
         this.cache[refId].push({ timestamp, value: newValue });
 
         // Create a DataFrame with all cached data
-        const frame = new MutableDataFrame({
-          refId,
-          fields: [
-            { name: 'Time', type: FieldType.time },
-            { name: 'Value', type: FieldType.number },
-          ],
-        });
+        // const frame = new MutableDataFrame({
+        //   refId,
+        //   fields: [
+        //     { name: 'Time', type: FieldType.time },
+        //     { name: 'Value', type: FieldType.number },
+        //   ],
+        // });
+        // const frame = arrayToDataFrame(this.cache[refId].map(p => ({
+        //   Time: p.timestamp,
+        //   Value: p.value,
+        // })));
+        // frame.refId = refId;
 
-        // Populate the DataFrame with cached values
-        this.cache[refId].forEach(point => {
-          frame.appendRow([point.timestamp, point.value]);
-        });
+        // // Populate the DataFrame with cached values
+        // this.cache[refId].forEach(point => {
+        //   frame.appendRow([point.timestamp, point.value]);
+        // });
+
+        // 1) build an array of row‑objects
+        const rows = this.cache[refId].map(point => ({
+          Time: point.timestamp,
+          Value: point.value,
+        }));
+
+        // 2) create the DataFrame (it will infer field names/types)
+        const frame = arrayToDataFrame(rows);
+
+        // 3) set your refId metadata
+        frame.refId = refId;
+
+        // 4) override any field types that weren’t inferred correctly
+        //    (here “Time” should be timestamp, “Value” numeric)
+        const timeField = frame.fields.find(f => f.name === 'Time');
+        if (timeField) {
+          timeField.type = FieldType.time;
+        }
+
+        const valueField = frame.fields.find(f => f.name === 'Value');
+        if (valueField) {
+          valueField.type = FieldType.number;
+        }
 
         return frame;
       })

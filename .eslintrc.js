@@ -4,6 +4,7 @@ module.exports = {
     'react/prop-types': 'off',
     'react-hooks/exhaustive-deps': 'off',
     'react/jsx-key': 'off',
-    'react-hooks/rules-of-hooks': 'off'
+    'react-hooks/rules-of-hooks': 'off',
+     '@typescript-eslint/naming-convention': 'off'
   },
 };

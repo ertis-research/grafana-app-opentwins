@@ -25,6 +25,12 @@
 
   "includes": [
     {
+      "type": "datasource",
+      "name": "My Data Source",
+      "id": "eclipse-ditto-datasource",
+      "path": "nested-datasource"
+    },
+    {
       "type": "page",
       "name": "Twins",
       "addToNav": true,

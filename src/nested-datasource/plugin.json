@@ -11,7 +11,7 @@
       "url": "https://grafana.com"
     },
     "keywords": [
-      "DITTO_API_URL=http://10.255.41.221:8080/api/2",
+      "DITTO_API_URL=http://10.255.41.221:8080",
       "DITTO_API_USER=ditto",
       "DITTO_API_PASSWORD=ditto"
     ],
