@@ -10,7 +10,6 @@ export function ConfigEditor(props: EditorProps): ReactElement {
   const { jsonData, secureJsonData, secureJsonFields } = props.options;
   const onUrlFieldChange = useChangeOptions(props, 'url');
   const onPathFieldChange = useChangeOptions(props, 'path');
-  const onUsernameFieldChange = useChangeOptions(props, 'username');
   const onApiAuthFieldChange = useChangeSecureOptions(props, 'apiAuth');
   const onResetApiAuth = useResetSecureOptions(props, 'apiAuth');
 
@@ -31,15 +30,6 @@ export function ConfigEditor(props: EditorProps): ReactElement {
           onChange={onPathFieldChange}
           value={jsonData.path}
           placeholder="Enter Eclipse IoT path"
-          width={40}
-        />
-      </InlineField>
-      <InlineField label="Username" labelWidth={26} interactive tooltip={'Json field returned to frontend'}>
-        <Input
-          id="config-path"
-          onChange={onUsernameFieldChange}
-          value={jsonData.username}
-          placeholder="Enter Eclipse IoT username"
           width={40}
         />
       </InlineField>

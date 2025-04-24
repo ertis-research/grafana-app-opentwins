@@ -12,7 +12,6 @@ import { firstValueFrom, lastValueFrom } from 'rxjs';
 
 export class DataSource extends DataSourceApi<MyQuery, BasicDataSourceOptions> {
   baseUrl: string;
-  user: string;
   path: string;
   url: string;
   routePath = "/ditto";
@@ -22,12 +21,11 @@ export class DataSource extends DataSourceApi<MyQuery, BasicDataSourceOptions> {
   constructor(instanceSettings: DataSourceInstanceSettings<BasicDataSourceOptions>) {
     super(instanceSettings);
 
-    const { url = '', path = '', username = '' } = instanceSettings.jsonData;
+    const { url = '', path = '' } = instanceSettings.jsonData;
 
     this.baseUrl = url;
     this.url = instanceSettings.url!;
     this.path = path;
-    this.user = username;
   }
   
   getUrl() {
@@ -44,10 +42,6 @@ export class DataSource extends DataSourceApi<MyQuery, BasicDataSourceOptions> {
 
   getPath() {
     return this.path;
-  }
-
-  getUser() {
-    return this.user;
   }
 
   filterQuery(query: MyQuery): boolean {

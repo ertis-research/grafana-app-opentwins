@@ -24,7 +24,6 @@ export interface MyDataSourceOptions extends DataSourceJsonData {
 export interface BasicDataSourceOptions extends DataSourceJsonData {
   url?: string;
   path?: string;
-  username?: string;
 }
 
 export interface BasicSecureJsonData {
