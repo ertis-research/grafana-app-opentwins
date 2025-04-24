@@ -1,6 +1,5 @@
 import {
   arrayToDataFrame,
-  CoreApp,
   DataQueryRequest,
   DataQueryResponse,
   DataSourceApi,
@@ -8,42 +7,47 @@ import {
   FieldType,
 } from '@grafana/data';
 import { FetchResponse, getBackendSrv, isFetchError } from '@grafana/runtime';
-import { DataSourceResponse, defaultQuery, MyDataSourceOptions, MyQuery } from './types';
+import { BasicDataSourceOptions, DataSourceResponse, MyQuery } from './types';
 import { firstValueFrom, lastValueFrom } from 'rxjs';
 
-export class DataSource extends DataSourceApi<MyQuery, MyDataSourceOptions> {
+export class DataSource extends DataSourceApi<MyQuery, BasicDataSourceOptions> {
   baseUrl: string;
   user: string;
-  password: string;
+  path: string;
+  url: string;
+  routePath = "/ditto";
 
   private cache: Record<string, Array<{ timestamp: number; value: number }>> = {};
 
-  constructor(instanceSettings: DataSourceInstanceSettings<MyDataSourceOptions>) {
+  constructor(instanceSettings: DataSourceInstanceSettings<BasicDataSourceOptions>) {
     super(instanceSettings);
-  
-    const keywordMap = Object.fromEntries(
-      (instanceSettings.meta.info as any)?.keywords.map((k: string) => k.split('=')) || []
-    );    
-  
-    this.baseUrl = keywordMap['DITTO_API_URL'] || '';
-    this.user = keywordMap['DITTO_API_USER'] || '';
-    this.password = keywordMap['DITTO_API_PASSWORD'] || '';
+
+    const { url = '', path = '', username = '' } = instanceSettings.jsonData;
+
+    this.baseUrl = url;
+    this.url = instanceSettings.url!;
+    this.path = path;
+    this.user = username;
   }
   
+  getUrl() {
+    return this.url;
+  }
+
+  getRoutePath() {
+    return this.routePath;
+  }
+
   getBaseUrl() {
     return this.baseUrl;
   }
 
+  getPath() {
+    return this.path;
+  }
+
   getUser() {
     return this.user;
-  }
-
-  getPassword() {
-    return this.password;
-  }
-
-  getDefaultQuery(_: CoreApp): Partial<MyQuery> {
-    return defaultQuery;
   }
 
   filterQuery(query: MyQuery): boolean {
@@ -53,15 +57,10 @@ export class DataSource extends DataSourceApi<MyQuery, MyDataSourceOptions> {
   async query(options: DataQueryRequest<MyQuery>): Promise<DataQueryResponse> {
     const data = await Promise.all(
       options.targets.map(async target => {
-        const fullUrl = `${this.baseUrl}/things/${target.thingID}/features/${target.queryText}`;
-
         // Fetch the latest data
         const response = await firstValueFrom(getBackendSrv().fetch({
-          url: fullUrl,
+          url: this.url + this.routePath + `/${this.path}/things/${target.thingID}/features/${target.queryText}`,
           method: 'GET',
-          headers: {
-            Authorization: `Basic ${btoa(`${this.user}:${this.password}`)}`,
-          },
         })) as FetchResponse<{ value: number }>;
 
         // Extract the value from the API response
@@ -74,25 +73,6 @@ export class DataSource extends DataSourceApi<MyQuery, MyDataSourceOptions> {
           this.cache[refId] = [];
         }
         this.cache[refId].push({ timestamp, value: newValue });
-
-        // Create a DataFrame with all cached data
-        // const frame = new MutableDataFrame({
-        //   refId,
-        //   fields: [
-        //     { name: 'Time', type: FieldType.time },
-        //     { name: 'Value', type: FieldType.number },
-        //   ],
-        // });
-        // const frame = arrayToDataFrame(this.cache[refId].map(p => ({
-        //   Time: p.timestamp,
-        //   Value: p.value,
-        // })));
-        // frame.refId = refId;
-
-        // // Populate the DataFrame with cached values
-        // this.cache[refId].forEach(point => {
-        //   frame.appendRow([point.timestamp, point.value]);
-        // });
 
         // 1) build an array of row‑objects
         const rows = this.cache[refId].map(point => ({
@@ -125,13 +105,6 @@ export class DataSource extends DataSourceApi<MyQuery, MyDataSourceOptions> {
     return { data };
   }
 
-  async request(url: string, params?: string) {
-    const response = getBackendSrv().fetch<DataSourceResponse>({
-      url: `${this.baseUrl}${url}${params?.length ? `?${params}` : ''}`,
-    });
-    return lastValueFrom(response);
-  }
-
   /**
    * Checks whether we can connect to the API.
    */
@@ -139,7 +112,12 @@ export class DataSource extends DataSourceApi<MyQuery, MyDataSourceOptions> {
     const defaultErrorMessage = 'Cannot connect to API';
 
     try {
-      const response = await this.request('/health');
+      const response = await lastValueFrom(
+        getBackendSrv().fetch<DataSourceResponse>({
+          url: this.url + this.routePath + "/health",
+          method: 'GET',
+        })
+      );
       if (response.status === 200) {
         return {
           status: 'success',

@@ -3,8 +3,9 @@ import { InlineField, Input, Select } from '@grafana/ui';
 import { QueryEditorProps } from '@grafana/data';
 import { DataSource } from './DataSource';
 import { MyDataSourceOptions, MyQuery } from './types';
-import { fetchExtendedApiForDittoService } from "../services/general/fetchExtendedApiService"
 import { emptyContext } from 'utils/context/staticContext';
+import { FetchResponse, getBackendSrv } from '@grafana/runtime';
+import { firstValueFrom } from 'rxjs';
 
 type Props = QueryEditorProps<DataSource, MyQuery, MyDataSourceOptions>;
 
@@ -17,13 +18,7 @@ export function QueryEditor({ query, onChange, onRunQuery, datasource }: Props) 
     onChange({ ...query, thingID: value });
   };
 
-  const onConstantChange = (event: ChangeEvent<HTMLInputElement>) => {
-    onChange({ ...query, constant: parseFloat(event.target.value) });
-    // executes the query
-    onRunQuery();
-  };
-
-  const { queryText, constant, thingID } = query;
+  const { queryText, thingID } = query;
   const [ids, setIds] = useState<Array<{ label: string; value: string }>>([]);
   
   useEffect(() => {
@@ -32,13 +27,14 @@ export function QueryEditor({ query, onChange, onRunQuery, datasource }: Props) 
       context.ditto_extended_endpoint = datasource.getBaseUrl();
 
       try {
-        let twins = await fetchExtendedApiForDittoService(context, "/things?option=size(200)", {
-          method: 'GET',
-          headers: {
-            Authorization: 'Basic ' + btoa(`${datasource.getUser()}:${datasource.getPassword()}`),
-            Accept: "application/json",
-          },
-        });
+        const twinsResponse: FetchResponse<any[]> = await firstValueFrom(
+          getBackendSrv().fetch<any[]>({
+            url: datasource.getUrl() + datasource.getRoutePath() + `/${datasource.getPath()}/things?option=size(200)`,
+            method: 'GET',
+          })
+        );
+
+        const twins = twinsResponse.data;
 
         let res = twins.map((item: any) => ({
           label: item.thingId, // Displayed text
@@ -56,9 +52,6 @@ export function QueryEditor({ query, onChange, onRunQuery, datasource }: Props) 
 
   return (
     <>
-      <InlineField label="Constant" labelWidth={14}>
-        <Input id="query-editor-constant" onChange={onConstantChange} value={constant} type="number" step="0.1" />
-      </InlineField>
       <InlineField label="Thing ID" labelWidth={14} tooltip="Not used yet">
         <Select
           id="query-editor-thing-id"

@@ -1,74 +1,58 @@
-import React, { ChangeEvent } from 'react';
-import { DataSourceHttpSettings, InlineField, Input, SecretInput } from '@grafana/ui';
-import { DataSourcePluginOptionsEditorProps } from '@grafana/data';
-import { MyDataSourceOptions, MySecureJsonData } from './types';
+import React, { ReactElement } from 'react';
+import { InlineField, Input, SecretInput } from '@grafana/ui';
+import type { EditorProps } from './types';
+import { useChangeOptions } from './useChangeOptions';
+import { useChangeSecureOptions } from './useChangeSecureOptions';
+import { useResetSecureOptions } from './useResetSecureOptions';
 
-interface Props extends DataSourcePluginOptionsEditorProps<MyDataSourceOptions, MySecureJsonData> {}
+export function ConfigEditor(props: EditorProps): ReactElement {
 
-export function ConfigEditor(props: Props) {
-  const { onOptionsChange, options } = props;
-  const { jsonData, secureJsonFields, secureJsonData } = options;
-
-  const onPathChange = (event: ChangeEvent<HTMLInputElement>) => {
-    onOptionsChange({
-      ...options,
-      jsonData: {
-        ...jsonData,
-        path: event.target.value,
-      },
-    });
-  };
-
-  // Secure field (only sent to the backend)
-  const onAPIKeyChange = (event: ChangeEvent<HTMLInputElement>) => {
-    onOptionsChange({
-      ...options,
-      secureJsonData: {
-        apiKey: event.target.value,
-      },
-    });
-  };
-
-  const onResetAPIKey = () => {
-    onOptionsChange({
-      ...options,
-      secureJsonFields: {
-        ...options.secureJsonFields,
-        apiKey: false,
-      },
-      secureJsonData: {
-        ...options.secureJsonData,
-        apiKey: '',
-      },
-    });
-  };
+  const { jsonData, secureJsonData, secureJsonFields } = props.options;
+  const onUrlFieldChange = useChangeOptions(props, 'url');
+  const onPathFieldChange = useChangeOptions(props, 'path');
+  const onUsernameFieldChange = useChangeOptions(props, 'username');
+  const onApiAuthFieldChange = useChangeSecureOptions(props, 'apiAuth');
+  const onResetApiAuth = useResetSecureOptions(props, 'apiAuth');
 
   return (
     <>
-      <DataSourceHttpSettings
-        defaultUrl="https://api.example.com"
-        dataSourceConfig={options}
-        onChange={onOptionsChange}
-      />
-      <InlineField label="Path" labelWidth={26} interactive tooltip={'Json field returned to frontend'}>
+      <InlineField label="Url" labelWidth={26} interactive tooltip={'Json field returned to frontend'}>
         <Input
-          id="config-editor-path"
-          onChange={onPathChange}
-          value={jsonData.path}
-          placeholder="Enter the path, e.g. /api/v1"
+          id="config-url"
+          onChange={onUrlFieldChange}
+          value={jsonData.url}
+          placeholder="Enter Eclipse IoT URL"
           width={40}
         />
       </InlineField>
-      <InlineField label="API Key" labelWidth={26} interactive tooltip={'Secure json field (backend only)'}>
+      <InlineField label="Path" labelWidth={26} interactive tooltip={'Json field returned to frontend'}>
+        <Input
+          id="config-path"
+          onChange={onPathFieldChange}
+          value={jsonData.path}
+          placeholder="Enter Eclipse IoT path"
+          width={40}
+        />
+      </InlineField>
+      <InlineField label="Username" labelWidth={26} interactive tooltip={'Json field returned to frontend'}>
+        <Input
+          id="config-path"
+          onChange={onUsernameFieldChange}
+          value={jsonData.username}
+          placeholder="Enter Eclipse IoT username"
+          width={40}
+        />
+      </InlineField>
+      <InlineField label="API Auth Header" labelWidth={26} interactive tooltip={'Secure json field (backend only)'}>
         <SecretInput
           required
           id="config-editor-api-key"
-          isConfigured={secureJsonFields.apiKey}
-          value={secureJsonData?.apiKey}
-          placeholder="Enter your API key"
+          isConfigured={secureJsonFields.apiAuth}
+          value={secureJsonData?.apiAuth}
+          placeholder="Enter your API Authorization Header"
           width={40}
-          onReset={onResetAPIKey}
-          onChange={onAPIKeyChange}
+          onReset={onResetApiAuth}
+          onChange={onApiAuthFieldChange}
         />
       </InlineField>
     </>

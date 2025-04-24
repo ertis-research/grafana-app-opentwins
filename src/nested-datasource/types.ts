@@ -1,15 +1,10 @@
-import type { DataSourceJsonData } from '@grafana/data';
+import type { DataSourceJsonData, DataSourcePluginOptionsEditorProps } from '@grafana/data';
 import type { DataQuery } from '@grafana/schema';
 
 export interface MyQuery extends DataQuery {
   queryText?: string;
   thingID?: string;
-  constant: number;
 }
-
-export const defaultQuery: Partial<MyQuery> = {
-  constant: 6.5,
-};
 
 export interface DataPoint {
   Time: number;
@@ -26,9 +21,14 @@ export interface MyDataSourceOptions extends DataSourceJsonData {
   path?: string;
 }
 
-/**
- * Value that is used in the backend, but never sent over HTTP to the frontend
- */
-export interface MySecureJsonData {
-  apiKey?: string;
+export interface BasicDataSourceOptions extends DataSourceJsonData {
+  url?: string;
+  path?: string;
+  username?: string;
 }
+
+export interface BasicSecureJsonData {
+  apiAuth?: string;
+}
+
+export type EditorProps = DataSourcePluginOptionsEditorProps<BasicDataSourceOptions, BasicSecureJsonData>;
