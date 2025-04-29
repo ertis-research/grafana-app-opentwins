@@ -11,8 +11,6 @@ This application plugin for Grafana has been created specifically to act as a fr
 - [Usage](#usage)
 - [License](#license)
 
-## Changelog
-
 ## Installation and activation
 
 ### Requirements
@@ -59,6 +57,14 @@ To activate it, go to its info page (click on it) and click on *enable*.
 
 With this, we will have our plugin installed and activated, pending configuration and use.
 
-## Usage
+## Data source
 
-## License
+In the ATNoG version, we added a data source to create dashboards fed with data from digital twins.
+
+To achieve this, it is necessary to follow the following steps:
+    1. Search for the `eclipse-ditto-datasource` in the `Data Sources` section under `Connections` in the side menu, and click on it:
+    ![Datasources](src/img/readme/datasources.png)
+    2. On the new page, you will need to specify how Grafana can connect to the Eclipse Ditto. Therefore, you will have to provide the URL, the path to the API (note that you can not include a `/` at the beginning of the provided path), and the auth key (base64 of `<username>`:`<password>`), as follows:
+    ![Datasource setup](src/img/readme/datasource-setup.png)
+    3. Finally, after you click on `Save & test`, you can create a new dashboard or explore data (in the button at the top right corner) to check if the setup was done correctly. In the last case, you will be provided with a page similar to the following example. Note that the `Thing ID` box options will automatically be filled with the things already on Eclipse Ditto.
+    ![Explore data](src/img/readme/explore-data.png)

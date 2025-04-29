@@ -55,10 +55,10 @@ export class DataSource extends DataSourceApi<MyQuery, BasicDataSourceOptions> {
         const response = await firstValueFrom(getBackendSrv().fetch({
           url: this.url + this.routePath + `/${this.path}/things/${target.thingID}/features/${target.queryText}`,
           method: 'GET',
-        })) as FetchResponse<{ value: number }>;
+        })) as FetchResponse<number>;
 
         // Extract the value from the API response
-        const newValue = response.data.value; // Ensure the API returns a numeric value
+        const newValue = response.data; // Ensure the API returns a numeric value
         const timestamp = Date.now(); // Use the current time as the timestamp
 
         // Update the in-memory cache for this target

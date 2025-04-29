@@ -52,7 +52,7 @@ export function QueryEditor({ query, onChange, onRunQuery, datasource }: Props) 
 
   return (
     <>
-      <InlineField label="Thing ID" labelWidth={14} tooltip="Not used yet">
+      <InlineField label="Thing ID" labelWidth={20} tooltip="Not used yet">
         <Select
           id="query-editor-thing-id"
           options={ids}
@@ -61,7 +61,7 @@ export function QueryEditor({ query, onChange, onRunQuery, datasource }: Props) 
           placeholder="Enter a query"
         />
       </InlineField>
-      <InlineField label="Query Text" labelWidth={14} tooltip="Not used yet">
+      <InlineField label="Property Path" labelWidth={20} tooltip="Not used yet">
         <Input
           id="query-editor-query-text"
           onChange={onQueryTextChange}

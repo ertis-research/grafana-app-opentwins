@@ -33,13 +33,13 @@ export function ConfigEditor(props: EditorProps): ReactElement {
           width={40}
         />
       </InlineField>
-      <InlineField label="API Auth Header" labelWidth={26} interactive tooltip={'Secure json field (backend only)'}>
+      <InlineField label="API Auth Key" labelWidth={26} interactive tooltip={'Secure json field (backend only)'}>
         <SecretInput
           required
           id="config-editor-api-key"
           isConfigured={secureJsonFields.apiAuth}
           value={secureJsonData?.apiAuth}
-          placeholder="Enter your API Authorization Header"
+          placeholder="Enter your API Authorization Key"
           width={40}
           onReset={onResetApiAuth}
           onChange={onApiAuthFieldChange}
