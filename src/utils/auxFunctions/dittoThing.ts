@@ -44,7 +44,6 @@ export const fromMetaToValues = (meta: AppPluginMeta<KeyValue<any>>) => {
         if(data.extendedURL !== undefined) {res['ditto_extended_endpoint'] = data.extendedURL}
         if(data.agentsURL !== undefined) {res['agent_endpoint'] = data.agentsURL}
         if(data.agentsContext !== undefined) {res['agent_context'] = data.agentsContext}
-        res['user_role'] = 'viewer'
     }
     return res
 }
