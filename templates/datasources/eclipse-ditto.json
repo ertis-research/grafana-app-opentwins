@@ -1,0 +1,14 @@
+{
+    "name": "Eclipse Ditto",
+    "type": "eclipse-ditto-datasource",
+    "access": "proxy",
+    "url": "$DITTO_URL",
+    "isDefault": true,
+    "secureJsonData": {
+        "apiAuth": "$DITTO_AUTH"
+    },
+    "jsonData": {
+        "url": "$DITTO_URL",
+        "path": "api/2"
+    }
+}

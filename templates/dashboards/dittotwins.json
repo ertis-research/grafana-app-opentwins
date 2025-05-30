@@ -1,0 +1,1468 @@
+{
+  "dashboard": {
+    "annotations": {
+      "list": [
+        {
+          "builtIn": 1,
+          "datasource": {
+            "type": "grafana",
+            "uid": "-- Grafana --"
+          },
+          "enable": true,
+          "hide": true,
+          "iconColor": "rgba(0, 211, 255, 1)",
+          "name": "Annotations & Alerts",
+          "type": "dashboard"
+        }
+      ]
+    },
+    "editable": true,
+    "fiscalYearStartMonth": 0,
+    "graphTooltip": 0,
+    "id": null,
+    "links": [],
+    "liveNow": false,
+    "panels": [
+      {
+        "datasource": {
+          "type": "eclipse-ditto-datasource",
+          "uid": "$DITTO_DATASOURCE_UID"
+        },
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "thresholds"
+            },
+            "custom": {
+              "hideFrom": {
+                "legend": false,
+                "tooltip": false,
+                "viz": false
+              }
+            },
+            "mappings": [],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green",
+                  "value": null
+                },
+                {
+                  "color": "red",
+                  "value": 80
+                }
+              ]
+            },
+            "unitScale": true
+          },
+          "overrides": []
+        },
+        "gridPos": {
+          "h": 15,
+          "w": 6,
+          "x": 0,
+          "y": 0
+        },
+        "id": 1,
+        "options": {
+          "basemap": {
+            "config": {},
+            "name": "Layer 0",
+            "type": "default"
+          },
+          "controls": {
+            "mouseWheelZoom": true,
+            "showAttribution": true,
+            "showDebug": false,
+            "showMeasure": false,
+            "showScale": false,
+            "showZoom": true
+          },
+          "layers": [
+            {
+              "config": {
+                "showLegend": false,
+                "style": {
+                  "color": {
+                    "fixed": "dark-green"
+                  },
+                  "opacity": 0.5,
+                  "rotation": {
+                    "fixed": 0,
+                    "max": 360,
+                    "min": -360,
+                    "mode": "mod"
+                  },
+                  "size": {
+                    "fixed": 5,
+                    "max": 15,
+                    "min": 2
+                  },
+                  "symbol": {
+                    "fixed": "img/icons/marker/circle.svg",
+                    "mode": "fixed"
+                  },
+                  "symbolAlign": {
+                    "horizontal": "center",
+                    "vertical": "center"
+                  },
+                  "textConfig": {
+                    "fontSize": 12,
+                    "offsetX": 0,
+                    "offsetY": 0,
+                    "textAlign": "center",
+                    "textBaseline": "middle"
+                  }
+                }
+              },
+              "location": {
+                "latitude": "final_latitude",
+                "longitude": "final_longitude",
+                "mode": "coords"
+              },
+              "name": "Layer 1",
+              "tooltip": true,
+              "type": "markers"
+            }
+          ],
+          "tooltip": {
+            "mode": "details"
+          },
+          "view": {
+            "allLayers": true,
+            "id": "fit",
+            "lat": 0,
+            "lon": 0,
+            "zoom": 15
+          }
+        },
+        "pluginVersion": "10.3.1",
+        "targets": [
+          {
+            "datasource": {
+              "type": "eclipse-ditto-datasource",
+              "uid": "$DITTO_DATASOURCE_UID"
+            },
+            "hide": false,
+            "queryText": "ModemStatus/properties/referencePosition",
+            "refId": "latitude",
+            "thingID": "org.acme:my-device-2"
+          }
+        ],
+        "title": "DT Location",
+        "transformations": [
+          {
+            "id": "extractFields",
+            "options": {
+              "format": "json",
+              "jsonPaths": [
+                {
+                  "alias": "lat",
+                  "path": "latitude"
+                },
+                {
+                  "alias": "lon",
+                  "path": "longitude"
+                }
+              ],
+              "keepTime": false,
+              "replace": false,
+              "source": "Value"
+            }
+          },
+          {
+            "id": "calculateField",
+            "options": {
+              "alias": "final_latitude",
+              "binary": {
+                "left": "lat",
+                "operator": "/",
+                "right": "10000000"
+              },
+              "mode": "binary",
+              "reduce": {
+                "reducer": "sum"
+              }
+            }
+          },
+          {
+            "id": "calculateField",
+            "options": {
+              "alias": "final_longitude",
+              "binary": {
+                "left": "lon",
+                "operator": "/",
+                "right": "10000000"
+              },
+              "mode": "binary",
+              "reduce": {
+                "reducer": "sum"
+              }
+            }
+          },
+          {
+            "id": "limit",
+            "options": {
+              "limitField": 1
+            }
+          }
+        ],
+        "type": "geomap"
+      },
+      {
+        "datasource": {
+          "type": "eclipse-ditto-datasource",
+          "uid": "$DITTO_DATASOURCE_UID"
+        },
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "palette-classic"
+            },
+            "custom": {
+              "axisBorderShow": false,
+              "axisCenteredZero": false,
+              "axisColorMode": "text",
+              "axisLabel": "",
+              "axisPlacement": "auto",
+              "barAlignment": 0,
+              "drawStyle": "line",
+              "fillOpacity": 0,
+              "gradientMode": "none",
+              "hideFrom": {
+                "legend": false,
+                "tooltip": false,
+                "viz": false
+              },
+              "insertNulls": false,
+              "lineInterpolation": "linear",
+              "lineWidth": 1,
+              "pointSize": 5,
+              "scaleDistribution": {
+                "type": "linear"
+              },
+              "showPoints": "auto",
+              "spanNulls": false,
+              "stacking": {
+                "group": "A",
+                "mode": "none"
+              },
+              "thresholdsStyle": {
+                "mode": "off"
+              }
+            },
+            "mappings": [],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green",
+                  "value": null
+                },
+                {
+                  "color": "red",
+                  "value": 80
+                }
+              ]
+            },
+            "unitScale": true
+          },
+          "overrides": []
+        },
+        "gridPos": {
+          "h": 6,
+          "w": 6,
+          "x": 6,
+          "y": 0
+        },
+        "id": 4,
+        "options": {
+          "legend": {
+            "calcs": [],
+            "displayMode": "list",
+            "placement": "bottom",
+            "showLegend": true
+          },
+          "tooltip": {
+            "hideZeros": false,
+            "mode": "single",
+            "sort": "none"
+          }
+        },
+        "pluginVersion": "11.6.0+security-01",
+        "targets": [
+          {
+            "queryText": "ModemStatus/properties/modemStatus/lte/rsrq",
+            "refId": "GetLTE_RSRQ",
+            "thingID": "org.acme:my-device-2"
+          }
+        ],
+        "title": "LTE RSRQ (dB)",
+        "type": "timeseries"
+      },
+      {
+        "datasource": {
+          "type": "eclipse-ditto-datasource",
+          "uid": "$DITTO_DATASOURCE_UID"
+        },
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "thresholds"
+            },
+            "mappings": [],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "blue",
+                  "value": null
+                },
+                {
+                  "color": "red",
+                  "value": 80
+                }
+              ]
+            },
+            "unitScale": true
+          },
+          "overrides": []
+        },
+        "gridPos": {
+          "h": 4,
+          "w": 3,
+          "x": 12,
+          "y": 0
+        },
+        "id": 7,
+        "options": {
+          "colorMode": "value",
+          "graphMode": "area",
+          "justifyMode": "auto",
+          "orientation": "auto",
+          "percentChangeColorMode": "standard",
+          "reduceOptions": {
+            "calcs": [
+              "lastNotNull"
+            ],
+            "fields": "",
+            "values": false
+          },
+          "showPercentChange": false,
+          "textMode": "auto",
+          "wideLayout": true
+        },
+        "pluginVersion": "10.3.1",
+        "targets": [
+          {
+            "queryText": "ModemStatus/properties/modemStatus/mcc",
+            "refId": "mcc",
+            "thingID": "org.acme:my-device-2"
+          }
+        ],
+        "title": "MCC",
+        "type": "stat"
+      },
+      {
+        "datasource": {
+          "type": "eclipse-ditto-datasource",
+          "uid": "$DITTO_DATASOURCE_UID"
+        },
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "thresholds"
+            },
+            "mappings": [],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green",
+                  "value": null
+                },
+                {
+                  "color": "blue",
+                  "value": 80
+                }
+              ]
+            },
+            "unitScale": true
+          },
+          "overrides": []
+        },
+        "gridPos": {
+          "h": 4,
+          "w": 3,
+          "x": 15,
+          "y": 0
+        },
+        "id": 8,
+        "options": {
+          "colorMode": "value",
+          "graphMode": "area",
+          "justifyMode": "auto",
+          "orientation": "auto",
+          "percentChangeColorMode": "standard",
+          "reduceOptions": {
+            "calcs": [
+              "lastNotNull"
+            ],
+            "fields": "",
+            "values": false
+          },
+          "showPercentChange": false,
+          "textMode": "auto",
+          "wideLayout": true
+        },
+        "pluginVersion": "10.3.1",
+        "targets": [
+          {
+            "queryText": "ModemStatus/properties/modemStatus/mnc",
+            "refId": "MNC",
+            "thingID": "org.acme:my-device-2"
+          }
+        ],
+        "title": "MNC",
+        "type": "stat"
+      },
+      {
+        "datasource": {
+          "type": "eclipse-ditto-datasource",
+          "uid": "$DITTO_DATASOURCE_UID"
+        },
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "palette-classic"
+            },
+            "custom": {
+              "axisBorderShow": false,
+              "axisCenteredZero": false,
+              "axisColorMode": "text",
+              "axisLabel": "",
+              "axisPlacement": "auto",
+              "barAlignment": 0,
+              "drawStyle": "line",
+              "fillOpacity": 0,
+              "gradientMode": "none",
+              "hideFrom": {
+                "legend": false,
+                "tooltip": false,
+                "viz": false
+              },
+              "insertNulls": false,
+              "lineInterpolation": "linear",
+              "lineWidth": 1,
+              "pointSize": 5,
+              "scaleDistribution": {
+                "type": "linear"
+              },
+              "showPoints": "auto",
+              "spanNulls": false,
+              "stacking": {
+                "group": "A",
+                "mode": "none"
+              },
+              "thresholdsStyle": {
+                "mode": "off"
+              }
+            },
+            "mappings": [],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green",
+                  "value": null
+                },
+                {
+                  "color": "red",
+                  "value": 80
+                }
+              ]
+            },
+            "unitScale": true
+          },
+          "overrides": []
+        },
+        "gridPos": {
+          "h": 7,
+          "w": 6,
+          "x": 18,
+          "y": 0
+        },
+        "id": 11,
+        "options": {
+          "legend": {
+            "calcs": [],
+            "displayMode": "list",
+            "placement": "bottom",
+            "showLegend": true
+          },
+          "tooltip": {
+            "hideZeros": false,
+            "mode": "single",
+            "sort": "none"
+          }
+        },
+        "pluginVersion": "11.6.0+security-01",
+        "targets": [
+          {
+            "queryText": "ModemStatus/properties/modemStatus/nr/snr",
+            "refId": "5G_SNR",
+            "thingID": "org.acme:my-device-2"
+          }
+        ],
+        "title": "5G SNR (dB)",
+        "type": "timeseries"
+      },
+      {
+        "datasource": {
+          "type": "eclipse-ditto-datasource",
+          "uid": "$DITTO_DATASOURCE_UID"
+        },
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "thresholds"
+            },
+            "mappings": [],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "orange",
+                  "value": null
+                },
+                {
+                  "color": "orange",
+                  "value": 80
+                }
+              ]
+            },
+            "unitScale": true
+          },
+          "overrides": []
+        },
+        "gridPos": {
+          "h": 4,
+          "w": 3,
+          "x": 12,
+          "y": 4
+        },
+        "id": 9,
+        "options": {
+          "colorMode": "value",
+          "graphMode": "area",
+          "justifyMode": "auto",
+          "orientation": "auto",
+          "percentChangeColorMode": "standard",
+          "reduceOptions": {
+            "calcs": [
+              "lastNotNull"
+            ],
+            "fields": "",
+            "values": false
+          },
+          "showPercentChange": false,
+          "textMode": "auto",
+          "wideLayout": true
+        },
+        "pluginVersion": "10.3.1",
+        "targets": [
+          {
+            "queryText": "ModemStatus/properties/modemStatus/lte/pci",
+            "refId": "LTE_PCI",
+            "thingID": "org.acme:my-device-2"
+          }
+        ],
+        "title": "LTE PCI",
+        "type": "stat"
+      },
+      {
+        "datasource": {
+          "type": "eclipse-ditto-datasource",
+          "uid": "$DITTO_DATASOURCE_UID"
+        },
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "thresholds"
+            },
+            "mappings": [],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "orange",
+                  "value": null
+                },
+                {
+                  "color": "orange",
+                  "value": 80
+                }
+              ]
+            },
+            "unitScale": true
+          },
+          "overrides": []
+        },
+        "gridPos": {
+          "h": 4,
+          "w": 3,
+          "x": 15,
+          "y": 4
+        },
+        "id": 10,
+        "options": {
+          "colorMode": "value",
+          "graphMode": "area",
+          "justifyMode": "auto",
+          "orientation": "auto",
+          "percentChangeColorMode": "standard",
+          "reduceOptions": {
+            "calcs": [
+              "lastNotNull"
+            ],
+            "fields": "",
+            "values": false
+          },
+          "showPercentChange": false,
+          "textMode": "auto",
+          "wideLayout": true
+        },
+        "pluginVersion": "10.3.1",
+        "targets": [
+          {
+            "queryText": "ModemStatus/properties/modemStatus/nr/pci",
+            "refId": "NR_PCI",
+            "thingID": "org.acme:my-device-2"
+          }
+        ],
+        "title": "5G PCI",
+        "type": "stat"
+      },
+      {
+        "datasource": {
+          "type": "eclipse-ditto-datasource",
+          "uid": "$DITTO_DATASOURCE_UID"
+        },
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "palette-classic"
+            },
+            "custom": {
+              "axisBorderShow": false,
+              "axisCenteredZero": false,
+              "axisColorMode": "text",
+              "axisLabel": "",
+              "axisPlacement": "auto",
+              "barAlignment": 0,
+              "drawStyle": "line",
+              "fillOpacity": 0,
+              "gradientMode": "none",
+              "hideFrom": {
+                "legend": false,
+                "tooltip": false,
+                "viz": false
+              },
+              "insertNulls": false,
+              "lineInterpolation": "linear",
+              "lineWidth": 1,
+              "pointSize": 5,
+              "scaleDistribution": {
+                "type": "linear"
+              },
+              "showPoints": "auto",
+              "spanNulls": false,
+              "stacking": {
+                "group": "A",
+                "mode": "none"
+              },
+              "thresholdsStyle": {
+                "mode": "off"
+              }
+            },
+            "mappings": [],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "red",
+                  "value": null
+                },
+                {
+                  "color": "green",
+                  "value": 20
+                }
+              ]
+            },
+            "unitScale": true
+          },
+          "overrides": []
+        },
+        "gridPos": {
+          "h": 5,
+          "w": 6,
+          "x": 6,
+          "y": 6
+        },
+        "id": 3,
+        "options": {
+          "legend": {
+            "calcs": [],
+            "displayMode": "list",
+            "placement": "bottom",
+            "showLegend": true
+          },
+          "tooltip": {
+            "hideZeros": false,
+            "mode": "single",
+            "sort": "none"
+          }
+        },
+        "pluginVersion": "11.6.0+security-01",
+        "targets": [
+          {
+            "queryText": "ModemStatus/properties/modemStatus/lte/snr",
+            "refId": "GetLTE_SNR",
+            "thingID": "org.acme:my-device-2"
+          }
+        ],
+        "title": "LTE SNR (dB)",
+        "type": "timeseries"
+      },
+      {
+        "datasource": {
+          "type": "eclipse-ditto-datasource",
+          "uid": "$DITTO_DATASOURCE_UID"
+        },
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "palette-classic"
+            },
+            "custom": {
+              "axisBorderShow": false,
+              "axisCenteredZero": false,
+              "axisColorMode": "text",
+              "axisLabel": "",
+              "axisPlacement": "auto",
+              "barAlignment": 0,
+              "drawStyle": "line",
+              "fillOpacity": 0,
+              "gradientMode": "none",
+              "hideFrom": {
+                "legend": false,
+                "tooltip": false,
+                "viz": false
+              },
+              "insertNulls": false,
+              "lineInterpolation": "linear",
+              "lineWidth": 1,
+              "pointSize": 5,
+              "scaleDistribution": {
+                "type": "linear"
+              },
+              "showPoints": "auto",
+              "spanNulls": false,
+              "stacking": {
+                "group": "A",
+                "mode": "none"
+              },
+              "thresholdsStyle": {
+                "mode": "off"
+              }
+            },
+            "mappings": [],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green",
+                  "value": null
+                },
+                {
+                  "color": "red",
+                  "value": 80
+                }
+              ]
+            },
+            "unitScale": true
+          },
+          "overrides": []
+        },
+        "gridPos": {
+          "h": 7,
+          "w": 6,
+          "x": 18,
+          "y": 7
+        },
+        "id": 12,
+        "options": {
+          "legend": {
+            "calcs": [],
+            "displayMode": "list",
+            "placement": "bottom",
+            "showLegend": true
+          },
+          "tooltip": {
+            "hideZeros": false,
+            "mode": "single",
+            "sort": "none"
+          }
+        },
+        "pluginVersion": "11.6.0+security-01",
+        "targets": [
+          {
+            "queryText": "ModemStatus/properties/modemStatus/nr/rsrq",
+            "refId": "5G_RSRQ",
+            "thingID": "org.acme:my-device-2"
+          }
+        ],
+        "title": "5G RSRQ (dB)",
+        "type": "timeseries"
+      },
+      {
+        "datasource": {
+          "type": "eclipse-ditto-datasource",
+          "uid": "$DITTO_DATASOURCE_UID"
+        },
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "palette-classic"
+            },
+            "custom": {
+              "axisBorderShow": false,
+              "axisCenteredZero": false,
+              "axisColorMode": "text",
+              "axisLabel": "",
+              "axisPlacement": "auto",
+              "barAlignment": 0,
+              "drawStyle": "line",
+              "fillOpacity": 0,
+              "gradientMode": "none",
+              "hideFrom": {
+                "legend": false,
+                "tooltip": false,
+                "viz": false
+              },
+              "insertNulls": false,
+              "lineInterpolation": "linear",
+              "lineWidth": 1,
+              "pointSize": 5,
+              "scaleDistribution": {
+                "type": "linear"
+              },
+              "showPoints": "auto",
+              "spanNulls": false,
+              "stacking": {
+                "group": "A",
+                "mode": "none"
+              },
+              "thresholdsStyle": {
+                "mode": "off"
+              }
+            },
+            "mappings": [],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green",
+                  "value": null
+                },
+                {
+                  "color": "red",
+                  "value": 80
+                }
+              ]
+            },
+            "unitScale": true
+          },
+          "overrides": []
+        },
+        "gridPos": {
+          "h": 7,
+          "w": 6,
+          "x": 12,
+          "y": 8
+        },
+        "id": 15,
+        "options": {
+          "legend": {
+            "calcs": [],
+            "displayMode": "list",
+            "placement": "bottom",
+            "showLegend": true
+          },
+          "tooltip": {
+            "hideZeros": false,
+            "mode": "single",
+            "sort": "none"
+          }
+        },
+        "pluginVersion": "11.6.0+security-01",
+        "targets": [
+          {
+            "queryText": "MessageDelay/properties/delay",
+            "refId": "e2eLatency",
+            "thingID": "org.acme:my-device-2"
+          }
+        ],
+        "title": "E2E Latency (ms)",
+        "type": "timeseries"
+      },
+      {
+        "datasource": {
+          "type": "eclipse-ditto-datasource",
+          "uid": "$DITTO_DATASOURCE_UID"
+        },
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "palette-classic"
+            },
+            "custom": {
+              "axisBorderShow": false,
+              "axisCenteredZero": false,
+              "axisColorMode": "text",
+              "axisLabel": "",
+              "axisPlacement": "auto",
+              "barAlignment": 0,
+              "drawStyle": "line",
+              "fillOpacity": 0,
+              "gradientMode": "none",
+              "hideFrom": {
+                "legend": false,
+                "tooltip": false,
+                "viz": false
+              },
+              "insertNulls": false,
+              "lineInterpolation": "linear",
+              "lineWidth": 1,
+              "pointSize": 5,
+              "scaleDistribution": {
+                "type": "linear"
+              },
+              "showPoints": "auto",
+              "spanNulls": false,
+              "stacking": {
+                "group": "A",
+                "mode": "none"
+              },
+              "thresholdsStyle": {
+                "mode": "off"
+              }
+            },
+            "mappings": [],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green",
+                  "value": null
+                },
+                {
+                  "color": "red",
+                  "value": 80
+                }
+              ]
+            },
+            "unitScale": true
+          },
+          "overrides": []
+        },
+        "gridPos": {
+          "h": 5,
+          "w": 6,
+          "x": 6,
+          "y": 11
+        },
+        "id": 5,
+        "options": {
+          "legend": {
+            "calcs": [],
+            "displayMode": "list",
+            "placement": "bottom",
+            "showLegend": true
+          },
+          "tooltip": {
+            "hideZeros": false,
+            "mode": "single",
+            "sort": "none"
+          }
+        },
+        "pluginVersion": "11.6.0+security-01",
+        "targets": [
+          {
+            "queryText": "ModemStatus/properties/modemStatus/lte/rsrp",
+            "refId": "LTE_RSRP",
+            "thingID": "org.acme:my-device-2"
+          }
+        ],
+        "title": "LTE RSRP (dBm)",
+        "type": "timeseries"
+      },
+      {
+        "datasource": {
+          "type": "eclipse-ditto-datasource",
+          "uid": "$DITTO_DATASOURCE_UID"
+        },
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "palette-classic"
+            },
+            "custom": {
+              "axisBorderShow": false,
+              "axisCenteredZero": false,
+              "axisColorMode": "text",
+              "axisLabel": "",
+              "axisPlacement": "auto",
+              "barAlignment": 0,
+              "drawStyle": "line",
+              "fillOpacity": 0,
+              "gradientMode": "none",
+              "hideFrom": {
+                "legend": false,
+                "tooltip": false,
+                "viz": false
+              },
+              "insertNulls": false,
+              "lineInterpolation": "linear",
+              "lineWidth": 1,
+              "pointSize": 5,
+              "scaleDistribution": {
+                "type": "linear"
+              },
+              "showPoints": "auto",
+              "spanNulls": false,
+              "stacking": {
+                "group": "A",
+                "mode": "none"
+              },
+              "thresholdsStyle": {
+                "mode": "off"
+              }
+            },
+            "mappings": [],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green",
+                  "value": null
+                },
+                {
+                  "color": "red",
+                  "value": 80
+                }
+              ]
+            },
+            "unitScale": true
+          },
+          "overrides": []
+        },
+        "gridPos": {
+          "h": 7,
+          "w": 6,
+          "x": 18,
+          "y": 14
+        },
+        "id": 13,
+        "options": {
+          "legend": {
+            "calcs": [],
+            "displayMode": "list",
+            "placement": "bottom",
+            "showLegend": true
+          },
+          "tooltip": {
+            "hideZeros": false,
+            "mode": "single",
+            "sort": "none"
+          }
+        },
+        "pluginVersion": "11.6.0+security-01",
+        "targets": [
+          {
+            "queryText": "ModemStatus/properties/modemStatus/nr/rsrp",
+            "refId": "5G_RSRP",
+            "thingID": "org.acme:my-device-2"
+          }
+        ],
+        "title": "5G RSRP (dBm)",
+        "type": "timeseries"
+      },
+      {
+        "datasource": {
+          "type": "eclipse-ditto-datasource",
+          "uid": "$DITTO_DATASOURCE_UID"
+        },
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "thresholds"
+            },
+            "mappings": [],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green",
+                  "value": null
+                },
+                {
+                  "color": "red",
+                  "value": 80
+                }
+              ]
+            },
+            "unitScale": true
+          },
+          "overrides": []
+        },
+        "gridPos": {
+          "h": 6,
+          "w": 3,
+          "x": 0,
+          "y": 15
+        },
+        "id": 18,
+        "options": {
+          "colorMode": "value",
+          "graphMode": "area",
+          "justifyMode": "auto",
+          "orientation": "auto",
+          "percentChangeColorMode": "standard",
+          "reduceOptions": {
+            "calcs": [
+              "lastNotNull"
+            ],
+            "fields": "",
+            "values": false
+          },
+          "showPercentChange": false,
+          "textMode": "auto",
+          "wideLayout": true
+        },
+        "pluginVersion": "10.3.1",
+        "targets": [
+          {
+            "queryText": "ModemStatus/properties/modemStatus/ratMode",
+            "refId": "RAT",
+            "thingID": "org.acme:my-device-2"
+          }
+        ],
+        "title": "RAT",
+        "type": "stat"
+      },
+      {
+        "datasource": {
+          "type": "eclipse-ditto-datasource",
+          "uid": "$DITTO_DATASOURCE_UID"
+        },
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "thresholds"
+            },
+            "mappings": [],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green",
+                  "value": null
+                },
+                {
+                  "color": "red",
+                  "value": 120
+                }
+              ]
+            },
+            "unitScale": true
+          },
+          "overrides": []
+        },
+        "gridPos": {
+          "h": 6,
+          "w": 3,
+          "x": 3,
+          "y": 15
+        },
+        "id": 17,
+        "options": {
+          "colorMode": "value",
+          "graphMode": "area",
+          "justifyMode": "auto",
+          "orientation": "auto",
+          "percentChangeColorMode": "standard",
+          "reduceOptions": {
+            "calcs": [
+              "lastNotNull"
+            ],
+            "fields": "",
+            "values": false
+          },
+          "showPercentChange": false,
+          "textMode": "auto",
+          "wideLayout": true
+        },
+        "pluginVersion": "10.3.1",
+        "targets": [
+          {
+            "datasource": {
+              "type": "eclipse-ditto-datasource",
+              "uid": "$DITTO_DATASOURCE_UID"
+            },
+            "queryText": "Dynamics/properties/highFrequencyContainer/speed/speedValue",
+            "refId": "getSpeed",
+            "thingID": "org.acme:my-device-2"
+          }
+        ],
+        "title": "vOBU Speed (km/h)",
+        "transformations": [
+          {
+            "id": "organize",
+            "options": {
+              "excludeByName": {
+                "Time": false,
+                "Value": false
+              },
+              "includeByName": {},
+              "indexByName": {},
+              "renameByName": {
+                "Time": "",
+                "Value": "speed_cms"
+              }
+            }
+          },
+          {
+            "id": "calculateField",
+            "options": {
+              "alias": "speed_kmh",
+              "binary": {
+                "left": "speed_cms",
+                "operator": "*",
+                "right": "0.036"
+              },
+              "mode": "binary",
+              "reduce": {
+                "reducer": "sum"
+              },
+              "replaceFields": true
+            }
+          }
+        ],
+        "type": "stat"
+      },
+      {
+        "datasource": {
+          "type": "eclipse-ditto-datasource",
+          "uid": "$DITTO_DATASOURCE_UID"
+        },
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "palette-classic"
+            },
+            "custom": {
+              "axisBorderShow": false,
+              "axisCenteredZero": false,
+              "axisColorMode": "text",
+              "axisLabel": "",
+              "axisPlacement": "auto",
+              "barAlignment": 0,
+              "drawStyle": "line",
+              "fillOpacity": 0,
+              "gradientMode": "none",
+              "hideFrom": {
+                "legend": false,
+                "tooltip": false,
+                "viz": false
+              },
+              "insertNulls": false,
+              "lineInterpolation": "linear",
+              "lineWidth": 1,
+              "pointSize": 5,
+              "scaleDistribution": {
+                "type": "linear"
+              },
+              "showPoints": "auto",
+              "spanNulls": false,
+              "stacking": {
+                "group": "A",
+                "mode": "none"
+              },
+              "thresholdsStyle": {
+                "mode": "off"
+              }
+            },
+            "mappings": [],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green",
+                  "value": null
+                },
+                {
+                  "color": "red",
+                  "value": 80
+                }
+              ]
+            },
+            "unitScale": true
+          },
+          "overrides": []
+        },
+        "gridPos": {
+          "h": 6,
+          "w": 6,
+          "x": 12,
+          "y": 15
+        },
+        "id": 16,
+        "options": {
+          "legend": {
+            "calcs": [],
+            "displayMode": "list",
+            "placement": "bottom",
+            "showLegend": true
+          },
+          "tooltip": {
+            "hideZeros": false,
+            "mode": "single",
+            "sort": "none"
+          }
+        },
+        "pluginVersion": "11.6.0+security-01",
+        "targets": [
+          {
+            "queryText": "NetworkThroughput/properties/rx_bytes",
+            "refId": "tt_rx_bytes",
+            "thingID": "org.acme:my-device-2"
+          }
+        ],
+        "title": "Throughput RX (b/s)",
+        "type": "timeseries"
+      },
+      {
+        "datasource": {
+          "type": "eclipse-ditto-datasource",
+          "uid": "$DITTO_DATASOURCE_UID"
+        },
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "palette-classic"
+            },
+            "custom": {
+              "axisBorderShow": false,
+              "axisCenteredZero": false,
+              "axisColorMode": "text",
+              "axisLabel": "",
+              "axisPlacement": "auto",
+              "barAlignment": 0,
+              "drawStyle": "line",
+              "fillOpacity": 0,
+              "gradientMode": "none",
+              "hideFrom": {
+                "legend": false,
+                "tooltip": false,
+                "viz": false
+              },
+              "insertNulls": false,
+              "lineInterpolation": "linear",
+              "lineWidth": 1,
+              "pointSize": 5,
+              "scaleDistribution": {
+                "type": "linear"
+              },
+              "showPoints": "auto",
+              "spanNulls": false,
+              "stacking": {
+                "group": "A",
+                "mode": "none"
+              },
+              "thresholdsStyle": {
+                "mode": "off"
+              }
+            },
+            "mappings": [],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green",
+                  "value": null
+                },
+                {
+                  "color": "red",
+                  "value": 80
+                }
+              ]
+            },
+            "unitScale": true
+          },
+          "overrides": []
+        },
+        "gridPos": {
+          "h": 5,
+          "w": 6,
+          "x": 6,
+          "y": 16
+        },
+        "id": 6,
+        "options": {
+          "legend": {
+            "calcs": [],
+            "displayMode": "list",
+            "placement": "bottom",
+            "showLegend": true
+          },
+          "tooltip": {
+            "hideZeros": false,
+            "mode": "single",
+            "sort": "none"
+          }
+        },
+        "pluginVersion": "11.6.0+security-01",
+        "targets": [
+          {
+            "queryText": "ModemStatus/properties/modemStatus/lte/rssi",
+            "refId": "getLTE_RSSI",
+            "thingID": "org.acme:my-device-2"
+          }
+        ],
+        "title": "LTE RSSI (dBm)",
+        "type": "timeseries"
+      }
+    ],
+    "refresh": "5s",
+    "schemaVersion": 39,
+    "tags": [],
+    "templating": {
+      "list": []
+    },
+    "time": {
+      "from": "now-5m",
+      "to": "now"
+    },
+    "timepicker": {},
+    "timezone": "browser",
+    "title": "DittoTwins",
+    "uid": "cemd3k5dnwc1se",
+    "version": 2,
+    "weekStart": ""
+  },
+  "overwrite": false,
+  "inputs": [],
+  "folderUid": ""
+}
