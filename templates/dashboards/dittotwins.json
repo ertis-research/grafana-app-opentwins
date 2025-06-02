@@ -28,6 +28,31 @@
           "type": "eclipse-ditto-datasource",
           "uid": "$DITTO_DATASOURCE_UID"
         },
+        "gridPos": {
+          "h": 8,
+          "w": 6,
+          "x": 0,
+          "y": 0
+        },
+        "id": 19,
+        "options": {
+          "code": {
+            "language": "plaintext",
+            "showLineNumbers": false,
+            "showMiniMap": false
+          },
+          "content": "<img src=\"http://127.0.0.1:5000/video_feed\" width=\"100%\" />",
+          "mode": "html"
+        },
+        "pluginVersion": "10.3.1",
+        "title": "Trajectory Visualization",
+        "type": "text"
+      },
+      {
+        "datasource": {
+          "type": "eclipse-ditto-datasource",
+          "uid": "$DITTO_DATASOURCE_UID"
+        },
         "fieldConfig": {
           "defaults": {
             "color": {
@@ -59,10 +84,10 @@
           "overrides": []
         },
         "gridPos": {
-          "h": 15,
+          "h": 8,
           "w": 6,
           "x": 0,
-          "y": 0
+          "y": 8
         },
         "id": 1,
         "options": {
@@ -1128,7 +1153,7 @@
           "overrides": []
         },
         "gridPos": {
-          "h": 6,
+          "h": 5,
           "w": 3,
           "x": 0,
           "y": 15
@@ -1191,10 +1216,10 @@
           "overrides": []
         },
         "gridPos": {
-          "h": 6,
+          "h": 5,
           "w": 3,
           "x": 3,
-          "y": 15
+          "y": 16
         },
         "id": 17,
         "options": {
