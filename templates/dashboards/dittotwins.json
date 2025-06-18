@@ -29,7 +29,7 @@
           "uid": "$DITTO_DATASOURCE_UID"
         },
         "gridPos": {
-          "h": 8,
+          "h": 13,
           "w": 6,
           "x": 0,
           "y": 0
@@ -47,193 +47,6 @@
         "pluginVersion": "10.3.1",
         "title": "Trajectory Visualization",
         "type": "text"
-      },
-      {
-        "datasource": {
-          "type": "eclipse-ditto-datasource",
-          "uid": "$DITTO_DATASOURCE_UID"
-        },
-        "fieldConfig": {
-          "defaults": {
-            "color": {
-              "mode": "thresholds"
-            },
-            "custom": {
-              "hideFrom": {
-                "legend": false,
-                "tooltip": false,
-                "viz": false
-              }
-            },
-            "mappings": [],
-            "thresholds": {
-              "mode": "absolute",
-              "steps": [
-                {
-                  "color": "green",
-                  "value": null
-                },
-                {
-                  "color": "red",
-                  "value": 80
-                }
-              ]
-            },
-            "unitScale": true
-          },
-          "overrides": []
-        },
-        "gridPos": {
-          "h": 8,
-          "w": 6,
-          "x": 0,
-          "y": 8
-        },
-        "id": 1,
-        "options": {
-          "basemap": {
-            "config": {},
-            "name": "Layer 0",
-            "type": "default"
-          },
-          "controls": {
-            "mouseWheelZoom": true,
-            "showAttribution": true,
-            "showDebug": false,
-            "showMeasure": false,
-            "showScale": false,
-            "showZoom": true
-          },
-          "layers": [
-            {
-              "config": {
-                "showLegend": false,
-                "style": {
-                  "color": {
-                    "fixed": "dark-green"
-                  },
-                  "opacity": 0.5,
-                  "rotation": {
-                    "fixed": 0,
-                    "max": 360,
-                    "min": -360,
-                    "mode": "mod"
-                  },
-                  "size": {
-                    "fixed": 5,
-                    "max": 15,
-                    "min": 2
-                  },
-                  "symbol": {
-                    "fixed": "img/icons/marker/circle.svg",
-                    "mode": "fixed"
-                  },
-                  "symbolAlign": {
-                    "horizontal": "center",
-                    "vertical": "center"
-                  },
-                  "textConfig": {
-                    "fontSize": 12,
-                    "offsetX": 0,
-                    "offsetY": 0,
-                    "textAlign": "center",
-                    "textBaseline": "middle"
-                  }
-                }
-              },
-              "location": {
-                "latitude": "final_latitude",
-                "longitude": "final_longitude",
-                "mode": "coords"
-              },
-              "name": "Layer 1",
-              "tooltip": true,
-              "type": "markers"
-            }
-          ],
-          "tooltip": {
-            "mode": "details"
-          },
-          "view": {
-            "allLayers": true,
-            "id": "fit",
-            "lat": 0,
-            "lon": 0,
-            "zoom": 15
-          }
-        },
-        "pluginVersion": "10.3.1",
-        "targets": [
-          {
-            "datasource": {
-              "type": "eclipse-ditto-datasource",
-              "uid": "$DITTO_DATASOURCE_UID"
-            },
-            "hide": false,
-            "queryText": "ModemStatus/properties/referencePosition",
-            "refId": "latitude",
-            "thingID": "org.acme:my-device-2"
-          }
-        ],
-        "title": "DT Location",
-        "transformations": [
-          {
-            "id": "extractFields",
-            "options": {
-              "format": "json",
-              "jsonPaths": [
-                {
-                  "alias": "lat",
-                  "path": "latitude"
-                },
-                {
-                  "alias": "lon",
-                  "path": "longitude"
-                }
-              ],
-              "keepTime": false,
-              "replace": false,
-              "source": "Value"
-            }
-          },
-          {
-            "id": "calculateField",
-            "options": {
-              "alias": "final_latitude",
-              "binary": {
-                "left": "lat",
-                "operator": "/",
-                "right": "10000000"
-              },
-              "mode": "binary",
-              "reduce": {
-                "reducer": "sum"
-              }
-            }
-          },
-          {
-            "id": "calculateField",
-            "options": {
-              "alias": "final_longitude",
-              "binary": {
-                "left": "lon",
-                "operator": "/",
-                "right": "10000000"
-              },
-              "mode": "binary",
-              "reduce": {
-                "reducer": "sum"
-              }
-            }
-          },
-          {
-            "id": "limit",
-            "options": {
-              "limitField": 1
-            }
-          }
-        ],
-        "type": "geomap"
       },
       {
         "datasource": {
@@ -1156,7 +969,7 @@
           "h": 5,
           "w": 3,
           "x": 0,
-          "y": 15
+          "y": 13
         },
         "id": 18,
         "options": {
@@ -1219,7 +1032,7 @@
           "h": 5,
           "w": 3,
           "x": 3,
-          "y": 16
+          "y": 13
         },
         "id": 17,
         "options": {
