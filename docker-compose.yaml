@@ -1,5 +1,8 @@
 services:
   grafana:
-    extends:
-      file: .config/docker-compose-base.yaml
-      service: grafana
+    build: .
+    image: custom-grafana:10.3.1-ubuntu
+    container_name: grafana
+    restart: unless-stopped
+    ports:
+      - '3000:3000'
