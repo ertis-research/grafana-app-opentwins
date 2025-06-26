@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 chown -R 472:472 /var/lib/grafana/plugins
 
@@ -11,7 +11,7 @@ until nc -z localhost 35729; do
   echo "Waiting for plugin dev server (port 35729) to be ready..."
   sleep 1
 done
-#sleep 5
+sleep 5
 
 # Set environment variables for Grafana
 export GF_SECURITY_ALLOW_EMBEDDING="true"
@@ -21,7 +21,7 @@ export DITTO_AUTH=ZGl0dG86ZGl0dG8=
 cd /usr/share/grafana/
 #/run.sh
 grafana-server --config=/etc/grafana/grafana.ini --homepath=/usr/share/grafana &
-
+    
 GRAFANA_PID=$!
 START_TIME=$(date +%s)
 DATASOURCE_API_URL="http://it2s-admin:it2sit2s@localhost:3000/api/datasources"

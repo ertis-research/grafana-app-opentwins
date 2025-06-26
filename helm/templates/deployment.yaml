@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: grafana
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: grafana
+  template:
+    metadata:
+      labels:
+        app: grafana
+    spec:
+      containers:
+        - name: grafana
+          image: ghcr.io/atnog/grafana-app-opentwins/grafana-eclipse-ditto
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 3000
+          volumeMounts:
+          - name: dashboards
+            mountPath: /home/grafana_user/templates/dashboards
+          - name: datasources
+            mountPath: /home/grafana_user/templates/datasources
+          # volumeMounts:
+          #   - name: grafana-storage
+          #     mountPath: /var/lib/grafana
+      volumes:
+        # - name: grafana-storage
+        #   persistentVolumeClaim:
+        #     claimName: grafana-pvc
+        - name: dashboards
+          configMap:
+            name: grafana-dashboards
+        - name: datasources
+          configMap:
+            name: grafana-datasources
