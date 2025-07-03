@@ -13,6 +13,8 @@ COPY grafana.ini /etc/grafana/grafana.ini
 
 RUN mkdir -p /var/lib/grafana/plugins/grafana-app-opentwins
 COPY ./ /var/lib/grafana/plugins/grafana-app-opentwins  
+RUN cd /var/lib/grafana/plugins/grafana-app-opentwins/src/ && yarn install
+
 RUN mkdir -p /home/grafana_user
 # COPY ./templates /home/grafana_user/templates
 

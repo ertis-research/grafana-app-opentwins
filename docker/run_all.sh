@@ -4,7 +4,7 @@ chown -R 472:472 /var/lib/grafana/plugins
 
 cd /var/lib/grafana/plugins/grafana-app-opentwins/src/
 
-yarn install
+# yarn install
 yarn dev &
 
 until nc -z localhost 35729; do
