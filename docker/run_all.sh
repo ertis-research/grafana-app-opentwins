@@ -15,8 +15,6 @@ sleep 5
 
 # Set environment variables for Grafana
 export GF_SECURITY_ALLOW_EMBEDDING="true"
-export DITTO_URL=http://10.255.41.221:8080
-export DITTO_AUTH=ZGl0dG86ZGl0dG8=
 
 cd /usr/share/grafana/
 #/run.sh

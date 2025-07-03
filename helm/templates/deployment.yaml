@@ -26,6 +26,11 @@ spec:
           # volumeMounts:
           #   - name: grafana-storage
           #     mountPath: /var/lib/grafana
+          env:
+            {{- range $key, $value := .Values.env }}
+            - name: {{ $key }}
+              value: "{{ $value }}"
+            {{- end }}
       volumes:
         # - name: grafana-storage
         #   persistentVolumeClaim:
