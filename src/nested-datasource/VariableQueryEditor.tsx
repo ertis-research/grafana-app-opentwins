@@ -1,38 +1,45 @@
 import React, { useEffect, useState } from 'react';
 import { InlineField, Select } from '@grafana/ui';
-import { VariableQueryEditorProps } from '@grafana/data';
-import { getBackendSrv } from '@grafana/runtime';
-import { firstValueFrom } from 'rxjs';
+import { QueryEditorProps } from '@grafana/data';
 import { DataSource } from './DataSource';
-import { MyDataSourceOptions } from './types';
+import { MyDataSourceOptions, MyQuery } from './types';
+import { emptyContext } from 'utils/context/staticContext';
+import { FetchResponse, getBackendSrv } from '@grafana/runtime';
+import { firstValueFrom } from 'rxjs';
 
-interface MyVariableQuery {
-  queryType?: string;
-}
+type Props = QueryEditorProps<DataSource, MyQuery, MyDataSourceOptions>;
 
-export function VariableQueryEditor(props: VariableQueryEditorProps<DataSource, MyVariableQuery, MyDataSourceOptions>) {
-  const { query, onChange } = props;
-  const datasource = props.datasource;
+export function VariableQueryEditor({ query, onChange, onRunQuery, datasource }: Props) {
+  const onThingIDChange = (value: string | undefined) => {
+    onChange({ ...query, thingID: value });
+  };
 
-  const [options, setOptions] = useState<Array<{ label: string; value: string }>>([]);
-
+  const { thingID } = query;
+  const [ids, setIds] = useState<Array<{ label: string; value: string }>>([]);
+  
   useEffect(() => {
     const fetchThingIds = async () => {
+      let context = { ...emptyContext };
+      context.ditto_extended_endpoint = datasource.getBaseUrl();
+
       try {
-        const response = await firstValueFrom(
+        const twinsResponse: FetchResponse<any[]> = await firstValueFrom(
           getBackendSrv().fetch<any[]>({
-            url: `${datasource.getUrl()}${datasource.getRoutePath()}/${datasource.getPath()}/things?option=size(200)`,
+            url: datasource.getUrl() + datasource.getRoutePath() + `/${datasource.getPath()}/things?option=size(200)`,
             method: 'GET',
           })
         );
 
-        const res = response.data.map((item: any) => ({
-          label: item.thingId,
-          value: item.thingId,
+        const twins = twinsResponse.data;
+
+        let res = twins.map((item: any) => ({
+          label: item.thingId, // Displayed text
+          value: item.thingId, // Actual value
         }));
-        setOptions(res);
+        setIds(res);
+
       } catch (error) {
-        console.error('Failed to load variable options:', error);
+        console.error("Error fetching thing IDs:", error);
       }
     };
 
@@ -40,13 +47,16 @@ export function VariableQueryEditor(props: VariableQueryEditorProps<DataSource, 
   }, []);
 
   return (
-    <InlineField label="Thing ID">
-      <Select
-        options={options}
-        value={query.queryType || ''}
-        onChange={(v) => onChange({ ...query, queryType: v.value })}
-        placeholder="Select thing ID"
-      />
-    </InlineField>
+    <>
+      <InlineField label="Thing ID" labelWidth={20} tooltip="Not used yet">
+        <Select
+          id="query-editor-thing-id"
+          options={ids}
+          onChange={(option) => onThingIDChange(option.value)}
+          value={thingID || ''}
+          placeholder="Enter a query"
+        />
+      </InlineField>
+    </>
   );
 }

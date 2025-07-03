@@ -9,6 +9,7 @@ import {
 import { FetchResponse, getBackendSrv, isFetchError } from '@grafana/runtime';
 import { BasicDataSourceOptions, DataSourceResponse, MyQuery } from './types';
 import { firstValueFrom, lastValueFrom } from 'rxjs';
+import { MyVariableSupport } from './VariableSupport';
 
 export class DataSource extends DataSourceApi<MyQuery, BasicDataSourceOptions> {
   baseUrl: string;
@@ -26,6 +27,8 @@ export class DataSource extends DataSourceApi<MyQuery, BasicDataSourceOptions> {
     this.baseUrl = url;
     this.url = instanceSettings.url!;
     this.path = path;
+  
+    this.variables = new MyVariableSupport(this);
   }
   
   getUrl() {
