@@ -6,7 +6,7 @@ import {
   DataSourceInstanceSettings,
   FieldType,
 } from '@grafana/data';
-import { FetchResponse, getBackendSrv, isFetchError } from '@grafana/runtime';
+import { FetchResponse, getBackendSrv, isFetchError, getTemplateSrv } from '@grafana/runtime';
 import { BasicDataSourceOptions, DataSourceResponse, MyQuery } from './types';
 import { firstValueFrom, lastValueFrom } from 'rxjs';
 import { MyVariableSupport } from './VariableSupport';
@@ -55,8 +55,13 @@ export class DataSource extends DataSourceApi<MyQuery, BasicDataSourceOptions> {
     const data = await Promise.all(
       options.targets.map(async target => {
         // Fetch the latest data
+
+        const rawThingID = target.thingID ?? '${ThingID}';
+
+        const resolvedThingID = getTemplateSrv().replace(rawThingID, options.scopedVars);
+
         const response = await firstValueFrom(getBackendSrv().fetch({
-          url: this.url + this.routePath + `/${this.path}/things/${target.thingID}/features/${target.queryText}`,
+          url: this.url + this.routePath + `/${this.path}/things/${resolvedThingID}/features/${target.queryText}`,
           method: 'GET',
         })) as FetchResponse<number>;
 
