@@ -4,6 +4,7 @@
   "name": "eclipse-ditto-datasource",
   "id": "eclipse-ditto-datasource",
   "metrics": true,
+  "alerting": true,
   "info": {
     "description": "",
     "author": {

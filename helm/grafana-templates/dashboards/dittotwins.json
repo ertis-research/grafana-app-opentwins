@@ -29,7 +29,7 @@
           "uid": "$DITTO_DATASOURCE_UID"
         },
         "gridPos": {
-          "h": 13,
+          "h": 12,
           "w": 6,
           "x": 0,
           "y": 0
@@ -110,7 +110,7 @@
         },
         "gridPos": {
           "h": 6,
-          "w": 6,
+          "w": 5,
           "x": 6,
           "y": 0
         },
@@ -132,8 +132,7 @@
         "targets": [
           {
             "queryText": "ModemStatus/properties/modemStatus/lte/rsrq",
-            "refId": "GetLTE_RSRQ",
-            "thingID": "org.acme:my-device-2"
+            "refId": "GetLTE_RSRQ"
           }
         ],
         "title": "LTE RSRQ (dB)",
@@ -169,8 +168,8 @@
         },
         "gridPos": {
           "h": 4,
-          "w": 3,
-          "x": 12,
+          "w": 4,
+          "x": 11,
           "y": 0
         },
         "id": 7,
@@ -195,8 +194,7 @@
         "targets": [
           {
             "queryText": "ModemStatus/properties/modemStatus/mcc",
-            "refId": "mcc",
-            "thingID": "org.acme:my-device-2"
+            "refId": "mcc"
           }
         ],
         "title": "MCC",
@@ -232,7 +230,7 @@
         },
         "gridPos": {
           "h": 4,
-          "w": 3,
+          "w": 4,
           "x": 15,
           "y": 0
         },
@@ -258,8 +256,7 @@
         "targets": [
           {
             "queryText": "ModemStatus/properties/modemStatus/mnc",
-            "refId": "MNC",
-            "thingID": "org.acme:my-device-2"
+            "refId": "MNC"
           }
         ],
         "title": "MNC",
@@ -327,8 +324,8 @@
         },
         "gridPos": {
           "h": 7,
-          "w": 6,
-          "x": 18,
+          "w": 5,
+          "x": 19,
           "y": 0
         },
         "id": 11,
@@ -349,8 +346,7 @@
         "targets": [
           {
             "queryText": "ModemStatus/properties/modemStatus/nr/snr",
-            "refId": "5G_SNR",
-            "thingID": "org.acme:my-device-2"
+            "refId": "5G_SNR"
           }
         ],
         "title": "5G SNR (dB)",
@@ -386,8 +382,8 @@
         },
         "gridPos": {
           "h": 4,
-          "w": 3,
-          "x": 12,
+          "w": 4,
+          "x": 11,
           "y": 4
         },
         "id": 9,
@@ -412,8 +408,7 @@
         "targets": [
           {
             "queryText": "ModemStatus/properties/modemStatus/lte/pci",
-            "refId": "LTE_PCI",
-            "thingID": "org.acme:my-device-2"
+            "refId": "LTE_PCI"
           }
         ],
         "title": "LTE PCI",
@@ -449,7 +444,7 @@
         },
         "gridPos": {
           "h": 4,
-          "w": 3,
+          "w": 4,
           "x": 15,
           "y": 4
         },
@@ -475,8 +470,7 @@
         "targets": [
           {
             "queryText": "ModemStatus/properties/modemStatus/nr/pci",
-            "refId": "NR_PCI",
-            "thingID": "org.acme:my-device-2"
+            "refId": "NR_PCI"
           }
         ],
         "title": "5G PCI",
@@ -544,7 +538,7 @@
         },
         "gridPos": {
           "h": 5,
-          "w": 6,
+          "w": 5,
           "x": 6,
           "y": 6
         },
@@ -566,8 +560,7 @@
         "targets": [
           {
             "queryText": "ModemStatus/properties/modemStatus/lte/snr",
-            "refId": "GetLTE_SNR",
-            "thingID": "org.acme:my-device-2"
+            "refId": "GetLTE_SNR"
           }
         ],
         "title": "LTE SNR (dB)",
@@ -635,8 +628,8 @@
         },
         "gridPos": {
           "h": 7,
-          "w": 6,
-          "x": 18,
+          "w": 5,
+          "x": 19,
           "y": 7
         },
         "id": 12,
@@ -657,8 +650,7 @@
         "targets": [
           {
             "queryText": "ModemStatus/properties/modemStatus/nr/rsrq",
-            "refId": "5G_RSRQ",
-            "thingID": "org.acme:my-device-2"
+            "refId": "5G_RSRQ"
           }
         ],
         "title": "5G RSRQ (dB)",
@@ -725,9 +717,9 @@
           "overrides": []
         },
         "gridPos": {
-          "h": 7,
-          "w": 6,
-          "x": 12,
+          "h": 6,
+          "w": 8,
+          "x": 11,
           "y": 8
         },
         "id": 15,
@@ -748,8 +740,7 @@
         "targets": [
           {
             "queryText": "MessageDelay/properties/delay",
-            "refId": "e2eLatency",
-            "thingID": "org.acme:my-device-2"
+            "refId": "e2eLatency"
           }
         ],
         "title": "E2E Latency (ms)",
@@ -817,7 +808,7 @@
         },
         "gridPos": {
           "h": 5,
-          "w": 6,
+          "w": 5,
           "x": 6,
           "y": 11
         },
@@ -839,8 +830,7 @@
         "targets": [
           {
             "queryText": "ModemStatus/properties/modemStatus/lte/rsrp",
-            "refId": "LTE_RSRP",
-            "thingID": "org.acme:my-device-2"
+            "refId": "LTE_RSRP"
           }
         ],
         "title": "LTE RSRP (dBm)",
@@ -908,8 +898,8 @@
         },
         "gridPos": {
           "h": 7,
-          "w": 6,
-          "x": 18,
+          "w": 5,
+          "x": 19,
           "y": 14
         },
         "id": 13,
@@ -930,8 +920,7 @@
         "targets": [
           {
             "queryText": "ModemStatus/properties/modemStatus/nr/rsrp",
-            "refId": "5G_RSRP",
-            "thingID": "org.acme:my-device-2"
+            "refId": "5G_RSRP"
           }
         ],
         "title": "5G RSRP (dBm)",
@@ -969,7 +958,7 @@
           "h": 5,
           "w": 3,
           "x": 0,
-          "y": 13
+          "y": 12
         },
         "id": 18,
         "options": {
@@ -993,8 +982,7 @@
         "targets": [
           {
             "queryText": "ModemStatus/properties/modemStatus/ratMode",
-            "refId": "RAT",
-            "thingID": "org.acme:my-device-2"
+            "refId": "RAT"
           }
         ],
         "title": "RAT",
@@ -1032,7 +1020,7 @@
           "h": 5,
           "w": 3,
           "x": 3,
-          "y": 13
+          "y": 12
         },
         "id": 17,
         "options": {
@@ -1060,8 +1048,7 @@
               "uid": "$DITTO_DATASOURCE_UID"
             },
             "queryText": "Dynamics/properties/highFrequencyContainer/speed/speedValue",
-            "refId": "getSpeed",
-            "thingID": "org.acme:my-device-2"
+            "refId": "getSpeed"
           }
         ],
         "title": "vOBU Speed (km/h)",
@@ -1161,10 +1148,10 @@
           "overrides": []
         },
         "gridPos": {
-          "h": 6,
-          "w": 6,
-          "x": 12,
-          "y": 15
+          "h": 7,
+          "w": 4,
+          "x": 11,
+          "y": 14
         },
         "id": 16,
         "options": {
@@ -1184,11 +1171,99 @@
         "targets": [
           {
             "queryText": "NetworkThroughput/properties/rx_bytes",
-            "refId": "tt_rx_bytes",
-            "thingID": "org.acme:my-device-2"
+            "refId": "tt_rx_bytes"
           }
         ],
         "title": "Throughput RX (b/s)",
+        "type": "timeseries"
+      },
+      {
+        "datasource": {
+          "type": "eclipse-ditto-datasource",
+          "uid": "$DITTO_DATASOURCE_UID"
+        },
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "palette-classic"
+            },
+            "custom": {
+              "axisBorderShow": false,
+              "axisCenteredZero": false,
+              "axisColorMode": "text",
+              "axisLabel": "",
+              "axisPlacement": "auto",
+              "barAlignment": 0,
+              "barWidthFactor": 0.6,
+              "drawStyle": "line",
+              "fillOpacity": 0,
+              "gradientMode": "none",
+              "hideFrom": {
+                "legend": false,
+                "tooltip": false,
+                "viz": false
+              },
+              "insertNulls": false,
+              "lineInterpolation": "linear",
+              "lineWidth": 1,
+              "pointSize": 5,
+              "scaleDistribution": {
+                "type": "linear"
+              },
+              "showPoints": "auto",
+              "spanNulls": false,
+              "stacking": {
+                "group": "A",
+                "mode": "none"
+              },
+              "thresholdsStyle": {
+                "mode": "off"
+              }
+            },
+            "mappings": [],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green"
+                },
+                {
+                  "color": "red",
+                  "value": 80
+                }
+              ]
+            }
+          },
+          "overrides": []
+        },
+        "gridPos": {
+          "h": 7,
+          "w": 4,
+          "x": 15,
+          "y": 14
+        },
+        "id": 20,
+        "options": {
+          "legend": {
+            "calcs": [],
+            "displayMode": "list",
+            "placement": "bottom",
+            "showLegend": true
+          },
+          "tooltip": {
+            "hideZeros": false,
+            "mode": "single",
+            "sort": "none"
+          }
+        },
+        "pluginVersion": "11.6.0",
+        "targets": [
+          {
+            "queryText": "NetworkThroughput/properties/tx_bytes",
+            "refId": "tt_tx_bytes"
+          }
+        ],
+        "title": "Throughput TX (b/s)",
         "type": "timeseries"
       },
       {
@@ -1253,7 +1328,7 @@
         },
         "gridPos": {
           "h": 5,
-          "w": 6,
+          "w": 5,
           "x": 6,
           "y": 16
         },
@@ -1275,8 +1350,7 @@
         "targets": [
           {
             "queryText": "ModemStatus/properties/modemStatus/lte/rssi",
-            "refId": "getLTE_RSSI",
-            "thingID": "org.acme:my-device-2"
+            "refId": "getLTE_RSSI"
           }
         ],
         "title": "LTE RSSI (dBm)",
@@ -1287,7 +1361,36 @@
     "schemaVersion": 39,
     "tags": [],
     "templating": {
-      "list": []
+      "list": [
+        {
+          "name": "ThingID",
+          "type": "query",
+          "datasource": {
+            "type": "eclipse-ditto-datasource",
+            "uid": "$DITTO_DATASOURCE_UID"
+          },
+          "definition": "things",            
+          "query": "things",
+          "refresh": 1,
+          "hide": 0,
+          "current": {
+            "selected": true,
+            "text": "org.acme:my-device-2",
+            "value": "org.acme:my-device-2"
+          },
+          "options": [
+            {
+              "text": "org.acme:my-device-2",
+              "value": "org.acme:my-device-2",
+              "selected": true
+            }
+          ],
+          "includeAll": false,
+          "multi": false,
+          "label": "Thing ID",
+          "skipUrlSync": false
+        }
+      ]
     },
     "time": {
       "from": "now-5m",
