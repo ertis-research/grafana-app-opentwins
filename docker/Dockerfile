@@ -1,3 +1,14 @@
+FROM golang:1.24.5 as go-build
+
+# Install packages
+RUN go install github.com/magefile/mage@v1.15.0
+
+COPY ./ /var/lib/grafana/plugins/grafana-app-opentwins
+
+WORKDIR /var/lib/grafana/plugins/grafana-app-opentwins
+
+RUN mage -v build:backend
+
 FROM grafana/grafana:11.6.0-ubuntu
 
 USER 0
@@ -12,7 +23,8 @@ RUN apt update && apt install -y --no-install-recommends \
 COPY grafana.ini /etc/grafana/grafana.ini
 
 RUN mkdir -p /var/lib/grafana/plugins/grafana-app-opentwins
-COPY ./ /var/lib/grafana/plugins/grafana-app-opentwins  
+COPY ./ /var/lib/grafana/plugins/grafana-app-opentwins
+COPY --from=go-build /var/lib/grafana/plugins/grafana-app-opentwins/dist /var/lib/grafana/plugins/grafana-app-opentwins/dist
 RUN cd /var/lib/grafana/plugins/grafana-app-opentwins/src/ && yarn install
 
 RUN mkdir -p /home/grafana_user
