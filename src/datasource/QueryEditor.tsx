@@ -10,8 +10,12 @@ import { firstValueFrom } from 'rxjs';
 type Props = QueryEditorProps<DataSource, MyQuery, MyDataSourceOptions>;
 
 export function QueryEditor({ query, onChange, onRunQuery, datasource }: Props) {
-  const { queryText, thingID } = query;
-  const [ids, setIds] = useState<Array<ComboboxOption>>([]);
+  const { queryType, queryText, thingID } = query;
+  const [ids, setIds] = useState<ComboboxOption[]>([]);
+
+  const onQueryTypeChange = (value: string) => {
+    onChange({ ...query, queryType: value });
+  };
 
   const onQueryTextChange = (event: ChangeEvent<HTMLInputElement>) => {
     onChange({ ...query, queryText: event.target.value });
@@ -51,6 +55,18 @@ export function QueryEditor({ query, onChange, onRunQuery, datasource }: Props) 
 
   return (
     <>
+      <InlineField label="Query Type" labelWidth={20} tooltip="Not used yet">
+        <Combobox
+          id="query-editor-type"
+          options={[
+            { label: 'Features', value: '' },
+            { label: 'Messages', value: 'messages' },
+          ]}
+          onChange={(option) => onQueryTypeChange(option.value)}
+          value={queryType || ''}
+          placeholder="Enter a query"
+        />
+      </InlineField>
       <InlineField label="Thing ID" labelWidth={20} tooltip="Not used yet">
         <Combobox
           id="query-editor-thing-id"
