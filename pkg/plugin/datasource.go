@@ -18,7 +18,6 @@ import (
 	"github.com/ATNoG/grafana-app-opentwins/pkg/models"
 	"github.com/gorilla/websocket"
 	"github.com/grafana/grafana-plugin-sdk-go/backend"
-	"github.com/grafana/grafana-plugin-sdk-go/backend/datasource"
 	"github.com/grafana/grafana-plugin-sdk-go/backend/httpclient"
 	"github.com/grafana/grafana-plugin-sdk-go/backend/instancemgmt"
 	"github.com/grafana/grafana-plugin-sdk-go/backend/log"
@@ -38,9 +37,8 @@ var (
 
 // Datasource for eclipse ditto.
 type Datasource struct {
-	settings     *models.PluginSettings
-	httpClient   *http.Client
-	queryHandler *datasource.QueryTypeMux
+	settings   *models.PluginSettings
+	httpClient *http.Client
 
 	wsTaskStatus atomic.Int32 // 0 - Not started, 1 - Started, 2 - Terminating
 
@@ -98,13 +96,9 @@ func NewDatasource(ctx context.Context, rawSettings backend.DataSourceInstanceSe
 	ds := &Datasource{
 		settings:     settings,
 		httpClient:   httpClient,
-		queryHandler: datasource.NewQueryTypeMux(),
 		wsTaskStatus: atomic.Int32{},
 		messages:     make(map[string]map[string]json.RawMessage),
 	}
-
-	ds.queryHandler.HandleFunc("messages", ds.QueryDataMessages)
-	ds.queryHandler.HandleFunc("", ds.QueryDataFeatures)
 
 	ds.ensureWSTask()
 
@@ -240,28 +234,23 @@ func (d *Datasource) ensureWSTask() {
 // The QueryDataResponse contains a map of RefID to the response for each query, and each response
 // contains Frames ([]*Frame).
 func (d *Datasource) QueryData(ctx context.Context, req *backend.QueryDataRequest) (*backend.QueryDataResponse, error) {
-	return d.queryHandler.QueryData(ctx, req)
-}
-
-func (d *Datasource) QueryDataMessages(ctx context.Context, req *backend.QueryDataRequest) (*backend.QueryDataResponse, error) {
 	d.ensureWSTask()
 
 	response := backend.NewQueryDataResponse()
 
 	for _, q := range req.Queries {
-		res := d.queryMessages(ctx, req.PluginContext, q)
+		var res backend.DataResponse
+		var qm queryModel
 
-		response.Responses[q.RefID] = res
-	}
-
-	return response, nil
-}
-
-func (d *Datasource) QueryDataFeatures(ctx context.Context, req *backend.QueryDataRequest) (*backend.QueryDataResponse, error) {
-	response := backend.NewQueryDataResponse()
-
-	for _, q := range req.Queries {
-		res := d.queryFeatures(ctx, req.PluginContext, q)
+		// Unmarshal the JSON into our queryModel.
+		err := json.Unmarshal(q.JSON, &qm)
+		if err != nil {
+			res = backend.ErrDataResponse(backend.StatusBadRequest, fmt.Sprintf("json unmarshal: %v", err.Error()))
+		} else if qm.QueryType == "messages" {
+			res = d.queryMessages(ctx, req.PluginContext, q, qm)
+		} else {
+			res = d.queryFeatures(ctx, req.PluginContext, q, qm)
+		}
 
 		response.Responses[q.RefID] = res
 	}
@@ -272,18 +261,11 @@ func (d *Datasource) QueryDataFeatures(ctx context.Context, req *backend.QueryDa
 type queryModel struct {
 	ThingID   string `json:"thingID"`
 	QueryText string `json:"queryText"`
+	QueryType string `json:"queryType"`
 }
 
-func (d *Datasource) queryMessages(_ context.Context, _ backend.PluginContext, query backend.DataQuery) backend.DataResponse {
+func (d *Datasource) queryMessages(_ context.Context, _ backend.PluginContext, query backend.DataQuery, qm queryModel) backend.DataResponse {
 	var response backend.DataResponse
-
-	// Unmarshal the JSON into our queryModel.
-	var qm queryModel
-
-	err := json.Unmarshal(query.JSON, &qm)
-	if err != nil {
-		return backend.ErrDataResponse(backend.StatusBadRequest, fmt.Sprintf("json unmarshal: %v", err.Error()))
-	}
 
 	d.messagesLock.RLock()
 	rawValue, found := d.messages[qm.ThingID][qm.QueryText]
@@ -302,6 +284,7 @@ func (d *Datasource) queryMessages(_ context.Context, _ backend.PluginContext, q
 	} else if bytes.Equal(rawValue, []byte("false")) {
 		value = 0
 	} else {
+		var err error
 		value, err = strconv.ParseFloat(string(rawValue), 64)
 		if err != nil {
 			return backend.ErrDataResponse(backend.StatusBadRequest, fmt.Sprintf("float conversion: %v", err.Error()))
@@ -320,16 +303,8 @@ func (d *Datasource) queryMessages(_ context.Context, _ backend.PluginContext, q
 	return response
 }
 
-func (d *Datasource) queryFeatures(ctx context.Context, _ backend.PluginContext, query backend.DataQuery) backend.DataResponse {
+func (d *Datasource) queryFeatures(ctx context.Context, _ backend.PluginContext, query backend.DataQuery, qm queryModel) backend.DataResponse {
 	var response backend.DataResponse
-
-	// Unmarshal the JSON into our queryModel.
-	var qm queryModel
-
-	err := json.Unmarshal(query.JSON, &qm)
-	if err != nil {
-		return backend.ErrDataResponse(backend.StatusBadRequest, fmt.Sprintf("json unmarshal: %v", err.Error()))
-	}
 
 	url, err := url.JoinPath(
 		d.settings.Url,

@@ -2,18 +2,29 @@ import React, { ChangeEvent, useEffect, useState } from 'react';
 import { InlineField, Input, Combobox, ComboboxOption } from '@grafana/ui';
 import { QueryEditorProps } from '@grafana/data';
 import { DataSource } from './DataSource';
-import { MyDataSourceOptions, MyQuery } from './types';
+import { MyDataSourceOptions, MyQuery, QueryType } from './types';
 import { emptyContext } from 'utils/context/staticContext';
 import { FetchResponse, getBackendSrv } from '@grafana/runtime';
 import { firstValueFrom } from 'rxjs';
 
 type Props = QueryEditorProps<DataSource, MyQuery, MyDataSourceOptions>;
 
-export function QueryEditor({ query, onChange, onRunQuery, datasource }: Props) {
+const comboboxQueryTypeOptions: Array<ComboboxOption<QueryType>> = [
+  { label: 'Features', value: QueryType.Features },
+  { label: 'Messages', value: QueryType.Messages },
+];
+
+export const defaultQuery: Partial<MyQuery> = {
+  queryType: QueryType.Features,
+};
+
+export function QueryEditor({ query, onChange, datasource }: Props) {
+  query = { ...defaultQuery, ...query };
+
   const { queryType, queryText, thingID } = query;
   const [ids, setIds] = useState<ComboboxOption[]>([]);
 
-  const onQueryTypeChange = (value: string) => {
+  const onQueryTypeChange = (value: QueryType) => {
     onChange({ ...query, queryType: value });
   };
 
@@ -58,12 +69,9 @@ export function QueryEditor({ query, onChange, onRunQuery, datasource }: Props) 
       <InlineField label="Query Type" labelWidth={20} tooltip="Not used yet">
         <Combobox
           id="query-editor-type"
-          options={[
-            { label: 'Features', value: '' },
-            { label: 'Messages', value: 'messages' },
-          ]}
+          options={comboboxQueryTypeOptions}
           onChange={(option) => onQueryTypeChange(option.value)}
-          value={queryType || ''}
+          value={queryType}
           placeholder="Enter a query"
         />
       </InlineField>
