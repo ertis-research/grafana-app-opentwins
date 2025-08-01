@@ -3,8 +3,10 @@
   "type": "datasource",
   "name": "eclipse-ditto-datasource",
   "id": "eclipse-ditto-datasource",
+  "backend": true,
   "metrics": true,
   "alerting": true,
+  "executable": "gpx_eclipse-ditto-datasource",
   "info": {
     "description": "",
     "author": {

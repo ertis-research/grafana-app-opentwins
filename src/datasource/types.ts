@@ -1,9 +1,15 @@
 import type { DataSourceJsonData, DataSourcePluginOptionsEditorProps } from '@grafana/data';
 import type { DataQuery } from '@grafana/schema';
 
+export enum QueryType {
+  Features = 'features',
+  Messages = 'messages',
+}
+
 export interface MyQuery extends DataQuery {
   queryText?: string;
   thingID?: string;
+  queryType: QueryType;
 }
 
 export interface DataPoint {
@@ -24,6 +30,7 @@ export interface MyDataSourceOptions extends DataSourceJsonData {
 export interface BasicDataSourceOptions extends DataSourceJsonData {
   url?: string;
   path?: string;
+  wsUrl?: string;
 }
 
 export interface BasicSecureJsonData {

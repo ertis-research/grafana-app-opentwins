@@ -6,9 +6,9 @@ import { useChangeSecureOptions } from './useChangeSecureOptions';
 import { useResetSecureOptions } from './useResetSecureOptions';
 
 export function ConfigEditor(props: EditorProps): ReactElement {
-
   const { jsonData, secureJsonData, secureJsonFields } = props.options;
   const onUrlFieldChange = useChangeOptions(props, 'url');
+  const onWsUrlFieldChange = useChangeOptions(props, 'wsUrl');
   const onPathFieldChange = useChangeOptions(props, 'path');
   const onApiAuthFieldChange = useChangeSecureOptions(props, 'apiAuth');
   const onResetApiAuth = useResetSecureOptions(props, 'apiAuth');
@@ -43,6 +43,15 @@ export function ConfigEditor(props: EditorProps): ReactElement {
           width={40}
           onReset={onResetApiAuth}
           onChange={onApiAuthFieldChange}
+        />
+      </InlineField>
+      <InlineField label="WebSocket Url" labelWidth={26} interactive tooltip={'WebSocket URL to use for messages'}>
+        <Input
+          id="config-ws-url"
+          onChange={onWsUrlFieldChange}
+          value={jsonData.wsUrl}
+          placeholder="Enter Eclipse IoT websocket URL"
+          width={40}
         />
       </InlineField>
     </>

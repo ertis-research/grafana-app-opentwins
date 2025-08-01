@@ -131,6 +131,7 @@
         "pluginVersion": "11.6.0+security-01",
         "targets": [
           {
+            "thingID": "${ThingID}",
             "queryText": "ModemStatus/properties/modemStatus/lte/rsrq",
             "refId": "GetLTE_RSRQ"
           }
@@ -180,9 +181,7 @@
           "orientation": "auto",
           "percentChangeColorMode": "standard",
           "reduceOptions": {
-            "calcs": [
-              "lastNotNull"
-            ],
+            "calcs": ["lastNotNull"],
             "fields": "",
             "values": false
           },
@@ -193,6 +192,7 @@
         "pluginVersion": "10.3.1",
         "targets": [
           {
+            "thingID": "${ThingID}",
             "queryText": "ModemStatus/properties/modemStatus/mcc",
             "refId": "mcc"
           }
@@ -242,9 +242,7 @@
           "orientation": "auto",
           "percentChangeColorMode": "standard",
           "reduceOptions": {
-            "calcs": [
-              "lastNotNull"
-            ],
+            "calcs": ["lastNotNull"],
             "fields": "",
             "values": false
           },
@@ -255,6 +253,7 @@
         "pluginVersion": "10.3.1",
         "targets": [
           {
+            "thingID": "${ThingID}",
             "queryText": "ModemStatus/properties/modemStatus/mnc",
             "refId": "MNC"
           }
@@ -345,6 +344,7 @@
         "pluginVersion": "11.6.0+security-01",
         "targets": [
           {
+            "thingID": "${ThingID}",
             "queryText": "ModemStatus/properties/modemStatus/nr/snr",
             "refId": "5G_SNR"
           }
@@ -394,9 +394,7 @@
           "orientation": "auto",
           "percentChangeColorMode": "standard",
           "reduceOptions": {
-            "calcs": [
-              "lastNotNull"
-            ],
+            "calcs": ["lastNotNull"],
             "fields": "",
             "values": false
           },
@@ -407,6 +405,7 @@
         "pluginVersion": "10.3.1",
         "targets": [
           {
+            "thingID": "${ThingID}",
             "queryText": "ModemStatus/properties/modemStatus/lte/pci",
             "refId": "LTE_PCI"
           }
@@ -456,9 +455,7 @@
           "orientation": "auto",
           "percentChangeColorMode": "standard",
           "reduceOptions": {
-            "calcs": [
-              "lastNotNull"
-            ],
+            "calcs": ["lastNotNull"],
             "fields": "",
             "values": false
           },
@@ -469,6 +466,7 @@
         "pluginVersion": "10.3.1",
         "targets": [
           {
+            "thingID": "${ThingID}",
             "queryText": "ModemStatus/properties/modemStatus/nr/pci",
             "refId": "NR_PCI"
           }
@@ -559,6 +557,7 @@
         "pluginVersion": "11.6.0+security-01",
         "targets": [
           {
+            "thingID": "${ThingID}",
             "queryText": "ModemStatus/properties/modemStatus/lte/snr",
             "refId": "GetLTE_SNR"
           }
@@ -649,6 +648,7 @@
         "pluginVersion": "11.6.0+security-01",
         "targets": [
           {
+            "thingID": "${ThingID}",
             "queryText": "ModemStatus/properties/modemStatus/nr/rsrq",
             "refId": "5G_RSRQ"
           }
@@ -739,6 +739,7 @@
         "pluginVersion": "11.6.0+security-01",
         "targets": [
           {
+            "thingID": "${ThingID}",
             "queryText": "MessageDelay/properties/delay",
             "refId": "e2eLatency"
           }
@@ -829,6 +830,7 @@
         "pluginVersion": "11.6.0+security-01",
         "targets": [
           {
+            "thingID": "${ThingID}",
             "queryText": "ModemStatus/properties/modemStatus/lte/rsrp",
             "refId": "LTE_RSRP"
           }
@@ -919,6 +921,7 @@
         "pluginVersion": "11.6.0+security-01",
         "targets": [
           {
+            "thingID": "${ThingID}",
             "queryText": "ModemStatus/properties/modemStatus/nr/rsrp",
             "refId": "5G_RSRP"
           }
@@ -968,9 +971,7 @@
           "orientation": "auto",
           "percentChangeColorMode": "standard",
           "reduceOptions": {
-            "calcs": [
-              "lastNotNull"
-            ],
+            "calcs": ["lastNotNull"],
             "fields": "",
             "values": false
           },
@@ -981,6 +982,7 @@
         "pluginVersion": "10.3.1",
         "targets": [
           {
+            "thingID": "${ThingID}",
             "queryText": "ModemStatus/properties/modemStatus/ratMode",
             "refId": "RAT"
           }
@@ -1030,9 +1032,7 @@
           "orientation": "auto",
           "percentChangeColorMode": "standard",
           "reduceOptions": {
-            "calcs": [
-              "lastNotNull"
-            ],
+            "calcs": ["lastNotNull"],
             "fields": "",
             "values": false
           },
@@ -1047,6 +1047,7 @@
               "type": "eclipse-ditto-datasource",
               "uid": "$DITTO_DATASOURCE_UID"
             },
+            "thingID": "${ThingID}",
             "queryText": "Dynamics/properties/highFrequencyContainer/speed/speedValue",
             "refId": "getSpeed"
           }
@@ -1170,6 +1171,7 @@
         "pluginVersion": "11.6.0+security-01",
         "targets": [
           {
+            "thingID": "${ThingID}",
             "queryText": "NetworkThroughput/properties/rx_bytes",
             "refId": "tt_rx_bytes"
           }
@@ -1259,6 +1261,7 @@
         "pluginVersion": "11.6.0",
         "targets": [
           {
+            "thingID": "${ThingID}",
             "queryText": "NetworkThroughput/properties/tx_bytes",
             "refId": "tt_tx_bytes"
           }
@@ -1349,6 +1352,7 @@
         "pluginVersion": "11.6.0+security-01",
         "targets": [
           {
+            "thingID": "${ThingID}",
             "queryText": "ModemStatus/properties/modemStatus/lte/rssi",
             "refId": "getLTE_RSSI"
           }
@@ -1369,7 +1373,7 @@
             "type": "eclipse-ditto-datasource",
             "uid": "$DITTO_DATASOURCE_UID"
           },
-          "definition": "things",            
+          "definition": "things",
           "query": "things",
           "refresh": 1,
           "hide": 0,

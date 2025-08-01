@@ -15,14 +15,14 @@ export class DataSource extends DataSourceApi<MyQuery, BasicDataSourceOptions> {
   baseUrl: string;
   path: string;
   url: string;
-  routePath = "/ditto";
+  routePath = '/ditto';
 
   private cache: Record<string, Array<{ timestamp: number; value: number }>> = {};
 
   private alertState = {
     value: 0,
     timestamp: 0,
-  }
+  };
 
   constructor(instanceSettings: DataSourceInstanceSettings<BasicDataSourceOptions>) {
     super(instanceSettings);
@@ -32,12 +32,12 @@ export class DataSource extends DataSourceApi<MyQuery, BasicDataSourceOptions> {
     this.baseUrl = url;
     this.url = instanceSettings.url!;
     this.path = path;
-  
+
     this.variables = new MyVariableSupport(this);
 
     this.connectToDittoWebSocket();
   }
-  
+
   getUrl() {
     return this.url;
   }
@@ -59,30 +59,31 @@ export class DataSource extends DataSourceApi<MyQuery, BasicDataSourceOptions> {
   }
 
   async query(options: DataQueryRequest<MyQuery>): Promise<DataQueryResponse> {
-    const alertQuery = options.targets.find(t => t.queryText === 'alert_query');
+    const alertQuery = options.targets.find((t) => t.queryText === 'alert_query');
     if (alertQuery) {
       return Promise.resolve({
         data: [
           {
             target: 'reduce_speed_alert',
             datapoints: [[this.alertState.value, Date.now()]],
-          }
-        ]
+          },
+        ],
       });
     }
-    
+
     const data = await Promise.all(
-      options.targets.map(async target => {
+      options.targets.map(async (target) => {
         // Fetch the latest data
 
-        const rawThingID = target.thingID ?? '${ThingID}';
+        const resolvedThingID = getTemplateSrv().replace(target.thingID);
+        const resolvedQueryText = getTemplateSrv().replace(target.queryText);
 
-        const resolvedThingID = getTemplateSrv().replace(rawThingID, options.scopedVars);
-
-        const response = await firstValueFrom(getBackendSrv().fetch({
-          url: this.url + this.routePath + `/${this.path}/things/${resolvedThingID}/features/${target.queryText}`,
-          method: 'GET',
-        })) as FetchResponse<number>;
+        const response = (await firstValueFrom(
+          getBackendSrv().fetch({
+            url: this.url + this.routePath + `/${this.path}/things/${resolvedThingID}/features/${resolvedQueryText}`,
+            method: 'GET',
+          })
+        )) as FetchResponse<number>;
 
         // Extract the value from the API response
         const newValue = response.data; // Ensure the API returns a numeric value
@@ -96,7 +97,7 @@ export class DataSource extends DataSourceApi<MyQuery, BasicDataSourceOptions> {
         this.cache[refId].push({ timestamp, value: newValue });
 
         // 1) build an array of row‑objects
-        const rows = this.cache[refId].map(point => ({
+        const rows = this.cache[refId].map((point) => ({
           Time: point.timestamp,
           Value: point.value,
         }));
@@ -109,12 +110,12 @@ export class DataSource extends DataSourceApi<MyQuery, BasicDataSourceOptions> {
 
         // 4) override any field types that weren’t inferred correctly
         //    (here “Time” should be timestamp, “Value” numeric)
-        const timeField = frame.fields.find(f => f.name === 'Time');
+        const timeField = frame.fields.find((f) => f.name === 'Time');
         if (timeField) {
           timeField.type = FieldType.time;
         }
 
-        const valueField = frame.fields.find(f => f.name === 'Value');
+        const valueField = frame.fields.find((f) => f.name === 'Value');
         if (valueField) {
           valueField.type = FieldType.number;
         }
@@ -135,7 +136,7 @@ export class DataSource extends DataSourceApi<MyQuery, BasicDataSourceOptions> {
     try {
       const response = await lastValueFrom(
         getBackendSrv().fetch<DataSourceResponse>({
-          url: this.url + this.routePath + "/health",
+          url: this.url + this.routePath + '/health',
           method: 'GET',
         })
       );
@@ -202,5 +203,4 @@ export class DataSource extends DataSourceApi<MyQuery, BasicDataSourceOptions> {
       setTimeout(() => this.connectToDittoWebSocket(), 5000);
     };
   }
-
 }

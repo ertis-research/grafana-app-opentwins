@@ -28,7 +28,7 @@
       "type": "datasource",
       "name": "My Data Source",
       "id": "eclipse-ditto-datasource",
-      "path": "nested-datasource"
+      "path": "datasource"
     },
     {
       "type": "page",
@@ -61,7 +61,7 @@
       "path": "/plugins/ertis-opentwins/?page=config",
       "role": "Admin",
       "addToNav": true,
-      "icon" : "sliders-v-alt"
+      "icon": "sliders-v-alt"
     },
     {
       "type": "dashboard",
