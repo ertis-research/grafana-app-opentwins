@@ -24,15 +24,108 @@
     "liveNow": false,
     "panels": [
       {
+        "fieldConfig": {
+          "defaults": {},
+          "overrides": []
+        },
+        "gridPos": {
+          "h": 4,
+          "w": 6,
+          "x": 0,
+          "y": 0
+        },
+        "id": 22,
+        "options": {
+          "alertInstanceLabelFilter": "",
+          "alertName": "",
+          "dashboardAlerts": false,
+          "groupBy": [],
+          "groupMode": "default",
+          "maxItems": 20,
+          "showInactiveAlerts": false,
+          "sortOrder": 1,
+          "stateFilter": {
+            "error": true,
+            "firing": true,
+            "noData": false,
+            "normal": false,
+            "pending": true,
+            "recovering": false
+          },
+          "viewMode": "list"
+        },
+        "pluginVersion": "12.2.0-pre",
+        "title": "Collision Alert",
+        "type": "alertlist"
+      },
+      {
+        "datasource": {
+          "type": "eclipse-ditto-datasource",
+          "uid": "$DITTO_DATASOURCE_UID"
+        },
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "thresholds"
+            },
+            "mappings": [],
+            "noValue": "N/A",
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "red"
+                }
+              ]
+            },
+            "unit": "velocitykmh"
+          },
+          "overrides": []
+        },
+        "gridPos": {
+          "h": 4,
+          "w": 4,
+          "x": 2,
+          "y": 17
+        },
+        "id": 21,
+        "options": {
+          "colorMode": "value",
+          "graphMode": "area",
+          "justifyMode": "auto",
+          "orientation": "auto",
+          "percentChangeColorMode": "standard",
+          "reduceOptions": {
+            "calcs": [
+              "lastNotNull"
+            ],
+            "fields": "",
+            "values": false
+          },
+          "showPercentChange": false,
+          "textMode": "auto",
+          "wideLayout": true
+        },
+        "pluginVersion": "11.6.0",
+        "targets": [
+          {
+            "queryText": "advisedSpeed",
+            "refId": "speedavisedalert"
+          }
+        ],
+        "title": "Advised Speed",
+        "type": "stat"
+      },
+      {
         "datasource": {
           "type": "eclipse-ditto-datasource",
           "uid": "$DITTO_DATASOURCE_UID"
         },
         "gridPos": {
-          "h": 12,
+          "h": 13,
           "w": 6,
           "x": 0,
-          "y": 0
+          "y": 4
         },
         "id": 19,
         "options": {
@@ -131,7 +224,6 @@
         "pluginVersion": "11.6.0+security-01",
         "targets": [
           {
-            "thingID": "${ThingID}",
             "queryText": "ModemStatus/properties/modemStatus/lte/rsrq",
             "refId": "GetLTE_RSRQ"
           }
@@ -181,7 +273,9 @@
           "orientation": "auto",
           "percentChangeColorMode": "standard",
           "reduceOptions": {
-            "calcs": ["lastNotNull"],
+            "calcs": [
+              "lastNotNull"
+            ],
             "fields": "",
             "values": false
           },
@@ -192,7 +286,6 @@
         "pluginVersion": "10.3.1",
         "targets": [
           {
-            "thingID": "${ThingID}",
             "queryText": "ModemStatus/properties/modemStatus/mcc",
             "refId": "mcc"
           }
@@ -242,7 +335,9 @@
           "orientation": "auto",
           "percentChangeColorMode": "standard",
           "reduceOptions": {
-            "calcs": ["lastNotNull"],
+            "calcs": [
+              "lastNotNull"
+            ],
             "fields": "",
             "values": false
           },
@@ -253,7 +348,6 @@
         "pluginVersion": "10.3.1",
         "targets": [
           {
-            "thingID": "${ThingID}",
             "queryText": "ModemStatus/properties/modemStatus/mnc",
             "refId": "MNC"
           }
@@ -344,7 +438,6 @@
         "pluginVersion": "11.6.0+security-01",
         "targets": [
           {
-            "thingID": "${ThingID}",
             "queryText": "ModemStatus/properties/modemStatus/nr/snr",
             "refId": "5G_SNR"
           }
@@ -394,7 +487,9 @@
           "orientation": "auto",
           "percentChangeColorMode": "standard",
           "reduceOptions": {
-            "calcs": ["lastNotNull"],
+            "calcs": [
+              "lastNotNull"
+            ],
             "fields": "",
             "values": false
           },
@@ -405,7 +500,6 @@
         "pluginVersion": "10.3.1",
         "targets": [
           {
-            "thingID": "${ThingID}",
             "queryText": "ModemStatus/properties/modemStatus/lte/pci",
             "refId": "LTE_PCI"
           }
@@ -455,7 +549,9 @@
           "orientation": "auto",
           "percentChangeColorMode": "standard",
           "reduceOptions": {
-            "calcs": ["lastNotNull"],
+            "calcs": [
+              "lastNotNull"
+            ],
             "fields": "",
             "values": false
           },
@@ -466,7 +562,6 @@
         "pluginVersion": "10.3.1",
         "targets": [
           {
-            "thingID": "${ThingID}",
             "queryText": "ModemStatus/properties/modemStatus/nr/pci",
             "refId": "NR_PCI"
           }
@@ -557,7 +652,6 @@
         "pluginVersion": "11.6.0+security-01",
         "targets": [
           {
-            "thingID": "${ThingID}",
             "queryText": "ModemStatus/properties/modemStatus/lte/snr",
             "refId": "GetLTE_SNR"
           }
@@ -648,7 +742,6 @@
         "pluginVersion": "11.6.0+security-01",
         "targets": [
           {
-            "thingID": "${ThingID}",
             "queryText": "ModemStatus/properties/modemStatus/nr/rsrq",
             "refId": "5G_RSRQ"
           }
@@ -739,7 +832,6 @@
         "pluginVersion": "11.6.0+security-01",
         "targets": [
           {
-            "thingID": "${ThingID}",
             "queryText": "MessageDelay/properties/delay",
             "refId": "e2eLatency"
           }
@@ -830,7 +922,6 @@
         "pluginVersion": "11.6.0+security-01",
         "targets": [
           {
-            "thingID": "${ThingID}",
             "queryText": "ModemStatus/properties/modemStatus/lte/rsrp",
             "refId": "LTE_RSRP"
           }
@@ -921,7 +1012,6 @@
         "pluginVersion": "11.6.0+security-01",
         "targets": [
           {
-            "thingID": "${ThingID}",
             "queryText": "ModemStatus/properties/modemStatus/nr/rsrp",
             "refId": "5G_RSRP"
           }
@@ -958,10 +1048,10 @@
           "overrides": []
         },
         "gridPos": {
-          "h": 5,
-          "w": 3,
+          "h": 4,
+          "w": 2,
           "x": 0,
-          "y": 12
+          "y": 17
         },
         "id": 18,
         "options": {
@@ -971,7 +1061,9 @@
           "orientation": "auto",
           "percentChangeColorMode": "standard",
           "reduceOptions": {
-            "calcs": ["lastNotNull"],
+            "calcs": [
+              "lastNotNull"
+            ],
             "fields": "",
             "values": false
           },
@@ -982,110 +1074,11 @@
         "pluginVersion": "10.3.1",
         "targets": [
           {
-            "thingID": "${ThingID}",
             "queryText": "ModemStatus/properties/modemStatus/ratMode",
             "refId": "RAT"
           }
         ],
         "title": "RAT",
-        "type": "stat"
-      },
-      {
-        "datasource": {
-          "type": "eclipse-ditto-datasource",
-          "uid": "$DITTO_DATASOURCE_UID"
-        },
-        "fieldConfig": {
-          "defaults": {
-            "color": {
-              "mode": "thresholds"
-            },
-            "mappings": [],
-            "thresholds": {
-              "mode": "absolute",
-              "steps": [
-                {
-                  "color": "green",
-                  "value": null
-                },
-                {
-                  "color": "red",
-                  "value": 120
-                }
-              ]
-            },
-            "unitScale": true
-          },
-          "overrides": []
-        },
-        "gridPos": {
-          "h": 5,
-          "w": 3,
-          "x": 3,
-          "y": 12
-        },
-        "id": 17,
-        "options": {
-          "colorMode": "value",
-          "graphMode": "area",
-          "justifyMode": "auto",
-          "orientation": "auto",
-          "percentChangeColorMode": "standard",
-          "reduceOptions": {
-            "calcs": ["lastNotNull"],
-            "fields": "",
-            "values": false
-          },
-          "showPercentChange": false,
-          "textMode": "auto",
-          "wideLayout": true
-        },
-        "pluginVersion": "10.3.1",
-        "targets": [
-          {
-            "datasource": {
-              "type": "eclipse-ditto-datasource",
-              "uid": "$DITTO_DATASOURCE_UID"
-            },
-            "thingID": "${ThingID}",
-            "queryText": "Dynamics/properties/highFrequencyContainer/speed/speedValue",
-            "refId": "getSpeed"
-          }
-        ],
-        "title": "vOBU Speed (km/h)",
-        "transformations": [
-          {
-            "id": "organize",
-            "options": {
-              "excludeByName": {
-                "Time": false,
-                "Value": false
-              },
-              "includeByName": {},
-              "indexByName": {},
-              "renameByName": {
-                "Time": "",
-                "Value": "speed_cms"
-              }
-            }
-          },
-          {
-            "id": "calculateField",
-            "options": {
-              "alias": "speed_kmh",
-              "binary": {
-                "left": "speed_cms",
-                "operator": "*",
-                "right": "0.036"
-              },
-              "mode": "binary",
-              "reduce": {
-                "reducer": "sum"
-              },
-              "replaceFields": true
-            }
-          }
-        ],
         "type": "stat"
       },
       {
@@ -1171,7 +1164,6 @@
         "pluginVersion": "11.6.0+security-01",
         "targets": [
           {
-            "thingID": "${ThingID}",
             "queryText": "NetworkThroughput/properties/rx_bytes",
             "refId": "tt_rx_bytes"
           }
@@ -1261,7 +1253,6 @@
         "pluginVersion": "11.6.0",
         "targets": [
           {
-            "thingID": "${ThingID}",
             "queryText": "NetworkThroughput/properties/tx_bytes",
             "refId": "tt_tx_bytes"
           }
@@ -1352,7 +1343,6 @@
         "pluginVersion": "11.6.0+security-01",
         "targets": [
           {
-            "thingID": "${ThingID}",
             "queryText": "ModemStatus/properties/modemStatus/lte/rssi",
             "refId": "getLTE_RSSI"
           }
@@ -1361,7 +1351,10 @@
         "type": "timeseries"
       }
     ],
-    "refresh": "5s",
+    "timepicker": {
+      "refresh_intervals": ["1s", "5s", "10s", "30s", "1m", "5m", "15m", "30m", "1h", "2h", "1d"]
+    },
+    "refresh": "1s",
     "schemaVersion": 39,
     "tags": [],
     "templating": {
@@ -1400,7 +1393,6 @@
       "from": "now-5m",
       "to": "now"
     },
-    "timepicker": {},
     "timezone": "browser",
     "title": "DittoTwins",
     "uid": "cemd3k5dnwc1se",
