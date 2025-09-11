@@ -1,10 +1,12 @@
 import {
+  MutableDataFrame,
   arrayToDataFrame,
   DataQueryRequest,
   DataQueryResponse,
   DataSourceApi,
   DataSourceInstanceSettings,
   FieldType,
+  ThresholdsMode,
 } from '@grafana/data';
 import { FetchResponse, getBackendSrv, isFetchError, getTemplateSrv } from '@grafana/runtime';
 import { BasicDataSourceOptions, DataSourceResponse, MyQuery } from './types';
@@ -20,9 +22,15 @@ export class DataSource extends DataSourceApi<MyQuery, BasicDataSourceOptions> {
   private cache: Record<string, Array<{ timestamp: number; value: number }>> = {};
 
   private alertState = {
-    value: 0,
+    value: null as number | null,
     timestamp: 0,
+    alertFlag: 0
   };
+
+  private collisionTimer: NodeJS.Timeout | null = null;
+  private connectionTimer: NodeJS.Timeout | null = null;
+
+  private collisionExpired = false;
 
   constructor(instanceSettings: DataSourceInstanceSettings<BasicDataSourceOptions>) {
     super(instanceSettings);
@@ -59,23 +67,47 @@ export class DataSource extends DataSourceApi<MyQuery, BasicDataSourceOptions> {
   }
 
   async query(options: DataQueryRequest<MyQuery>): Promise<DataQueryResponse> {
-    const alertQuery = options.targets.find((t) => t.queryText === 'alert_query');
-    if (alertQuery) {
-      return Promise.resolve({
-        data: [
-          {
-            target: 'reduce_speed_alert',
-            datapoints: [[this.alertState.value, Date.now()]],
-          },
-        ],
-      });
+    for (const target of options.targets) {
+      if (target.queryText === 'advisedSpeed') {
+        const frame = new MutableDataFrame({
+          refId: target.refId,
+          fields: [
+            { name: 'Time', type: FieldType.time, values: [this.alertState.timestamp] },
+            {
+              name: 'advisedSpeed',
+              type: FieldType.number,
+              values: [this.alertState.value],
+              config: {
+                thresholds: {
+                  mode: ThresholdsMode.Absolute,
+                  steps: [
+                    {
+                      color: 
+                        this.alertState.alertFlag === 2 
+                        ? 'red' 
+                        : this.alertState.alertFlag === 1 
+                        ? 'yellow' 
+                        : 'green',
+                      value: 0
+                    }
+                  ],
+                },
+              },
+            },
+          ],
+        });
+
+        return Promise.resolve({ data: [frame] });
+      }
     }
 
     const data = await Promise.all(
       options.targets.map(async (target) => {
         // Fetch the latest data
 
-        const resolvedThingID = getTemplateSrv().replace(target.thingID);
+        const rawThingID = target.thingID ?? '${ThingID}';
+        const resolvedThingID = getTemplateSrv().replace(rawThingID, options.scopedVars);
+        
         const resolvedQueryText = getTemplateSrv().replace(target.queryText);
 
         const response = (await firstValueFrom(
@@ -176,19 +208,44 @@ export class DataSource extends DataSourceApi<MyQuery, BasicDataSourceOptions> {
     ws.onmessage = (event) => {
       try {
         const message = JSON.parse(event.data);
-        const rawValue = message?.value;
-
-        if (typeof rawValue === 'string' && rawValue.toLowerCase().includes('reduce')) {
-          this.alertState.value = 1;
+        const stringValue = message?.value;
+        const value = typeof stringValue === 'string' ? JSON.parse(stringValue) : stringValue;
+        const collision = value?.collision;
+        const advisedSpeed = value?.advisedSpeed;     
+        
+        if (collision) { // If collision detected, set alert to yellow
+          this.alertState.alertFlag = 1; // yellow
+          this.alertState.value = advisedSpeed;
           this.alertState.timestamp = Date.now();
 
-          console.log('[Ditto WS] "Reduce speed" message received');
+          // Reset timer and flag
+          if (this.collisionTimer) { clearTimeout(this.collisionTimer); }
+          this.collisionExpired = false;
 
-          // Optional: auto-reset alert after 30 seconds
-          setTimeout(() => {
-            this.alertState.value = 0;
-          }, 30000);
+          // Start 5s timer ONLY once a collision is detected
+          this.collisionTimer = setTimeout(() => {
+            this.collisionExpired = true;
+            console.log('[Ditto WS] Collision alert expired');
+          }, 5000);
+
+        } else {
+          if (this.collisionExpired) { // If collision expired, reset to green when no collision
+            this.alertState.alertFlag = 0; 
+            this.alertState.value = advisedSpeed;
+            this.alertState.timestamp = Date.now();
+          }
         }
+
+        // connectionTimer to assert the connection is still alive (or not)
+        if (this.connectionTimer) { clearTimeout(this.connectionTimer); }
+
+        this.connectionTimer = setTimeout(() => {
+          this.alertState.alertFlag = 2; // red
+          this.alertState.value = null;
+          this.alertState.timestamp = Date.now();
+          console.warn('[Ditto WS] No message received in 3s — setting red alert');
+        }, 3000);    
+        
       } catch (err) {
         console.error('WebSocket message parse error:', err);
       }

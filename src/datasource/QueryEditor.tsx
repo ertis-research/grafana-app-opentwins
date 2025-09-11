@@ -72,7 +72,7 @@ export function QueryEditor({ query, onChange, datasource }: Props) {
           options={comboboxQueryTypeOptions}
           onChange={(option) => onQueryTypeChange(option.value)}
           value={queryType}
-          placeholder="Enter a query"
+          placeholder="Chose the query type"
         />
       </InlineField>
       <InlineField label="Thing ID" labelWidth={20} tooltip="Not used yet">
@@ -82,7 +82,7 @@ export function QueryEditor({ query, onChange, datasource }: Props) {
           options={ids}
           onChange={(option) => onThingIDChange(option.value)}
           value={thingID || ''}
-          placeholder="Enter a query"
+          placeholder="Chose the Thing ID"
         />
       </InlineField>
       <InlineField label="Property Path" labelWidth={20} tooltip="Not used yet">

@@ -7,18 +7,16 @@ cd /var/lib/grafana/plugins/grafana-app-opentwins/src/
 # yarn install
 yarn dev &
 
-until nc -z localhost 35729; do
-  echo "Waiting for plugin dev server (port 35729) to be ready..."
-  sleep 1
-done
-sleep 5
+# until nc -z localhost 35729; do
+#   echo "Waiting for plugin dev server (port 35729) to be ready..."
+#   sleep 1
+# done
+# sleep 5
 
 # Set environment variables for Grafana
 export GF_SECURITY_ALLOW_EMBEDDING="true"
 
-cd /usr/share/grafana/
-#/run.sh
-grafana-server --config=/etc/grafana/grafana.ini --homepath=/usr/share/grafana &
+/usr/share/grafana/bin/linux-amd64/grafana-server --config=/etc/grafana/grafana.ini --homepath=/usr/share/grafana &
     
 GRAFANA_PID=$!
 START_TIME=$(date +%s)
