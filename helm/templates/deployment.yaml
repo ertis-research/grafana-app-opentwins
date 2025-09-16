@@ -1,9 +1,10 @@
+{{ if .Values.enabled -}}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: grafana
 spec:
-  replicas: 1
+  replicas: {{ .Values.deployment.replicas }}
   selector:
     matchLabels:
       app: grafana
@@ -14,8 +15,8 @@ spec:
     spec:
       containers:
         - name: grafana
-          image: ghcr.io/atnog/grafana-app-opentwins/grafana-eclipse-ditto
-          imagePullPolicy: Always
+          image: "{{ .Values.deployment.image }}"
+          imagePullPolicy: "{{ .Values.deployment.imagePullPolicy }}"
           ports:
             - containerPort: 3000
           volumeMounts:
@@ -27,7 +28,7 @@ spec:
           #   - name: grafana-storage
           #     mountPath: /var/lib/grafana
           env:
-            {{- range $key, $value := .Values.env }}
+            {{- range $key, $value := .Values.deployment.env }}
             - name: {{ $key }}
               value: "{{ $value }}"
             {{- end }}
@@ -41,3 +42,4 @@ spec:
         - name: datasources
           configMap:
             name: grafana-datasources
+{{- end }}
