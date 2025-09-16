@@ -29,7 +29,7 @@ jobs:
       - uses: actions/checkout@v5
       # This will create the image grafana:dev-ubuntu ($ORIGIN_NAME)
       - name: Build image
-        run: docker build . --file Dockerfile --tag $IMAGE_NAME
+        run: docker build . --file docker/Dockerfile --tag $IMAGE_NAME
 
       - name: Log in to registry
         run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
