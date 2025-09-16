@@ -16,7 +16,7 @@ yarn dev &
 # Set environment variables for Grafana
 export GF_SECURITY_ALLOW_EMBEDDING="true"
 
-/usr/share/grafana/bin/linux-amd64/grafana-server --config=/etc/grafana/grafana.ini --homepath=/usr/share/grafana &
+/usr/share/grafana/bin/grafana-server --config=/etc/grafana/grafana.ini --homepath=/usr/share/grafana &
     
 GRAFANA_PID=$!
 START_TIME=$(date +%s)
