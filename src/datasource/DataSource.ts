@@ -17,6 +17,7 @@ export class DataSource extends DataSourceApi<MyQuery, BasicDataSourceOptions> {
   baseUrl: string;
   path: string;
   url: string;
+  wsUrl: string;
   routePath = '/ditto';
 
   private cache: Record<string, Array<{ timestamp: number; value: number }>> = {};
@@ -35,11 +36,12 @@ export class DataSource extends DataSourceApi<MyQuery, BasicDataSourceOptions> {
   constructor(instanceSettings: DataSourceInstanceSettings<BasicDataSourceOptions>) {
     super(instanceSettings);
 
-    const { url = '', path = '' } = instanceSettings.jsonData;
+    const { url = '', path = '', wsUrl = '' } = instanceSettings.jsonData;
 
     this.baseUrl = url;
     this.url = instanceSettings.url!;
     this.path = path;
+    this.wsUrl = wsUrl;
 
     this.variables = new MyVariableSupport(this);
 
@@ -198,7 +200,17 @@ export class DataSource extends DataSourceApi<MyQuery, BasicDataSourceOptions> {
   }
 
   private connectToDittoWebSocket(): void {
-    const ws = new WebSocket('ws://ditto:ditto@10.255.41.221:8080/ws/2'); // replace with your real address
+    //const ws = new WebSocket('ws://ditto:ditto@10.255.41.221:8080/ws/2'); // replace with your real address
+    if (!this.wsUrl) {
+      console.error('[Ditto WS] No WebSocket URL configured.');
+      return;
+    }
+
+    const wsUrl = new URL(this.wsUrl);
+    wsUrl.username = 'ditto';
+    wsUrl.password = 'ditto';
+
+    const ws = new WebSocket(wsUrl.toString());
 
     ws.onopen = () => {
       console.log('[Ditto WS] Connected');

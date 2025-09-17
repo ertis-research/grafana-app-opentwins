@@ -1,4 +1,4 @@
-FROM golang:1.24.5 as go-build
+FROM golang:1.24.5 AS go-build
 
 # Install packages
 RUN go install github.com/magefile/mage@v1.15.0
