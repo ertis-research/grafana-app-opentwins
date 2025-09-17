@@ -9,6 +9,7 @@
     },
     "jsonData": {
         "url": "$DITTO_URL",
-        "path": "api/2"
+        "path": "api/2",
+        "wsUrl": "$DITTO_WS_URL"
     }
 }
