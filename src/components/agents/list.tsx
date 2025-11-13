@@ -18,6 +18,7 @@ import { linkTwinToAgentService } from 'services/agents/linkTwinToAgentService'
 import { unlinkTwinToAgentService } from 'services/agents/unlinkTwinToAgentService'
 import { getCurrentUserRole, isEditor, Roles } from 'utils/auxFunctions/auth'
 import { getLogByPodService } from 'services/agents/getLogByPodService'
+import { DynamicInfo } from 'utils/interfaces/others'
 
 interface Parameters {
     path: string
@@ -29,11 +30,6 @@ interface AgentInfo {
     id: string
     info: ListAgent
     data: any
-}
-
-interface Log {
-    text: string,
-    timestamp: number
 }
 
 export function ListAgents({ path, meta, twinId }: Parameters) {
@@ -53,7 +49,7 @@ export function ListAgents({ path, meta, twinId }: Parameters) {
     const [selectedTwins, setSelectedTwins] = useState<Array<SelectableValue<string>>>([]);
     const [twins, setTwins] = useState<SelectData[]>([])
     const [userRole, setUserRole] = useState<string>(Roles.VIEWER)
-    const [latestLogs, setLatestLogs] = useState<Log[]>([])
+    const [latestLogs, setLatestLogs] = useState<DynamicInfo[]>([])
     const [chargingLog, setChargingLog] = useState<boolean>(false)
 
     const stringDateToLocal = (dt: string) => {
@@ -298,7 +294,7 @@ export function ListAgents({ path, meta, twinId }: Parameters) {
         };
     }, []);
 
-    const showLog = (log: Log) => {
+    const showLog = (log: DynamicInfo) => {
         const date = new Date(log.timestamp)
         return <div style={{ width: '100%', marginTop: '10px'}}>
             <p style={{ width: '100%', textAlign: 'end', marginBottom: '0px'}}>Last update at {date.toLocaleDateString() + " " + date.toLocaleTimeString()}</p>

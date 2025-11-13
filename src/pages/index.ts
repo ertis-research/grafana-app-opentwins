@@ -1,9 +1,9 @@
 import { AppRootProps, IconName } from '@grafana/data'
 import { TwinsPage } from './twinsPage'
-import { PoliciesPage } from './policiesPage'
 import { TypesPage } from './typesPage'
 import { ConnectionsPage } from './connectionsPage'
 import { AgentsPage } from './agentsPage'
+import { PoliciesPage } from './policiesPage'
 
 export type PageDefinition = {
   component: React.FC<AppRootProps>;
