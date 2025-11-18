@@ -12,5 +12,5 @@ export const plugin = new AppPlugin<{}>().setRootPage(ExampleRootPage).addConfig
   title: 'Configuration',
   icon: 'cog',
   body: AppConfig,
-  id: 'configuration',
+  id: 'config',
 });

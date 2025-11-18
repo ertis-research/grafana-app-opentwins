@@ -4,6 +4,8 @@ import { Button, Field, Input, FieldSet, useTheme2 } from '@grafana/ui';
 import { PluginConfigPageProps, AppPluginMeta, PluginMeta } from '@grafana/data';
 import { getBackendSrv } from '@grafana/runtime';
 
+// --- Types ---
+
 export type JsonData = {
     dittoURL?: string;
     extendedURL?: string;
@@ -11,217 +13,180 @@ export type JsonData = {
     agentsContext?: string;
     dittoUsername?: string;
     dittoPassword?: string;
-};
-
-type State = {
-    dittoURL: string;
-    extendedURL: string;
-    agentsURL?: string;
-    agentsContext?: string;
-    dittoUsername?: string;
-    dittoPassword?: string;
+    dittoDevopsUsername?: string;
+    dittoDevopsPassword?: string;
 };
 
 interface Props extends PluginConfigPageProps<AppPluginMeta<JsonData>> { }
 
+// --- Components ---
+
 export const AppConfig = ({ plugin }: Props) => {
     const { enabled, pinned, jsonData } = plugin.meta;
-    const [state, setState] = useState<State>({
-        dittoURL: (jsonData && jsonData.dittoURL) ? jsonData.dittoURL : '',
-        extendedURL: (jsonData && jsonData.extendedURL) ? jsonData.extendedURL : '',
-        agentsURL: (jsonData && jsonData.agentsURL) ? jsonData.agentsURL : '',
-        agentsContext: (jsonData && jsonData.agentsContext) ? jsonData.agentsContext : '',
-        dittoUsername: (jsonData && jsonData.dittoUsername) ? jsonData.dittoUsername : '',
-        dittoPassword: (jsonData && jsonData.dittoPassword) ? jsonData.dittoPassword : ''
+    const theme = useTheme2();
+
+    // Initialize state directly from jsonData or defaults
+    const [settings, setSettings] = useState<JsonData>({
+        dittoURL: jsonData?.dittoURL || '',
+        extendedURL: jsonData?.extendedURL || '',
+        agentsURL: jsonData?.agentsURL || '',
+        agentsContext: jsonData?.agentsContext || '',
+        dittoUsername: jsonData?.dittoUsername || '',
+        dittoPassword: jsonData?.dittoPassword || '',
+        dittoDevopsUsername: jsonData?.dittoDevopsUsername || '',
+        dittoDevopsPassword: jsonData?.dittoDevopsPassword || ''
     });
 
-    console.log(state)
+    // Optimized generic change handler
+    const handleChange = (key: keyof JsonData) => (event: ChangeEvent<HTMLInputElement>) => {
+        let value = event.target.value.trim();
 
-    const onChangeDittoURL = (event: ChangeEvent<HTMLInputElement>) => {
-        let url = event.target.value
-        if (url.endsWith("/")) { 
-            event.target.value.slice(0, -1)
+        // Automatic trailing slash removal for URL fields
+        if ((key === 'dittoURL' || key === 'extendedURL' || key === 'agentsURL') && value.endsWith('/')) {
+            value = value.slice(0, -1);
         }
-        setState({
-            ...state,
-            dittoURL: url.trim(),
+
+        setSettings((prev) => ({
+            ...prev,
+            [key]: value,
+        }));
+    };
+
+    const isSettingsValid = Boolean(
+        settings.dittoURL &&
+        settings.dittoPassword &&
+        settings.dittoUsername &&
+        settings.extendedURL
+    );
+
+    const onSave = () => {
+        updatePluginAndReload(plugin.meta.id, {
+            enabled,
+            pinned,
+            jsonData: settings,
         });
     };
 
-    const onChangeExtendedAPI = (event: ChangeEvent<HTMLInputElement>) => {
-        let url = event.target.value
-        if (url.endsWith("/")) { 
-            event.target.value.slice(0, -1)
-        }
-        setState({
-            ...state,
-            extendedURL: url.trim(),
-        });
-    };
-
-    const onChangeAgentsAPI = (event: ChangeEvent<HTMLInputElement>) => {
-        let url = event.target.value
-        if (url.endsWith("/")) { 
-            event.target.value.slice(0, -1)
-        }
-        setState({
-            ...state,
-            agentsURL: url.trim(),
-        });
-    };
-
-    const onChangeAgentsContext = (event: ChangeEvent<HTMLInputElement>) => {
-        setState({
-            ...state,
-            agentsContext: event.target.value.trim(),
-        });
-    };
-
-    const onChangeDittoUsername = (event: ChangeEvent<HTMLInputElement>) => {
-        setState({
-            ...state,
-            dittoUsername: event.target.value.trim(),
-        });
-    };
-
-    const onChangeDittoPassword = (event: ChangeEvent<HTMLInputElement>) => {
-        setState({
-            ...state,
-            dittoPassword: event.target.value.trim(),
+    const onTogglePlugin = (shouldEnable: boolean) => {
+        updatePluginAndReload(plugin.meta.id, {
+            enabled: shouldEnable,
+            pinned: shouldEnable,
+            jsonData,
         });
     };
 
     return (
-        <div>
+        <div style={{ maxWidth: '800px' }}>
             {/* ENABLE / DISABLE PLUGIN */}
-            <FieldSet label="Enable / Disable">
-                {!enabled && (
-                    <>
-                        <div className={useTheme2().colors.text.secondary}>The plugin is currently not enabled.</div>
-                        <Button
-                            className={useTheme2().spacing(3)}
-                            variant="primary"
-                            onClick={() =>
-                                updatePluginAndReload(plugin.meta.id, {
-                                    enabled: true,
-                                    pinned: true,
-                                    jsonData,
-                                })
-                            }
-                        >
-                            Enable plugin
-                        </Button>
-                    </>
-                )}
-
-                {/* Disable the plugin */}
-                {enabled && (
-                    <>
-                        <div className={useTheme2().colors.text.secondary}>The plugin is currently enabled.</div>
-                        <Button
-                            className={useTheme2().spacing(3)}
-                            variant="destructive"
-                            onClick={() =>
-                                updatePluginAndReload(plugin.meta.id, {
-                                    enabled: false,
-                                    pinned: false,
-                                    jsonData,
-                                })
-                            }
-                        >
-                            Disable plugin
-                        </Button>
-                    </>
-                )}
+            <FieldSet label="Plugin Status">
+                <div style={{ marginBottom: theme.spacing(2) }}>
+                    <div className={theme.colors.text.secondary} style={{ marginBottom: theme.spacing(1) }}>
+                        {enabled ? 'The plugin is currently enabled.' : 'The plugin is currently not enabled.'}
+                    </div>
+                    <Button
+                        variant={enabled ? 'destructive' : 'primary'}
+                        onClick={() => onTogglePlugin(!enabled)}
+                    >
+                        {enabled ? 'Disable Plugin' : 'Enable Plugin'}
+                    </Button>
+                </div>
             </FieldSet>
 
             {/* CUSTOM SETTINGS */}
-            <FieldSet label="API Settings" className={useTheme2().spacing(6)}>
-                {/* API Key */}
-                <Field label="Eclipse Ditto URL" description="" required>
+            <FieldSet label="API Settings" className={theme.spacing(4)}>
+
+                {/* Eclipse Ditto URLs */}
+                <Field label="Eclipse Ditto URL" description="Base API URL" required>
                     <Input
                         width={60}
-                        required
                         id="dittoURL"
-                        value={state.dittoURL}
-                        placeholder={`E.g.: http://mywebsite.com/api/v1`}
-                        onChange={onChangeDittoURL}
+                        value={settings.dittoURL}
+                        placeholder="E.g.: http://mywebsite.com/api/v1"
+                        onChange={handleChange('dittoURL')}
                     />
                 </Field>
 
-                <Field label="Eclipse Ditto Extended API URL" description="" required>
+                <Field label="Eclipse Ditto Extended API URL" description="Extended API Endpoint" required>
                     <Input
                         width={60}
                         id="extendedURL"
-                        required
-                        value={state.extendedURL}
-                        placeholder={`E.g.: http://mywebsite.com/api/v1`}
-                        onChange={onChangeExtendedAPI}
+                        value={settings.extendedURL}
+                        placeholder="E.g.: http://mywebsite.com/api/v1"
+                        onChange={handleChange('extendedURL')}
                     />
                 </Field>
 
-                {/* API Url */}
-                <Field label="Ditto username" description="" className={useTheme2().spacing(3)} required>
+                {/* Credentials - Standard */}
+                <Field label="Ditto Username" className={theme.spacing(3)} required>
                     <Input
                         width={60}
                         id="dittoUsername"
-                        value={state.dittoUsername}
-                        placeholder={`E.g.: http://mywebsite.com/api/v1`}
-                        onChange={onChangeDittoUsername}
-                        required
+                        value={settings.dittoUsername}
+                        placeholder="Your ditto user"
+                        onChange={handleChange('dittoUsername')}
                     />
                 </Field>
 
-                <Field label="Ditto password" description="" required>
+                <Field label="Ditto Password" required>
                     <Input
                         width={60}
-                        id="dittoURL"
-                        value={state.dittoPassword}
-                        placeholder={'Your secret API key'}
-                        onChange={onChangeDittoPassword}   
-                        required         
+                        type="password"
+                        id="dittoPassword"
+                        value={settings.dittoPassword}
+                        placeholder="Your ditto password"
+                        onChange={handleChange('dittoPassword')}
                     />
                 </Field>
 
-                <Field label="Agents API URL" description="OPTIONAL (Beta functionality)">
+                {/* Credentials - DevOps */}
+                <Field label="Ditto DevOps Username" className={theme.spacing(3)} required>
+                    <Input
+                        width={60}
+                        id="dittoDevopsUsername"
+                        value={settings.dittoDevopsUsername}
+                        placeholder="Your ditto devops user"
+                        onChange={handleChange('dittoDevopsUsername')}
+                    />
+                </Field>
+
+                <Field label="Ditto DevOps Password" required>
+                    <Input
+                        width={60}
+                        type="password"
+                        id="dittoDevopsPassword"
+                        value={settings.dittoDevopsPassword}
+                        placeholder="Your ditto devops password"
+                        onChange={handleChange('dittoDevopsPassword')}
+                    />
+                </Field>
+
+                {/* Beta Functionality */}
+                <Field label="Agents API URL" description="OPTIONAL (Beta functionality)" className={theme.spacing(3)}>
                     <Input
                         width={60}
                         id="agentsURL"
-                        value={state.agentsURL}
-                        placeholder={`E.g.: http://mywebsite.com`}
-                        onChange={onChangeAgentsAPI}
+                        value={settings.agentsURL}
+                        placeholder="E.g.: http://mywebsite.com"
+                        onChange={handleChange('agentsURL')}
                     />
                 </Field>
 
-                <Field label="Agents context" description="OPTIONAL (Beta functionality)">
+                <Field label="Agents Context" description="OPTIONAL (Beta functionality)">
                     <Input
                         width={60}
                         id="agentsContext"
-                        value={state.agentsContext}
-                        onChange={onChangeAgentsContext}
+                        value={settings.agentsContext}
+                        onChange={handleChange('agentsContext')}
                     />
                 </Field>
 
-                <div className={useTheme2().spacing(3)}>
+                <div className={theme.spacing(3)}>
                     <Button
                         type="submit"
-                        onClick={() =>
-                            updatePluginAndReload(plugin.meta.id, {
-                                enabled,
-                                pinned,
-                                jsonData: {
-                                    dittoURL: state.dittoURL,
-                                    extendedURL: state.extendedURL,
-                                    dittoUsername: state.dittoUsername,
-                                    dittoPassword: state.dittoPassword,
-                                    agentsURL: state.agentsURL,
-                                    agentsContext: state.agentsContext
-                                }
-                            })
-                        }
-                        disabled={Boolean(!state.dittoURL || !state.dittoPassword || !state.dittoUsername || !state.extendedURL)}
+                        onClick={onSave}
+                        disabled={!isSettingsValid}
                     >
-                        Save settings
+                        Save Settings
                     </Button>
                 </div>
             </FieldSet>
@@ -229,12 +194,12 @@ export const AppConfig = ({ plugin }: Props) => {
     );
 };
 
+// --- Helpers ---
+
 const updatePluginAndReload = async (pluginId: string, data: Partial<PluginMeta<JsonData>>) => {
     try {
         await updatePlugin(pluginId, data);
-
-        // Reloading the page as the changes made here wouldn't be propagated to the actual plugin otherwise.
-        // This is not ideal, however unfortunately currently there is no supported way for updating the plugin state.
+        // Reloading is required to propagate changes to the plugin state in the current architecture.
         window.location.reload();
     } catch (e) {
         console.error('Error while updating the plugin', e);

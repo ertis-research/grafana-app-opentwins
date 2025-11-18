@@ -72,16 +72,6 @@
       "role": "Admin",
       "addToNav": true,
       "icon" : "sliders-v-alt"
-    },
-    {
-      "type": "dashboard",
-      "name": "Streaming Example",
-      "path": "dashboards/streaming.json"
-    },
-    {
-      "type": "dashboard",
-      "name": "Lots of Stats",
-      "path": "dashboards/stats.json"
     }
   ],
 
