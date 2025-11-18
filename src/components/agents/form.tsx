@@ -1,14 +1,14 @@
 import { AppEvents, AppPluginMeta, KeyValue, SelectableValue } from '@grafana/data'
 import { Button, Field, Form, FormAPI, Input, MultiSelect, RadioButtonGroup, TextArea } from '@grafana/ui'
 import React, { ChangeEvent, Fragment, useContext, useEffect, useState } from 'react'
-import { createAgentService } from 'services/agents/createAgentService'
 import { setNestedKey } from 'utils/auxFunctions/general'
 import { StaticContext } from 'utils/context/staticContext'
 import yaml from 'js-yaml'
 import { getAppEvents } from '@grafana/runtime'
 import { SelectData } from 'utils/interfaces/select'
-import { getAllTwinsIdsService } from 'services/twins/getAllTwinsIdsService'
 import { checkIsEditor } from 'utils/auxFunctions/auth'
+import { getAllTwinsIdsService } from 'services/TwinsService'
+import { createAgentService } from 'services/AgentsService'
 
 interface Parameters {
     path: string

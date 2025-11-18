@@ -5,12 +5,11 @@ import { ListElement } from 'components/auxiliary/general/listElement'
 import { initResources, initSubjects } from 'utils/data/consts'
 import { FormSubjects } from './subcomponents/formSubjects'
 import { FormResources } from './subcomponents/formResources'
-import { createOrUpdatePolicyService } from 'services/policies/createPolicyService'
 import { StaticContext } from 'utils/context/staticContext'
-import { getPolicyByIdService } from 'services/policies/getPolicyByIdService'
 import { Notification } from 'utils/interfaces/notification'
 import { enumNotification } from 'utils/auxFunctions/general'
 import { CustomNotification } from 'components/auxiliary/general/notification'
+import { createOrUpdatePolicyService, getPolicyByIdService } from 'services/PoliciesService'
 
 interface Parameters {
     path: string

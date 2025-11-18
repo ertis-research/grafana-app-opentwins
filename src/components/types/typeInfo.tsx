@@ -3,10 +3,9 @@ import { AppPluginMeta, KeyValue } from '@grafana/data'
 import { IDittoThing } from 'utils/interfaces/dittoThing'
 import { StaticContext } from 'utils/context/staticContext'
 import { InformationType } from './subcomponents/information'
-import { getTypeService } from 'services/types/crud/getTypeService'
-import { deleteTypeService } from 'services/types/crud/deleteTypeService'
 import { HierarchyType } from './subcomponents/hierarchy'
 import { InfoHeader } from 'components/auxiliary/general/infoHeader'
+import { deleteTypeService, getTypeService } from 'services/TypesService'
 
 
 interface Parameters {

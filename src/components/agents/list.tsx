@@ -3,22 +3,15 @@ import { AppEvents, AppPluginMeta, KeyValue, SelectableValue } from "@grafana/da
 import { Button, ConfirmModal, ControlledCollapse, Divider, Field, Icon, IconButton, Input, LinkButton, MultiSelect, Select, Spinner, TextArea, useTheme2 } from '@grafana/ui'
 import { enumNotification } from 'utils/auxFunctions/general'
 import { AgentState, ListAgent, Pod, PodState, Types_values } from 'utils/interfaces/agents'
-import { getAllAgentsService } from 'services/agents/getAllAgentsService'
 import { CronJobIcon, DeployIcon } from 'img/icons'
-import { getAgentByIdService } from 'services/agents/getAgentByIdService'
 import { StaticContext } from 'utils/context/staticContext'
-import { pauseAgentByIdService } from 'services/agents/pauseAgentByIdService'
-import { resumeAgentByIdService } from 'services/agents/resumeAgentByIdService'
-import { deleteAgentByIdService } from 'services/agents/deleteAgentByIdService'
 import cronstrue from 'cronstrue'
 import { getAppEvents } from '@grafana/runtime'
 import { SelectData } from 'utils/interfaces/select'
-import { getAllTwinsIdsService } from 'services/twins/getAllTwinsIdsService'
-import { linkTwinToAgentService } from 'services/agents/linkTwinToAgentService'
-import { unlinkTwinToAgentService } from 'services/agents/unlinkTwinToAgentService'
 import { getCurrentUserRole, isEditor, Roles } from 'utils/auxFunctions/auth'
-import { getLogByPodService } from 'services/agents/getLogByPodService'
 import { DynamicInfo } from 'utils/interfaces/others'
+import { getAllTwinsIdsService } from 'services/TwinsService'
+import { deleteAgentByIdService, getAgentByIdService, getAllAgentsService, getLogByPodService, linkTwinToAgentService, pauseAgentByIdService, resumeAgentByIdService, unlinkTwinToAgentService } from 'services/AgentsService'
 
 interface Parameters {
     path: string
@@ -248,7 +241,7 @@ export function ListAgents({ path, meta, twinId }: Parameters) {
                 type: AppEvents.alertSuccess.name,
                 payload: ["Agent successfully deleted"]
             });
-        }).catch((e) => {
+        }).catch((e: any) => {
             console.log("error", e)
             appEvents.publish({
                 type: AppEvents.alertError.name,

@@ -22,7 +22,7 @@ export const DebugInfoPanel: React.FC<DebugInfoPanelProps> = ({ title, data, isL
     const content = data?.text ? JSON.stringify(data.text, undefined, 4) : "";
 
     return (
-        <div className="col-12 col-sm-12 col-md-6 col-lg-4">
+        <div className="col-12 col-sm-12 col-md-12 col-lg-4">
             <div style={{ display: 'flex', gap: '8px', marginBottom: '16px', alignItems: 'stretch' }}>
                 <Button
                     style={{ flexGrow: 1 }} // Botón de carga más grande

@@ -9,8 +9,7 @@ import { SelectData } from 'utils/interfaces/select'
 import { Control } from 'react-hook-form'
 import { SimulationAttributes, SimulationAttributesForm, SimulationContent } from 'utils/interfaces/simulation'
 import { StaticContext } from 'utils/context/staticContext'
-import { createOrUpdateSimulationService } from 'services/twins/simulation/createOrUpdateSimulationService'
-import { getSimulationService } from 'services/twins/simulation/getSimulationService'
+import { createOrUpdateSimulationService, getSimulationService } from 'services/SimulationsService'
 
 interface Parameters {
     path: string

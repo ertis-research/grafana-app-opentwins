@@ -2,9 +2,9 @@ import React, { useEffect, useContext, useState, Fragment } from 'react'
 import { AppEvents, AppPluginMeta, KeyValue } from '@grafana/data'
 import { StaticContext } from 'utils/context/staticContext'
 import { Button, Field, FieldSet, Form, FormAPI, Input, Spinner, useTheme2 } from '@grafana/ui'
-import { duplicateTwinService } from 'services/twins/duplicateTwinService'
 import { enumNotification } from 'utils/auxFunctions/general'
 import { getAppEvents } from '@grafana/runtime'
+import { duplicateTwinService } from 'services/TwinsService'
 
 
 interface Parameters {

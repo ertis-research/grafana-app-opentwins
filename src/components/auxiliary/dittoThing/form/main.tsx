@@ -8,14 +8,14 @@ import { basicAttributesConst, enumOptions, options, restrictedAttributesConst, 
 import { Control } from 'react-hook-form'
 import { FormAttributes } from 'components/auxiliary/dittoThing/form/subcomponents/formAttributes'
 import { FormFeatures } from 'components/auxiliary/dittoThing/form/subcomponents/formFeatures'
-import { getAllPoliciesService } from 'services/policies/getAllPoliciesService'
 import { getSelectWithObjectsFromThingsArray, JSONtoIAttributes, JSONtoIFeatures, splitThingId } from 'utils/auxFunctions/dittoThing'
-import { getAllTypesService } from 'services/types/getAllTypesService'
 import { capitalize, enumNotification } from 'utils/auxFunctions/general'
 import { StaticContext } from 'utils/context/staticContext'
 import { CustomNotification } from 'components/auxiliary/general/notification'
 import { Notification } from 'utils/interfaces/notification'
 import { checkIsEditor } from 'utils/auxFunctions/auth'
+import { getAllTypesService } from 'services/TypesService'
+import { getAllPoliciesService } from 'services/PoliciesService'
 
 interface Parameters {
     path: string

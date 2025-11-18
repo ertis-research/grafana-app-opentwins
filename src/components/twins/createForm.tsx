@@ -1,9 +1,9 @@
 import { AppPluginMeta, KeyValue } from '@grafana/data'
 import { ThingForm } from 'components/auxiliary/dittoThing/form/main'
 import React, { useContext, useEffect } from 'react'
-import { createOrUpdateTwinToBeChildService } from 'services/twins/children/createOrUpdateTwinToBeChildService'
-import { createOrUpdateTwinService } from 'services/twins/crud/createOrUpdateTwinService'
-import { createTwinFromTypeService } from 'services/types/createTwinFromTypeService'
+import { createOrUpdateTwinToBeChildService } from 'services/TwinsCompositionService'
+import { createOrUpdateTwinService } from 'services/TwinsService'
+import { createTwinFromTypeService } from 'services/TypesService'
 import { StaticContext } from 'utils/context/staticContext'
 import { IDittoThingData } from 'utils/interfaces/dittoThing'
 

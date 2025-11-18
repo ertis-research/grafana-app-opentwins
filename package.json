@@ -85,6 +85,7 @@
     "cronstrue": "^2.50.0",
     "emotion": "10.0.27",
     "js-yaml": "^4.1.0",
+    "loglevel": "^1.9.2",
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "react-router-dom": "^5.2.0",

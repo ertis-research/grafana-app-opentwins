@@ -1,6 +1,6 @@
 import { SelectableValue } from '@grafana/data'
-import { Button } from '@grafana/ui'
-import React from 'react'
+import { Button, ConfirmModal } from '@grafana/ui'
+import React, { useState } from 'react'
 
 /**
  * @name ConnectionActions
@@ -8,12 +8,15 @@ import React from 'react'
  */
 interface ConnectionActionsProps {
     selected: SelectableValue<any>;
+    onEdit: () => void;
     onDelete: () => void;
     onToggleStatus: () => void;
     isLoading: boolean;
 }
 
-export const ConnectionActions: React.FC<ConnectionActionsProps> = ({ selected, onDelete, onToggleStatus, isLoading }) => {
+export const ConnectionActions: React.FC<ConnectionActionsProps> = ({ selected, onDelete, onEdit, onToggleStatus, isLoading }) => {
+    const [showDeleteModal, setShowDeleteModal] = useState(false);
+    
     if (!selected?.value) {
         return null;
     }
@@ -45,9 +48,24 @@ export const ConnectionActions: React.FC<ConnectionActionsProps> = ({ selected, 
                     {toggleText}
                 </Button>
             )}
-            <Button variant="destructive" icon="trash-alt" onClick={onDelete} disabled={isLoading}>
+            <Button variant="secondary" style={{ marginRight: '10px' }} icon="edit" onClick={onEdit} disabled={isLoading}>
+                Edit
+            </Button>
+            <Button variant="destructive" icon="trash-alt" onClick={() => setShowDeleteModal(true)} disabled={isLoading}>
                 Delete
             </Button>
+            <ConfirmModal
+                isOpen={showDeleteModal}
+                title="Delete connection"
+                body="Are you sure you want to delete this connection? This action cannot be undone."
+                confirmText="Confirm Delete"
+                icon="exclamation-triangle"
+                onConfirm={() => {
+                    onDelete(); // Ejecuta la acción real
+                    setShowDeleteModal(false); // Cierra el modal
+                }}
+                onDismiss={() => setShowDeleteModal(false)}
+            />
         </div>
     );
 }

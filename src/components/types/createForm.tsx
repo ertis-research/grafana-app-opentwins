@@ -1,8 +1,8 @@
 import { AppPluginMeta, KeyValue } from '@grafana/data'
 import { ThingForm } from 'components/auxiliary/dittoThing/form/main'
 import React, { useContext } from 'react'
-import { createOrUpdateTypeToBeChildService } from 'services/types/children/createOrUpdateTypeToBeChildService'
-import { createOrUpdateTypeService } from 'services/types/crud/createOrUpdateTypeService'
+import { createOrUpdateTypeToBeChildService } from 'services/TypesCompositionService'
+import { createOrUpdateTypeService } from 'services/TypesService'
 import { StaticContext } from 'utils/context/staticContext'
 import { IDittoThingData } from 'utils/interfaces/dittoThing'
 

@@ -1,8 +1,7 @@
 import { AppPluginMeta, KeyValue } from '@grafana/data'
 import { ThingForm } from 'components/auxiliary/dittoThing/form/main'
 import React, { useEffect, useContext, useState } from 'react'
-import { createOrUpdateTwinService } from 'services/twins/crud/createOrUpdateTwinService'
-import { getTwinService } from 'services/twins/crud/getTwinService'
+import { createOrUpdateTwinService, getTwinService } from 'services/TwinsService'
 import { StaticContext } from 'utils/context/staticContext'
 import { IDittoThing, IDittoThingData } from 'utils/interfaces/dittoThing'
 

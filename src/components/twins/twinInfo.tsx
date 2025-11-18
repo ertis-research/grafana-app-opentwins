@@ -3,15 +3,14 @@ import { AppPluginMeta, KeyValue } from '@grafana/data'
 import { ListChildrenTwin } from './subcomponents/children'
 import { IDittoThing } from 'utils/interfaces/dittoThing'
 import { StaticContext } from 'utils/context/staticContext'
-import { getTwinService } from 'services/twins/crud/getTwinService'
 import { InformationTwin } from './subcomponents/information'
 import { SimulationList } from './subcomponents/simulationList'
 import { OtherFunctionsTwin } from './subcomponents/otherFunctions'
-import { deleteTwinService } from 'services/twins/crud/deleteTwinService'
-import { deleteTwinWithChildrenService } from 'services/twins/children/deleteTwinWithChildrenService'
 import { InfoHeader } from 'components/auxiliary/general/infoHeader'
 import { ListAgentsTwin } from './subcomponents/agents'
 import { getCurrentUserRole, isEditor, Roles } from 'utils/auxFunctions/auth'
+import { deleteTwinService, getTwinService } from 'services/TwinsService'
+import { deleteTwinWithChildrenService } from 'services/TwinsCompositionService'
 
 
 interface Parameters {

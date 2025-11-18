@@ -3,10 +3,10 @@ import { AppPluginMeta, KeyValue } from "@grafana/data"
 import { useTheme2 } from '@grafana/ui'
 import { ListLabels, ListThingNum } from 'components/auxiliary/dittoThing/list/listThingNum'
 import { Context, StaticContext } from 'utils/context/staticContext'
-import { getChildrenOfTypeService } from 'services/types/children/getChildrenOfTypeService'
 import { IDittoThing, LinkData } from 'utils/interfaces/dittoThing'
-import { getAllRootTwinsService } from 'services/twins/getAllRootTwinsService'
-import { createOrUpdateTwinToBeChildService } from 'services/twins/children/createOrUpdateTwinToBeChildService'
+import { getChildrenOfTypeService } from 'services/TypesCompositionService'
+import { getAllRootTwinsService } from 'services/TwinsService'
+import { createOrUpdateTwinToBeChildService } from 'services/TwinsCompositionService'
 
 interface Parameters {
     path: string

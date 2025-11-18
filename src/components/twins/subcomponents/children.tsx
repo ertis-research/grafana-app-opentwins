@@ -2,9 +2,8 @@ import React, { useContext, useEffect } from 'react'
 import { AppPluginMeta, KeyValue } from "@grafana/data"
 import { MainList } from 'components/auxiliary/dittoThing/list/main'
 import { StaticContext } from 'utils/context/staticContext'
-import { deleteTwinService } from 'services/twins/crud/deleteTwinService'
-import { getChildrenOfTwinService } from 'services/twins/children/getChildrenOfTwinService'
-import { deleteTwinWithChildrenService } from 'services/twins/children/deleteTwinWithChildrenService'
+import { deleteTwinWithChildrenService, getChildrenOfTwinService } from 'services/TwinsCompositionService'
+import { deleteTwinService } from 'services/TwinsService'
 
 interface Parameters {
     path: string

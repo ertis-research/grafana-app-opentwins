@@ -2,13 +2,10 @@ import React, { useContext, useEffect } from 'react'
 import { AppPluginMeta, KeyValue } from "@grafana/data"
 import { useTheme2 } from '@grafana/ui'
 import { ListLabels, ListThingNum } from 'components/auxiliary/dittoThing/list/listThingNum'
-import { getAllTypesService } from 'services/types/getAllTypesService'
 import { StaticContext } from 'utils/context/staticContext'
-import { getChildrenOfTypeService } from 'services/types/children/getChildrenOfTypeService'
 import { IDittoThing, LinkData } from 'utils/interfaces/dittoThing'
-import { getParentOfTypeService } from 'services/types/parent/getParentTypeService'
-import { createOrUpdateTypeToBeChildService } from 'services/types/children/createOrUpdateTypeToBeChildService'
-import { unlinkChildrenTypeById } from 'services/types/children/unlinkChildrenTypeByIdService'
+import { createOrUpdateTypeToBeChildService, getChildrenOfTypeService, getParentOfTypeService, unlinkChildrenTypeById } from 'services/TypesCompositionService'
+import { getAllTypesService } from 'services/TypesService'
 
 interface Parameters {
     path: string

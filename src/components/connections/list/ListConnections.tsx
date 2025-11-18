@@ -2,21 +2,14 @@ import { AppEvents, SelectableValue } from '@grafana/data'
 import { getAppEvents } from '@grafana/runtime'
 import { Icon, LinkButton, Select } from '@grafana/ui'
 import React, { Fragment, useContext, useEffect, useState } from 'react'
-import { closeConnectionService } from 'services/connections/closeConnectionService'
-import { deleteConnectionByIdService } from 'services/connections/deleteConnectionByIdService'
-import { getAllConnectionIdsService } from 'services/connections/getAllConnectionsService'
-import { enableConnectionLogsService, getLogsByConnectionIdService } from 'services/connections/getLogsByIdService'
-import { openConnectionService } from 'services/connections/openConnectionService'
 import { getCurrentUserRole, hasAuth, Roles } from 'utils/auxFunctions/auth'
 import { StaticContext } from 'utils/context/staticContext'
 import { SelectData } from 'utils/interfaces/select'
-import { getMetricsByConnectionIdService } from 'services/connections/getMetricsByIdService'
-import { getStatusByConnectionIdService } from 'services/connections/getStatusByIdService'
 import { DebugInfo, DebugInfoKey } from './ListConnection.types'
 import { ConnectionActions } from './ConnectionActions'
 import { ConnectionDetails } from './ConnectionDetails'
-import { refreshLogsByConnectionIdService } from 'services/connections/refreshLogsService'
-import { refreshMetricsByConnectionIdService } from 'services/connections/refreshMetricsService'
+import { useHistory } from 'react-router-dom';
+import { closeConnectionService, deleteConnectionByIdService, enableConnectionLogsService, getAllConnectionIdsService, getLogsByConnectionIdService, getMetricsByConnectionIdService, getStatusByConnectionIdService, openConnectionService, refreshLogsByConnectionIdService, refreshMetricsByConnectionIdService } from 'services/ConnectionsService'
 
 interface Parameters {
     path: string
@@ -32,6 +25,7 @@ export const ListConnections = ({ path }: Parameters) => {
     const [debugInfo, setDebugInfo] = useState<DebugInfo>()
     const [isTogglingStatus, setIsTogglingStatus] = useState(false);
     const appEvents = getAppEvents()
+    const history = useHistory()
 
     useEffect(() => {
         updateConnections()
@@ -179,8 +173,32 @@ export const ListConnections = ({ path }: Parameters) => {
 
     const handleOnClickDelete = () => {
         if (selected !== undefined && selected.value) {
-            deleteConnectionByIdService(context, selected.value)
-            // Aquí podrías querer llamar a updateConnections() tras el borrado
+            deleteConnectionByIdService(context, selected.value.id)
+                .then(() => {
+                    appEvents.publish({
+                        type: AppEvents.alertSuccess.name,
+                        payload: [`Connection deleted successfully`]
+                    });
+                })
+                .catch((e: Error) => {
+                    let msg = ""
+                    try {
+                        const response = JSON.parse(e.message)
+                        msg = response.message + ". " + response.description
+                    } catch (e) { }
+                    appEvents.publish({
+                        type: AppEvents.alertError.name,
+                        payload: [`Connection has not been deleted. ` + msg]
+                    });
+                });
+            setSelected({ value: undefined, label: undefined })
+            updateConnections()
+        }
+    }
+
+    const handleOnClickEdit = () => {
+        if (selected !== undefined && selected.value && selected.value.id) {
+            history.push(`?tab=connections&mode=edit&id=${selected.value.id}`);
         }
     }
 
@@ -222,7 +240,7 @@ export const ListConnections = ({ path }: Parameters) => {
     const renderAuthorizedContent = () => (
         <Fragment>
             <div className='row justify-content-between mb-4'>
-                <div className="col-12 col-sm-12 col-md-5 col-lg-5">
+                <div className="col-12 col-sm-12 col-md-6 col-lg-5">
                     <Select
                         options={connections}
                         value={selected}
@@ -231,24 +249,25 @@ export const ListConnections = ({ path }: Parameters) => {
                         placeholder="Search"
                     />
                 </div>
-                <div className='col-12 col-sm-12 col-md-4 col-lg-4' >
+                <div className='col-12 col-sm-12 col-md-6 col-lg-4' >
                     {selected && (
                         <ConnectionActions
                             selected={selected}
+                            onEdit={handleOnClickEdit}
                             onDelete={handleOnClickDelete}
                             onToggleStatus={handleOnClickStatusConnection}
                             isLoading={isTogglingStatus}
                         />
                     )}
                 </div>
-                <div className='col-12 col-sm-12 col-md-3 col-lg-3' style={{ display: 'flex', justifyContent: 'flex-end' }}>
+                <div className='col-12 col-sm-12 col-md-12 col-lg-3' style={{ display: 'flex', justifyContent: 'flex-end' }}>
                     <LinkButton variant="primary" href={path + "&mode=create"} icon="plus">
                         Create new connection
                     </LinkButton>
                 </div>
             </div>
 
-            {selected && (
+            {selected && selected.value && (
                 <ConnectionDetails
                     selected={selected}
                     debugInfo={debugInfo}

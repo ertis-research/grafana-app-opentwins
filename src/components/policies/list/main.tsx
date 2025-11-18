@@ -1,8 +1,6 @@
 import { SelectWithTextArea } from 'components/auxiliary/general/selectWithTextArea'
 import React, { useContext } from 'react'
-import { deletePolicyService } from 'services/policies/deletePolicy'
-import { getAllPoliciesService } from 'services/policies/getAllPoliciesService'
-import { getPolicyByIdService } from 'services/policies/getPolicyByIdService'
+import { deletePolicyService, getAllPoliciesService, getPolicyByIdService } from 'services/PoliciesService'
 import { Roles } from 'utils/auxFunctions/auth'
 import { StaticContext } from 'utils/context/staticContext'
 
