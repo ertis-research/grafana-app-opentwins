@@ -1,8 +1,7 @@
 import { SelectWithTextArea } from 'components/auxiliary/general/selectWithTextArea'
-import React, { useContext } from 'react'
+import React from 'react'
 import { deletePolicyService, getAllPoliciesService, getPolicyByIdService } from 'services/PoliciesService'
 import { Roles } from 'utils/auxFunctions/auth'
-import { StaticContext } from 'utils/context/staticContext'
 
 interface Parameters {
     path: string
@@ -10,10 +9,8 @@ interface Parameters {
 
 export const ListPolicies = ({path}: Parameters) => {
 
-    const context = useContext(StaticContext)
-
     const updatePolicy = (setObjects: any, thenFunction?: any) => {
-        getAllPoliciesService(context).then((res: string[]) => {
+        getAllPoliciesService().then((res: string[]) => {
             setObjects(res.map((item: string) => {
                 return {
                     label : item,
@@ -28,11 +25,11 @@ export const ListPolicies = ({path}: Parameters) => {
     }
 
     const getPolicy = (id: string) => {
-        return getPolicyByIdService(context, id)
+        return getPolicyByIdService(id)
     }
 
     const deletePolicy = (id: string) => {
-        return deletePolicyService(context, id)
+        return deletePolicyService(id)
     }
 
     return (

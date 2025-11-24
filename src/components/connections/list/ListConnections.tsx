@@ -1,9 +1,8 @@
 import { AppEvents, SelectableValue } from '@grafana/data'
 import { getAppEvents } from '@grafana/runtime'
 import { Icon, LinkButton, Select } from '@grafana/ui'
-import React, { Fragment, useContext, useEffect, useState } from 'react'
+import React, { Fragment, useEffect, useState } from 'react'
 import { getCurrentUserRole, hasAuth, Roles } from 'utils/auxFunctions/auth'
-import { StaticContext } from 'utils/context/staticContext'
 import { SelectData } from 'utils/interfaces/select'
 import { DebugInfo, DebugInfoKey } from './ListConnection.types'
 import { ConnectionActions } from './ConnectionActions'
@@ -17,7 +16,6 @@ interface Parameters {
 
 export const ListConnections = ({ path }: Parameters) => {
 
-    const context = useContext(StaticContext)
     const [userRole, setUserRole] = useState<string>(Roles.VIEWER)
     const [connections, setConnections] = useState<SelectData[]>([])
     const [selected, setSelected] = useState<SelectableValue<any>>()
@@ -47,7 +45,7 @@ export const ListConnections = ({ path }: Parameters) => {
 
 
     const updateConnections = () => {
-        getAllConnectionIdsService(context).then((res: any[]) => {
+        getAllConnectionIdsService().then((res: any[]) => {
             setConnections(res.map((ar: any) => {
                 return {
                     label: ar.name,
@@ -64,7 +62,7 @@ export const ListConnections = ({ path }: Parameters) => {
 
     const handleDebugData = async (
         type: DebugInfoKey,
-        serviceCall: (context: any, id: string) => Promise<any>
+        serviceCall: (id: string) => Promise<any>
     ) => {
         if (!selected) { return; }
         const { id } = selected.value;
@@ -72,7 +70,7 @@ export const ListConnections = ({ path }: Parameters) => {
         setCharging((prev) => ({ ...prev, [type]: true }));
 
         try {
-            const res: any = await serviceCall(context, id);
+            const res: any = await serviceCall(id);
             let dataToSet: any;
 
             if (typeof res === 'string') {
@@ -112,7 +110,7 @@ export const ListConnections = ({ path }: Parameters) => {
 
         try {
             // 1. Primer intento de obtener logs
-            const res: any = await getLogsByConnectionIdService(context, id);
+            const res: any = await getLogsByConnectionIdService(id);
             let logData: any;
 
             if (typeof res === 'string') {
@@ -133,7 +131,7 @@ export const ListConnections = ({ path }: Parameters) => {
                 });
 
                 // 4. Llamamos al servicio para activar logs
-                await enableConnectionLogsService(context, id);
+                await enableConnectionLogsService(id);
 
                 appEvents.publish({
                     type: AppEvents.alertSuccess.name,
@@ -141,7 +139,7 @@ export const ListConnections = ({ path }: Parameters) => {
                 });
 
                 // 5. Segundo intento
-                const secondRes: any = await getLogsByConnectionIdService(context, id);
+                const secondRes: any = await getLogsByConnectionIdService(id);
 
                 // 6. Mostramos el resultado (con la misma lógica de parseo)
                 let secondLogData: any;
@@ -173,7 +171,7 @@ export const ListConnections = ({ path }: Parameters) => {
 
     const handleOnClickDelete = () => {
         if (selected !== undefined && selected.value) {
-            deleteConnectionByIdService(context, selected.value.id)
+            deleteConnectionByIdService(selected.value.id)
                 .then(() => {
                     appEvents.publish({
                         type: AppEvents.alertSuccess.name,
@@ -216,7 +214,7 @@ export const ListConnections = ({ path }: Parameters) => {
         setIsTogglingStatus(true);
 
         try {
-            await serviceToCall(context, id);
+            await serviceToCall(id);
 
             appEvents.publish({
                 type: AppEvents.alertSuccess.name,

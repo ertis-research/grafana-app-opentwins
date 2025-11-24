@@ -1,6 +1,5 @@
-import React, { useEffect, useContext, useState, Fragment } from 'react'
+import React, { useEffect, useState, Fragment } from 'react'
 import { AppEvents, AppPluginMeta, KeyValue } from '@grafana/data'
-import { StaticContext } from 'utils/context/staticContext'
 import { Button, Field, FieldSet, Form, FormAPI, Input, Spinner, useTheme2 } from '@grafana/ui'
 import { enumNotification } from 'utils/auxFunctions/general'
 import { getAppEvents } from '@grafana/runtime'
@@ -21,7 +20,6 @@ interface DuplicateForm {
 export function OtherFunctionsTwin({ path, id, meta }: Parameters) {
 
     const bgcolor = useTheme2().colors.background.secondary
-    const context = useContext(StaticContext)
     const appEvents = getAppEvents()
 
     const [showNotification, setShowNotification] = useState(enumNotification.HIDE)
@@ -39,7 +37,7 @@ export function OtherFunctionsTwin({ path, id, meta }: Parameters) {
 
     const handleDuplicateTwin = (data: DuplicateForm) => {
         setShowNotification(enumNotification.LOADING)
-        duplicateTwinService(context, id, data.namespace + ":" + data.id).then(() => {
+        duplicateTwinService(id, data.namespace + ":" + data.id).then(() => {
             appEvents.publish({
                 type: AppEvents.alertSuccess.name,
                 payload: ["The twin has been duplicated successfully. You can access it from the main twins tab."]

@@ -3,7 +3,7 @@ import { useNavModel } from 'hooks/useNavModel';
 import { PageDefinition, pages as nPages } from 'pages';
 import React, { useEffect, useMemo } from 'react';
 
-export const ExampleRootPage = React.memo(function ExampleRootPage(props: AppRootProps) {
+export const RootPage = React.memo(function RootPage(props: AppRootProps) {
   const {
     path,
     onNavChanged,

@@ -40,9 +40,7 @@ export const fromMetaToValues = (meta: AppPluginMeta<KeyValue<any>>) => {
         const data: JsonData = meta.jsonData
         if(data.dittoURL !== undefined) {res['ditto_endpoint'] = data.dittoURL}
         if(data.dittoUsername !== undefined) {res['ditto_username'] = data.dittoUsername}
-        if(data.dittoPassword !== undefined) {res['ditto_password'] = data.dittoPassword}
         if(data.dittoDevopsUsername !== undefined) {res['ditto_username_devops'] = data.dittoDevopsUsername}
-        if(data.dittoDevopsPassword !== undefined) {res['ditto_password_devops'] = data.dittoDevopsPassword}
         if(data.extendedURL !== undefined) {res['ditto_extended_endpoint'] = data.extendedURL}
         if(data.agentsURL !== undefined) {res['agent_endpoint'] = data.agentsURL}
         if(data.agentsContext !== undefined) {res['agent_context'] = data.agentsContext}

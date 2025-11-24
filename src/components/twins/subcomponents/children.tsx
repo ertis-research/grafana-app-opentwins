@@ -1,7 +1,6 @@
-import React, { useContext, useEffect } from 'react'
+import React, { useEffect } from 'react'
 import { AppPluginMeta, KeyValue } from "@grafana/data"
 import { MainList } from 'components/auxiliary/dittoThing/list/main'
-import { StaticContext } from 'utils/context/staticContext'
 import { deleteTwinWithChildrenService, getChildrenOfTwinService } from 'services/TwinsCompositionService'
 import { deleteTwinService } from 'services/TwinsService'
 
@@ -13,8 +12,6 @@ interface Parameters {
 
 export function ListChildrenTwin({ path, id, meta }: Parameters) {
 
-    const context = useContext(StaticContext)
-
     useEffect(() => {
     }, [id])
 
@@ -22,7 +19,7 @@ export function ListChildrenTwin({ path, id, meta }: Parameters) {
             path={path} 
             meta={meta} 
             isType={false} 
-            funcThings={() => getChildrenOfTwinService(context, id)} 
+            funcThings={() => getChildrenOfTwinService(id)} 
             funcDelete={deleteTwinService} 
             funcDeleteChildren={deleteTwinWithChildrenService} 
             parentId={id}

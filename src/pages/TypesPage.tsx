@@ -1,9 +1,5 @@
 import React, { FC } from 'react'
-//import { FormThingType } from 'components/types/form/mainThingType';
 import { AppRootProps } from '@grafana/data'
-//import { FormTwinType } from 'components/types/form/mainTwinType';
-import { fromMetaToValues } from 'utils/auxFunctions/dittoThing'
-import { Context, StaticContext } from 'utils/context/staticContext'
 import { ListTypes } from 'components/types/list'
 import { CreateFormType } from 'components/types/createForm'
 import { TypeInfo } from 'components/types/typeInfo'
@@ -12,7 +8,6 @@ import { EditFormType } from 'components/types/editForm'
 export const TypesPage: FC<AppRootProps> = ({ query, path, meta }) => {
 
   const id = query["id"]
-  let valueMeta: Context = fromMetaToValues(meta)
   path = path + "?tab=types"
 
   let component = <ListTypes path={path} meta={meta} /> //default
@@ -31,10 +26,6 @@ export const TypesPage: FC<AppRootProps> = ({ query, path, meta }) => {
       break
   }
 
-  return (
-    <StaticContext.Provider value={valueMeta}>
-      {component}
-    </StaticContext.Provider>
-  )
+  return component
 
 };

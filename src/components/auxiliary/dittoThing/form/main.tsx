@@ -1,4 +1,4 @@
-import React, { useState, Fragment, useEffect, useContext, ChangeEvent } from 'react'
+import React, { useState, Fragment, useEffect, ChangeEvent } from 'react'
 import { AppPluginMeta, KeyValue, SelectableValue } from '@grafana/data'
 import { IAttribute, IDittoThing, IDittoThingData, IDittoThingForm, IFeature, IThingId } from 'utils/interfaces/dittoThing'
 import { Form, FormAPI, Field, Input, InputControl, Select, Icon, TextArea, Button, RadioButtonGroup, Switch, useTheme2 } from '@grafana/ui'
@@ -10,7 +10,6 @@ import { FormAttributes } from 'components/auxiliary/dittoThing/form/subcomponen
 import { FormFeatures } from 'components/auxiliary/dittoThing/form/subcomponents/formFeatures'
 import { getSelectWithObjectsFromThingsArray, JSONtoIAttributes, JSONtoIFeatures, splitThingId } from 'utils/auxFunctions/dittoThing'
 import { capitalize, enumNotification } from 'utils/auxFunctions/general'
-import { StaticContext } from 'utils/context/staticContext'
 import { CustomNotification } from 'components/auxiliary/general/notification'
 import { Notification } from 'utils/interfaces/notification'
 import { checkIsEditor } from 'utils/auxFunctions/auth'
@@ -42,9 +41,6 @@ export const ThingForm = ({ path, parentId, thingToEdit, isType, funcFromType, f
     const [showNotification, setShowNotification] = useState<Notification>({state: enumNotification.HIDE, title: ""})
     const [staticAttributes, setStaticAttributes] = useState<any>([])
     const [numChildren, setNumChildren] = useState<number>(1)
-
-
-    const context = useContext(StaticContext)
 
     const allowFromType = (isType || thingToEdit) ? false : true
     const title = (isType) ? "type" : "twin"
@@ -313,11 +309,11 @@ export const ThingForm = ({ path, parentId, thingToEdit, isType, funcFromType, f
         if (!allowFromType) {
             setSelected(enumOptions.FROM_ZERO)
         } else {
-            getAllTypesService(context).then((res) => setTypes(getSelectWithObjectsFromThingsArray(res)))
+            getAllTypesService().then((res) => setTypes(getSelectWithObjectsFromThingsArray(res)))
             .catch(() => console.log("error"))
         }
 
-        getAllPoliciesService(context).then((res: string[]) => {
+        getAllPoliciesService().then((res: string[]) => {
             setPolicies(res.map((item: string) => {
             return {
                 label : item,

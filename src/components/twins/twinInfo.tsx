@@ -55,7 +55,7 @@ export function TwinInfo({ path, id, meta, section }: Parameters) {
     }
 
     const getTwinInfo = () => {
-        getTwinService(context, id).then(res => {
+        getTwinService(id).then(res => {
             setTwinInfo(res)
         }).catch(() => console.log("error"))
     }

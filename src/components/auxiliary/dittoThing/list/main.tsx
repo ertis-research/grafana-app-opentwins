@@ -1,9 +1,8 @@
-import React, { useState, useEffect, Fragment, useContext, ChangeEvent } from 'react';
+import React, { useState, useEffect, Fragment, ChangeEvent } from 'react';
 import { IDittoThing } from 'utils/interfaces/dittoThing';
 import { LinkButton, Icon, ConfirmModal, Spinner, InlineSwitch, useTheme2, Input } from '@grafana/ui'
 import { AppEvents, AppPluginMeta, KeyValue } from '@grafana/data';
 import { defaultIfNoExist, enumNotification, imageIsUndefined } from 'utils/auxFunctions/general';
-import { StaticContext } from 'utils/context/staticContext';
 import { attributeSimulationOf } from 'utils/data/consts';
 import { getAppEvents } from '@grafana/runtime';
 import { getCurrentUserRole, isEditor, Roles } from 'utils/auxFunctions/auth';
@@ -31,7 +30,6 @@ export function MainList({ path, meta, isType, funcThings, funcDelete, funcDelet
     const [noSimulations, setNoSimulations] = useState<boolean>(iniNoSimulations)
     const [userRole, setUserRole] = useState<string>(Roles.VIEWER)
 
-    const context = useContext(StaticContext)
     const appEvents = getAppEvents()
 
     const title = (isType) ? "type" : "twin"
@@ -41,10 +39,10 @@ export function MainList({ path, meta, isType, funcThings, funcDelete, funcDelet
     const messageSuccess = `The ${title} has been deleted correctly.`
     const messageError = `The ${title} has not been deleted correctly. Refresh the page or check for errors.`
 
-    const deleteThing = (funcToExecute: any, context: any, thingId: string) => {
+    const deleteThing = (funcToExecute: any, thingId: string) => {
         setShowDeleteModal(undefined)
         setShowNotification(enumNotification.LOADING)
-        funcToExecute(context, thingId).then(() => {
+        funcToExecute(thingId).then(() => {
             console.log("OK")
             appEvents.publish({
                 type: AppEvents.alertSuccess.name,
@@ -134,9 +132,9 @@ export function MainList({ path, meta, isType, funcThings, funcDelete, funcDelet
         if (showDeleteModal !== undefined) {
             const thingId = showDeleteModal
             if (!isType && funcDeleteChildren !== undefined) {
-                return <ConfirmModal isOpen={true} title={messageDelete} body={descriptionDelete + `${thingId}?`} description={descriptionDeleteChildren} confirmationText={thingId} confirmText={"With children"} alternativeText={"Without children"} dismissText={"Cancel"} onAlternative={() => deleteThing(funcDelete, context, thingId)} onDismiss={hideNotification} onConfirm={() => deleteThing(funcDeleteChildren, context, thingId)} />
+                return <ConfirmModal isOpen={true} title={messageDelete} body={descriptionDelete + `${thingId}?`} description={descriptionDeleteChildren} confirmationText={thingId} confirmText={"With children"} alternativeText={"Without children"} dismissText={"Cancel"} onAlternative={() => deleteThing(funcDelete, thingId)} onDismiss={hideNotification} onConfirm={() => deleteThing(funcDeleteChildren, thingId)} />
             } else {
-                return <ConfirmModal isOpen={true} title={messageDelete} body={descriptionDelete + `${thingId}?`} confirmText={"Delete"} onConfirm={() => deleteThing(funcDelete, context, thingId)} onDismiss={hideNotification} />
+                return <ConfirmModal isOpen={true} title={messageDelete} body={descriptionDelete + `${thingId}?`} confirmText={"Delete"} onConfirm={() => deleteThing(funcDelete, thingId)} onDismiss={hideNotification} />
             }
         }
         switch (showNotification) {

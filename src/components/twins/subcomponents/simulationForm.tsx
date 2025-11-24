@@ -1,4 +1,4 @@
-import React, { Fragment, useState, useContext, useEffect, ChangeEvent } from 'react'
+import React, { Fragment, useState, useEffect, ChangeEvent } from 'react'
 import { AppPluginMeta, KeyValue, SelectableValue } from '@grafana/data'
 import { Button, ConfirmModal, Field, FieldSet, Form, FormAPI, Input, InputControl, List, Modal, Select, Switch, TextArea, useTheme2 } from '@grafana/ui'
 import { ElementHeader } from 'components/auxiliary/general/elementHeader'
@@ -8,7 +8,6 @@ import { ContentType, MethodRequest, TypesOfField} from 'utils/data/consts'
 import { SelectData } from 'utils/interfaces/select'
 import { Control } from 'react-hook-form'
 import { SimulationAttributes, SimulationAttributesForm, SimulationContent } from 'utils/interfaces/simulation'
-import { StaticContext } from 'utils/context/staticContext'
 import { createOrUpdateSimulationService, getSimulationService } from 'services/SimulationsService'
 
 interface Parameters {
@@ -35,8 +34,6 @@ export const SimulationForm = ({path, meta, id, simulationId}: Parameters) => {
     const contentTypeList: SelectData[] = enumToISelectList(ContentType)
     const typesOfFieldList: SelectData[] = enumToISelectList(TypesOfField)
 
-    const context = useContext(StaticContext)
-
     const contentDescription = "If the simulation needs to receive parameters, then configure the fields to be sent in the body of the request below"
     const titleSuccessEdit = "Successful edition!"
     const titleSuccessCreate = "Successful creation!"
@@ -47,7 +44,7 @@ export const SimulationForm = ({path, meta, id, simulationId}: Parameters) => {
 
     const handleOnSubmit = (data: SimulationAttributesForm) => {
         setShowNotification(enumNotification.LOADING)
-        createOrUpdateSimulationService(context, id, actualSimulation).then(() => {
+        createOrUpdateSimulationService(id, actualSimulation).then(() => {
             setShowNotification(enumNotification.SUCCESS)
         }).catch(() => {
             setShowNotification(enumNotification.ERROR)
@@ -162,7 +159,7 @@ export const SimulationForm = ({path, meta, id, simulationId}: Parameters) => {
 
     useEffect(() => {
         if(simulationId !== undefined) {
-            getSimulationService(context, id, simulationId).then((simulation: SimulationAttributes) => {
+            getSimulationService(id, simulationId).then((simulation: SimulationAttributes) => {
                 setActualSimulation(simulation)
                 setMethod({label: simulation.method, value: simulation.method})
                 if (simulation.contentType) {setContentType({label: simulation.contentType, value: simulation.contentType})}

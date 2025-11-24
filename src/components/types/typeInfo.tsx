@@ -1,7 +1,6 @@
-import React, { useState, useEffect, useContext, Fragment } from 'react'
+import React, { useState, useEffect, Fragment } from 'react'
 import { AppPluginMeta, KeyValue } from '@grafana/data'
 import { IDittoThing } from 'utils/interfaces/dittoThing'
-import { StaticContext } from 'utils/context/staticContext'
 import { InformationType } from './subcomponents/information'
 import { HierarchyType } from './subcomponents/hierarchy'
 import { InfoHeader } from 'components/auxiliary/general/infoHeader'
@@ -25,8 +24,6 @@ export function TypeInfo({ path, id, meta, section }: Parameters) {
     const [selected, setSelected] = useState<string>((section !== undefined) ? section : Sections.information);
     const [typeInfo, setTypeInfo] = useState<IDittoThing>({ thingId: "", policyId: "" })
 
-    const context = useContext(StaticContext)
-
     const getComponent = () => {
         switch (selected) {
             case Sections.hierarchy:
@@ -37,7 +34,7 @@ export function TypeInfo({ path, id, meta, section }: Parameters) {
     }
 
     const getTypeInfo = () => {
-        getTypeService(context, id).then(res => {
+        getTypeService(id).then(res => {
             setTypeInfo(res)
         }).catch(() => console.log("error"))
     }

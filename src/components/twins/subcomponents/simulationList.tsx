@@ -1,12 +1,11 @@
 import { AppEvents, AppPluginMeta, KeyValue } from '@grafana/data'
 import { getAppEvents } from '@grafana/runtime'
 import { Button, Card, Checkbox, Field, FieldSet, FileUpload, Form, FormAPI, Input, InputControl, LinkButton, List, Spinner, useTheme2 } from '@grafana/ui'
-import React, { Fragment, useState, useContext, useEffect, ChangeEvent } from 'react'
+import React, { Fragment, useState, useEffect, ChangeEvent } from 'react'
 import { deleteSimulationService, sendSimulationRequest } from 'services/SimulationsService'
 import { duplicateTwinService } from 'services/TwinsService'
 import { getCurrentUserRole, isEditor, Roles } from 'utils/auxFunctions/auth'
 import { defaultIfNoExist, enumNotification, removeEmptyEntries } from 'utils/auxFunctions/general'
-import { StaticContext } from 'utils/context/staticContext'
 import { TypesOfField } from 'utils/data/consts'
 import { IDittoThing } from 'utils/interfaces/dittoThing'
 import { SimulationAttributes, SimulationContent } from 'utils/interfaces/simulation'
@@ -35,8 +34,6 @@ export const SimulationList = ({ path, meta, id, twinInfo }: Parameters) => {
             simulationOf: id
         }
     }
-
-    const context = useContext(StaticContext)
 
     const sendSimulation = async (data: any) => {
         if (selectedSimulation !== undefined) {
@@ -71,7 +68,7 @@ export const SimulationList = ({ path, meta, id, twinInfo }: Parameters) => {
             delete data.thingId
             if (selectedSimulation !== undefined) {
                 data = removeEmptyEntries(data)
-                let ps: Array<Promise<any>> = thingIds.split(",").map((newId: string) => duplicateTwinService(context, id, newId.trim(), simulationOfAttribute))
+                let ps: Array<Promise<any>> = thingIds.split(",").map((newId: string) => duplicateTwinService(id, newId.trim(), simulationOfAttribute))
                 Promise.all(ps).then(() => {
                     appEvents.publish({
                         type: AppEvents.alertSuccess.name,
@@ -103,7 +100,7 @@ export const SimulationList = ({ path, meta, id, twinInfo }: Parameters) => {
 
     const handleOnCLickDelete = () => {
         if (selectedSimulation) {
-            deleteSimulationService(context, id, selectedSimulation.id)
+            deleteSimulationService(id, selectedSimulation.id)
             setselectedSimulation(undefined)
         }
     }

@@ -1,8 +1,7 @@
 import { AppPluginMeta, KeyValue } from '@grafana/data'
 import { ThingForm } from 'components/auxiliary/dittoThing/form/main'
-import React, { useEffect, useContext, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { createOrUpdateTypeService, getTypeService } from 'services/TypesService'
-import { StaticContext } from 'utils/context/staticContext'
 import { IDittoThing, IDittoThingData } from 'utils/interfaces/dittoThing'
 
 interface Parameters {
@@ -15,14 +14,12 @@ export const EditFormType = ({ path, meta, id }: Parameters) => {
 
     const [typeInfo, setTypeInfo] = useState<IDittoThing>()
 
-    const context = useContext(StaticContext)
-
     const handleEditType = (twinId: string, data: IDittoThingData) => {
-        return createOrUpdateTypeService(context, twinId, data)
+        return createOrUpdateTypeService(twinId, data)
     }
 
     useEffect(() => {
-        getTypeService(context, id).then((info: IDittoThing) => {
+        getTypeService(id).then((info: IDittoThing) => {
             setTypeInfo(info)
         })
     }, [id])

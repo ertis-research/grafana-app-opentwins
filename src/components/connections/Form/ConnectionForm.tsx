@@ -2,16 +2,8 @@
 import { AppEvents, AppPluginMeta, KeyValue, SelectableValue } from '@grafana/data'
 import { getAppEvents } from '@grafana/runtime'
 import { Button, Form, FormAPI, RadioButtonGroup, Spinner } from '@grafana/ui'
-import React, { Fragment, useEffect, useState, useContext } from 'react'
-import { StaticContext } from 'utils/context/staticContext'
+import React, { Fragment, useEffect, useState } from 'react'
 import { checkIsEditor } from 'utils/auxFunctions/auth'
-
-// --- Servicios ---
-// ¡IMPORTANTE! Necesitarás estos servicios (o similares) para editar:
-// import { getConnectionService } from 'services/connections/getConnectionService'
-// import { updateConnectionService } from 'services/connections/updateConnectionService'
-
-// --- Imports de la refactorización ---
 import { useConnectionForm } from './hooks/useConnectionForm'
 import { defaultOtherConnection, initConnectionData, ProtocolOptions } from './utils/constants'
 import { Protocols } from './ConnectionForm.types'
@@ -31,7 +23,6 @@ interface Parameters {
 
 // Renombrado de 'CreateFormConnection' a 'ConnectionForm'
 export function ConnectionForm({ path, meta, existingConnectionId }: Parameters) {
-    const context = useContext(StaticContext)
     const appEvents = getAppEvents()
 
     const [isSaving, setIsSaving] = useState(false)
@@ -64,7 +55,7 @@ export function ConnectionForm({ path, meta, existingConnectionId }: Parameters)
             setIsEditMode(true)
 
 
-            getConnectionByIdService(context, existingConnectionId)
+            getConnectionByIdService(existingConnectionId)
                 .then(apiData => {
                     const protocol = apiData.connectionType === 'kafka' ? Protocols.KAFKA : apiData.connectionType === 'mqtt-5' ? Protocols.MQTT5 : Protocols.OTHERS;
                     if (protocol === Protocols.OTHERS) {
@@ -104,7 +95,7 @@ export function ConnectionForm({ path, meta, existingConnectionId }: Parameters)
             }
 
             logger.debug("[ConnectionForm] Creating 'Other' connection with payload:", jsonOtherConnection);
-            createConnectionWithoutIdService(context, jsonOtherConnection)
+            createConnectionWithoutIdService(jsonOtherConnection)
                 .then(() => {
                     logger.info(`[ConnectionForm] 'Other' connection ${isEditMode ? 'updated' : 'created'} successfully.`);
                     appEvents.publish({ type: AppEvents.alertSuccess.name, payload: [`Connection ${isEditMode ? 'updated' : 'created'}`] });
@@ -130,7 +121,7 @@ export function ConnectionForm({ path, meta, existingConnectionId }: Parameters)
             logger.info("[ConnectionForm] Processing MQTT/Kafka connection submission.")
             const payload = buildConnectionPayload(currentConnection, selectedProtocol.value);
             logger.debug("[ConnectionForm] Payload generated:", payload);
-            const serviceCall = () => createConnectionWithIdService(context, currentConnection.id, payload);
+            const serviceCall = () => createConnectionWithIdService(currentConnection.id, payload);
 
             serviceCall()
                 .then(() => {

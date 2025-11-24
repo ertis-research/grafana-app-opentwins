@@ -2,8 +2,7 @@
   "$schema": "https://raw.githubusercontent.com/grafana/grafana/master/docs/sources/developers/plugins/plugin.schema.json",
   "type": "app",
   "name": "OpenTwins",
-  "id": "ertis-opentwins",
-
+  "id": "ertis-opentwins-app",
   "info": {
     "description": "Grafana app plugin for digital twins",
     "author": {
@@ -22,13 +21,12 @@
     "version": "1.1.0",
     "updated": "%TODAY%"
   },
-
   "includes": [
     {
       "type": "page",
       "name": "Twins",
       "addToNav": true,
-      "path": "/a/ertis-opentwins",
+      "path": "/a/ertis-opentwins-app",
       "role": "Viewer",
       "defaultNav": true,
       "icon": "file-alt"
@@ -37,7 +35,7 @@
       "type": "page",
       "name": "Twins",
       "addToNav": true,
-      "path": "/a/ertis-opentwins/?tab=twins",
+      "path": "/a/ertis-opentwins-app/?tab=twins",
       "role": "Viewer",
       "icon": "file-alt"
     },
@@ -45,7 +43,7 @@
       "type": "page",
       "name": "Types",
       "addToNav": true,
-      "path": "/a/ertis-opentwins/?tab=types",
+      "path": "/a/ertis-opentwins-app/?tab=types",
       "role": "Viewer",
       "icon": "folder-plus"
     },
@@ -53,7 +51,7 @@
       "type": "page",
       "name": "Connections",
       "addToNav": true,
-      "path": "/a/ertis-opentwins/?tab=connections",
+      "path": "/a/ertis-opentwins-app/?tab=connections",
       "role": "Editor",
       "icon": "plug"
     },
@@ -61,20 +59,55 @@
       "type": "page",
       "name": "Policies",
       "addToNav": true,
-      "path": "/a/ertis-opentwins/?tab=policies",
+      "path": "/a/ertis-opentwins-app/?tab=policies",
       "role": "Editor",
       "icon": "shield"
     },
     {
       "type": "page",
       "name": "Config",
-      "path": "/plugins/ertis-opentwins/?page=config",
+      "path": "/plugins/ertis-opentwins-app/?page=config",
       "role": "Admin",
       "addToNav": true,
       "icon" : "sliders-v-alt"
     }
   ],
-
+  "routes": [
+    {
+      "path": "ditto/*",
+      "url": "{{ .JsonData.dittoURL }}",
+      "headers": [
+        {
+          "name": "Authorization",
+          "content": "Basic {{ .SecureJsonData.dittoBasicAuth }}"
+        }
+      ]
+    },
+    {
+      "path": "dittodevops/*",
+      "url": "{{ .JsonData.dittoURL }}",
+      "headers": [
+        {
+          "name": "Authorization",
+          "content": "Basic {{ .SecureJsonData.dittoDevopsBasicAuth }}"
+        }
+      ]
+    },
+    {
+      "path": "extended/*",
+      "url": "{{ .JsonData.extendedURL }}",
+      "headers": [
+        {
+          "name": "Authorization",
+          "content": "Basic {{ .SecureJsonData.dittoBasicAuth }}"
+        }
+      ]
+    },
+    {
+      "path": "agents/*",
+      "url": "{{ .JsonData.agentsURL }}"
+    }
+  ],
   "dependencies": {
     "grafanaDependency": ">=7.0.0",
     "grafanaVersion": "7.0.0",

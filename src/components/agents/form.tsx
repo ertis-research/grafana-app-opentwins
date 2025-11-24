@@ -53,7 +53,7 @@ export function CreateFormAgent({ path, meta, id }: Parameters) {
     }
 
     const getTwins = () => {
-        getAllTwinsIdsService(context).then((res: string[]) => {
+        getAllTwinsIdsService().then((res: string[]) => {
             setTwins(res.map((id: string) => {
                 return { value: id, label: id }
             }))
@@ -90,7 +90,7 @@ export function CreateFormAgent({ path, meta, id }: Parameters) {
         json_data = setNestedKey(json_data, ['metadata', 'labels', 'opentwins.agents/name'], currentAgent.name)
         json_data = setNestedKey(json_data, ['metadata', 'labels', 'opentwins.agents/twins'], value.map((v) => v.value))
         console.log(JSON.stringify(json_data))
-        createAgentService(context, currentAgent.id, currentAgent.namespace, json_data).then((res: any) => {
+        createAgentService(currentAgent.id, currentAgent.namespace, json_data).then((res: any) => {
             appEvents.publish({
                 type: AppEvents.alertSuccess.name,
                 payload: ["Agent successfully created"],

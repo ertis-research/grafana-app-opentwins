@@ -1,11 +1,10 @@
-import React, { useState, Fragment, useEffect, useContext, ChangeEvent } from 'react'
+import React, { useState, Fragment, useEffect, ChangeEvent } from 'react'
 import { TextArea, Input, Field, List, Legend, Button, Form, FormAPI, FieldSet } from '@grafana/ui'
 import { Entry, Policy, Resource, Subject } from 'utils/interfaces/dittoPolicy'
 import { ListElement } from 'components/auxiliary/general/listElement'
 import { initResources, initSubjects } from 'utils/data/consts'
 import { FormSubjects } from './subcomponents/formSubjects'
 import { FormResources } from './subcomponents/formResources'
-import { StaticContext } from 'utils/context/staticContext'
 import { Notification } from 'utils/interfaces/notification'
 import { enumNotification } from 'utils/auxFunctions/general'
 import { CustomNotification } from 'components/auxiliary/general/notification'
@@ -22,10 +21,6 @@ export const FormPolicy = ({path, id}: Parameters ) => {
     const [entry, setEntry] = useState<Entry>({ name: "", subjects: initSubjects, resources: initResources})
     const [currentPolicy, setCurrentPolicy] = useState<Policy>({ policyId: "", entries: []})
     const [showNotification, setShowNotification] = useState<Notification>({state: enumNotification.HIDE, title: ""})
-    //const [subjects, setSubjects] = useState<Subject[]>(initSubjects)
-    //const [resources, setResources] = useState<Resource[]>(initResources)
-
-    const context = useContext(StaticContext)
 
 
 // -----------------------------------------------------------------------------------------------
@@ -108,7 +103,7 @@ export const FormPolicy = ({path, id}: Parameters ) => {
 
     useEffect(() => {
         if(id !== undefined && id !== '') {
-            getPolicyByIdService(context, id).then((policy: Policy) => {
+            getPolicyByIdService(id).then((policy: Policy) => {
                 setPolicy(policy)
             })
         }
@@ -178,7 +173,7 @@ export const FormPolicy = ({path, id}: Parameters ) => {
     const handleOnSubmitFinal = (data: {name: string}) => {
         try {
             setShowNotification({state: enumNotification.LOADING, title: ""})
-            createOrUpdatePolicyService(context, currentPolicy).then(() => {
+            createOrUpdatePolicyService(currentPolicy).then(() => {
                 //window.location.replace(path + "?tab=policies")
                 console.log("Listo")
                 setShowNotification(notificationSuccess)

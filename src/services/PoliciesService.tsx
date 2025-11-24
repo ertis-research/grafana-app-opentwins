@@ -1,57 +1,42 @@
-import { Context } from "utils/context/staticContext"
-import { Policy } from "utils/interfaces/dittoPolicy"
-import { fetchDittoAPIService, fetchExtendedApiForDittoService } from "./FetchService"
+import { Policy } from "utils/interfaces/dittoPolicy";
+import { fetchFromGrafanaProxy, PROXY_DITTO_URL, PROXY_EXTENDED_URL } from "./FetchService";
 
-// --- Helpers de Cabeceras ---
-
-/**
- * Devuelve cabeceras de autenticación dinámicas (del contexto) para PUT/POST.
- */
-const getContextAuthJsonHeaders = (context: Context) => ({
-    "Authorization": 'Basic ' + btoa(context.ditto_username + ':' + context.ditto_password),
-    "Content-Type": "application/json; charset=UTF-8"
-});
-
-// --- Servicios ---
+// --- Services ---
 
 /**
- * Crea o actualiza una política. Usa la autenticación del contexto.
+ * Creates or updates a policy using context authentication.
  */
-export const createOrUpdatePolicyService = async (context: Context, data: Policy) => {
-    return await fetchDittoAPIService(context, "/policies/" + data.policyId, {
+export const createOrUpdatePolicyService = async (data: Policy) => {
+    return await fetchFromGrafanaProxy(`${PROXY_DITTO_URL}/policies/${data.policyId}`, {
         method: 'PUT',
-        headers: getContextAuthJsonHeaders(context),
-        body: JSON.stringify({ entries: data.entries })
+        data: { entries: data.entries }
     });
 }
 
 /**
- * Borra una política..
+ * Deletes a policy.
  */
-export const deletePolicyService = async (context: Context, policyId: string) => {
-    return await fetchDittoAPIService(context, "/policies/" + policyId, {
-        method: 'DELETE',
-        headers: getContextAuthJsonHeaders(context)
+export const deletePolicyService = async (policyId: string) => {
+    return await fetchFromGrafanaProxy(`${PROXY_DITTO_URL}/policies/${policyId}`, {
+        method: 'DELETE'
     });
 }
 
 /**
- * Obtiene una política por ID..
+ * Gets a policy by ID.
  */
-export const getPolicyByIdService = async (context: Context, policyId: string) => {
-    return await fetchDittoAPIService(context, "/policies/" + policyId, {
-        method: 'GET',
-        headers: getContextAuthJsonHeaders(context)
+export const getPolicyByIdService = async (policyId: string) => {
+    return await fetchFromGrafanaProxy(`${PROXY_DITTO_URL}/policies/${policyId}`, {
+        method: 'GET'
     });
 }
 
 /**
- * Obtiene todas las políticas desde el endpoint extendido.
+ * Gets all policies from the extended endpoint.
  */
-export const getAllPoliciesService = async (context: Context) => {
-    // Nota: Esta función usa 'fetchExtendedApiForDittoService'
-    return await fetchExtendedApiForDittoService(context, "/policies", {
-        method: 'GET',
-        headers: getContextAuthJsonHeaders(context)
+export const getAllPoliciesService = async () => {
+    // Note: This function targets the extended endpoint
+    return await fetchFromGrafanaProxy(`${PROXY_EXTENDED_URL}/policies`, {
+        method: 'GET'
     });
 }

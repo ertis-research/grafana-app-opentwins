@@ -1,38 +1,32 @@
-import { Context } from "utils/context/staticContext"
-import { fetchAgentsAPIService } from "./FetchService"
+import { Context } from "utils/context/staticContext";
+import { fetchFromGrafanaProxy, PROXY_AGENTS_URL } from "./FetchService";
 
-// --- Constantes para Headers ---
+// --- Agent CRUD ---
 
-// Cabeceras para peticiones GET, DELETE, PUT, POST sin body JSON
-const AGENT_ACCEPT_HEADERS = {
-    "Accept": "application/json"
-};
-
-// Cabeceras para peticiones POST/PUT que envían JSON
-const AGENT_JSON_HEADERS = {
-    "Accept": "application/json",
-    "Content-Type": "application/json"
-};
-
-// --- CRUD de Agentes ---
-
-export const createAgentService = async (context: Context, id: string, namespace: string, data: any) => {
-    return await fetchAgentsAPIService(context, `/agent/${namespace}/${id}`, {
+/**
+ * Creates a new agent in a specific namespace.
+ */
+export const createAgentService = async (id: string, namespace: string, data: any) => {
+    return await fetchFromGrafanaProxy(`${PROXY_AGENTS_URL}/agent/${namespace}/${id}`, {
         method: 'POST',
-        headers: AGENT_JSON_HEADERS,
-        body: JSON.stringify(data)
+        data: data
     });
 }
 
-export const getAgentByIdService = async (context: Context, id: string, namespace: string) => {
-    return await fetchAgentsAPIService(context, `/agent/${namespace}/${id}`, {
-        method: 'GET',
-        headers: AGENT_ACCEPT_HEADERS
+/**
+ * Gets a specific agent by ID and namespace.
+ */
+export const getAgentByIdService = async (id: string, namespace: string) => {
+    return await fetchFromGrafanaProxy(`${PROXY_AGENTS_URL}/agent/${namespace}/${id}`, {
+        method: 'GET'
     });
 }
 
+/**
+ * Gets all agents, optionally filtered by twin ID or context.
+ */
 export const getAllAgentsService = async (context: Context, twinId?: string) => {
-    // Usar URLSearchParams para construir la query string de forma segura
+    // Use URLSearchParams to safely build the query string
     const params = new URLSearchParams();
     
     if (context.agent_context && context.agent_context.trim() !== '') {
@@ -43,58 +37,71 @@ export const getAllAgentsService = async (context: Context, twinId?: string) => 
     }
 
     const queryString = params.toString();
-    const url = queryString ? `/agents?${queryString}` : '/agents';
+    const url = queryString 
+        ? `${PROXY_AGENTS_URL}/agents?${queryString}` 
+        : `${PROXY_AGENTS_URL}/agents`;
 
-    return await fetchAgentsAPIService(context, url, {
-        method: 'GET',
-        headers: AGENT_ACCEPT_HEADERS
+    return await fetchFromGrafanaProxy(url, {
+        method: 'GET'
     });
 }
 
-export const deleteAgentByIdService = async (context: Context, id: string, namespace: string) => {
-    return await fetchAgentsAPIService(context, `/agent/${namespace}/${id}`, {
-        method: 'DELETE',
-        headers: AGENT_ACCEPT_HEADERS
+/**
+ * Deletes an agent by ID and namespace.
+ */
+export const deleteAgentByIdService = async (id: string, namespace: string) => {
+    return await fetchFromGrafanaProxy(`${PROXY_AGENTS_URL}/agent/${namespace}/${id}`, {
+        method: 'DELETE'
     });
 }
 
-// --- Comandos de Estado del Agente ---
+// --- Agent State Commands ---
 
-export const pauseAgentByIdService = async (context: Context, id: string, namespace: string) => {
-    return await fetchAgentsAPIService(context, `/agent/${namespace}/${id}/pause`, {
-        method: 'POST',
-        headers: AGENT_ACCEPT_HEADERS
+/**
+ * Pauses a specific agent.
+ */
+export const pauseAgentByIdService = async (id: string, namespace: string) => {
+    return await fetchFromGrafanaProxy(`${PROXY_AGENTS_URL}/agent/${namespace}/${id}/pause`, {
+        method: 'POST'
     });
 }
 
-export const resumeAgentByIdService = async (context: Context, id: string, namespace: string) => {
-    return await fetchAgentsAPIService(context, `/agent/${namespace}/${id}/resume`, {
-        method: 'POST',
-        headers: AGENT_ACCEPT_HEADERS
+/**
+ * Resumes a specific agent.
+ */
+export const resumeAgentByIdService = async (id: string, namespace: string) => {
+    return await fetchFromGrafanaProxy(`${PROXY_AGENTS_URL}/agent/${namespace}/${id}/resume`, {
+        method: 'POST'
     });
 }
 
-// --- Enlace con Twins ---
+// --- Twin Linking ---
 
-export const linkTwinToAgentService = async (context: Context, id: string, twinId: string, namespace: string) => {
-    return await fetchAgentsAPIService(context, `/agent/${namespace}/${id}/twin/${twinId}/link`, {
-        method: 'PUT',
-        headers: AGENT_ACCEPT_HEADERS
+/**
+ * Links a twin to a specific agent.
+ */
+export const linkTwinToAgentService = async (id: string, twinId: string, namespace: string) => {
+    return await fetchFromGrafanaProxy(`${PROXY_AGENTS_URL}/agent/${namespace}/${id}/twin/${twinId}/link`, {
+        method: 'PUT'
     });
 }
 
-export const unlinkTwinToAgentService = async (context: Context, id: string, twinId: string, namespace: string) => {
-    return await fetchAgentsAPIService(context, `/agent/${namespace}/${id}/twin/${twinId}/unlink`, {
-        method: 'PUT',
-        headers: AGENT_ACCEPT_HEADERS
+/**
+ * Unlinks a twin from a specific agent.
+ */
+export const unlinkTwinToAgentService = async (id: string, twinId: string, namespace: string) => {
+    return await fetchFromGrafanaProxy(`${PROXY_AGENTS_URL}/agent/${namespace}/${id}/twin/${twinId}/unlink`, {
+        method: 'PUT'
     });
 }
 
 // --- Logs ---
 
-export const getLogByPodService = async (context: Context, podId: string) => {
-    return await fetchAgentsAPIService(context, `/agents/${podId}/logs`, {
-        method: 'GET',
-        headers: AGENT_ACCEPT_HEADERS
+/**
+ * Gets logs for a specific agent pod.
+ */
+export const getLogByPodService = async (podId: string) => {
+    return await fetchFromGrafanaProxy(`${PROXY_AGENTS_URL}/agents/${podId}/logs`, {
+        method: 'GET'
     });
 }

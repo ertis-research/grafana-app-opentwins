@@ -1,8 +1,7 @@
 import { Button, ConfirmModal, Modal, Spinner } from "@grafana/ui"
-import React, { useState, useContext, Fragment, useEffect } from "react"
+import React, { useState, Fragment, useEffect } from "react"
 import { getCurrentUserRole, isEditor, Roles } from "utils/auxFunctions/auth"
 import { enumNotification } from "utils/auxFunctions/general"
-import { StaticContext } from "utils/context/staticContext"
 
 interface Parameters {
     path: string
@@ -21,8 +20,6 @@ export const ButtonsInfo = ({ path, thingId, isType, funcDelete, funcDeleteChild
     const messageError = `The ${title} has not been deleted correctly.`
     const descriptionError = "Refresh the page or check for errors."
 
-    const context = useContext(StaticContext)
-
     const [userRole, setUserRole] = useState<string>(Roles.VIEWER)
     const [showDeleteModal, setShowDeleteModal] = useState<string>()
     const [showNotification, setShowNotification] = useState<string>(enumNotification.HIDE)
@@ -39,11 +36,11 @@ export const ButtonsInfo = ({ path, thingId, isType, funcDelete, funcDeleteChild
         }
     }
 
-    const deleteThing = (funcToExecute: any, context: any, thingId: string) => {
+    const deleteThing = (funcToExecute: any, thingId: string) => {
         setShowDeleteModal(undefined)
         setShowNotification(enumNotification.LOADING)
         try {
-            funcToExecute(context, thingId).then(() => {
+            funcToExecute(thingId).then(() => {
                 console.log("OK")
                 setShowNotification(enumNotification.SUCCESS)
             }).catch(() => {
@@ -61,9 +58,9 @@ export const ButtonsInfo = ({ path, thingId, isType, funcDelete, funcDeleteChild
         if (showDeleteModal !== undefined) {
             const thingId = showDeleteModal
             if (!isType && funcDeleteChildren !== undefined) {
-                return <ConfirmModal isOpen={true} title={messageDelete} body={descriptionDelete + `${thingId}?`} description={descriptionDeleteChildren} confirmationText={thingId} confirmText={"With children"} alternativeText={"Without children"} dismissText={"Cancel"} onAlternative={() => deleteThing(funcDelete, context, thingId)} onDismiss={() => hideNotification(false)} onConfirm={() => deleteThing(funcDeleteChildren, context, thingId)} />
+                return <ConfirmModal isOpen={true} title={messageDelete} body={descriptionDelete + `${thingId}?`} description={descriptionDeleteChildren} confirmationText={thingId} confirmText={"With children"} alternativeText={"Without children"} dismissText={"Cancel"} onAlternative={() => deleteThing(funcDelete, thingId)} onDismiss={() => hideNotification(false)} onConfirm={() => deleteThing(funcDeleteChildren, thingId)} />
             } else {
-                return <ConfirmModal isOpen={true} title={messageDelete} body={descriptionDelete + `${thingId}?`} confirmText={"Delete"} onConfirm={() => deleteThing(funcDelete, context, thingId)} onDismiss={() => hideNotification(false)} />
+                return <ConfirmModal isOpen={true} title={messageDelete} body={descriptionDelete + `${thingId}?`} confirmText={"Delete"} onConfirm={() => deleteThing(funcDelete, thingId)} onDismiss={() => hideNotification(false)} />
             }
         }
         switch (showNotification) {

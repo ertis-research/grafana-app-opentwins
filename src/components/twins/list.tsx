@@ -1,7 +1,6 @@
-import React, {useContext} from 'react'
+import React from 'react'
 import { AppPluginMeta, KeyValue } from "@grafana/data"
 import { MainList } from 'components/auxiliary/dittoThing/list/main'
-import { StaticContext } from 'utils/context/staticContext'
 import { deleteTwinService, getAllRootTwinsService } from 'services/TwinsService'
 import { deleteTwinWithChildrenService } from 'services/TwinsCompositionService'
 
@@ -12,13 +11,11 @@ interface Parameters {
 
 export function ListTwins({path, meta }: Parameters) {
 
-    const context = useContext(StaticContext)
-
     return <MainList 
             path={path} 
             meta={meta} 
             isType={false} 
-            funcThings={() => getAllRootTwinsService(context)} 
+            funcThings={() => getAllRootTwinsService()} 
             funcDelete={deleteTwinService}
             funcDeleteChildren={deleteTwinWithChildrenService}
         />

@@ -72,7 +72,7 @@ export function ListAgents({ path, meta, twinId }: Parameters) {
     }
 
     const getTwins = () => {
-        getAllTwinsIdsService(context).then((res: string[]) => {
+        getAllTwinsIdsService().then((res: string[]) => {
             setTwins(res.map((id: string) => {
                 return { value: id, label: id }
             }))
@@ -87,7 +87,7 @@ export function ListAgents({ path, meta, twinId }: Parameters) {
     const getLog = (podId: string, idx: number) => {
         let timestamp = Date.now()
         setChargingLog(true)
-        getLogByPodService(context, podId).then((res: string) => {
+        getLogByPodService(podId).then((res: string) => {
             let aux = { ...latestLogs }
             aux[idx] = { timestamp: timestamp, text: res }
             setLatestLogs(aux)
@@ -106,7 +106,7 @@ export function ListAgents({ path, meta, twinId }: Parameters) {
     }
 
     const getAgentInfoById = (item: ListAgent) => {
-        getAgentByIdService(context, item.id, item.namespace).then((res: any) => {
+        getAgentByIdService(item.id, item.namespace).then((res: any) => {
             if (res !== undefined) {
                 setSelectedAgent({ id: item.id, info: item, data: JSON.parse(res) })
             }
@@ -167,7 +167,7 @@ export function ListAgents({ path, meta, twinId }: Parameters) {
 
     const handleOnClickUnlink = (twinId: string) => {
         if (selectedAgent) {
-            unlinkTwinToAgentService(context, selectedAgent.id, twinId, selectedAgent.info.namespace).then((res: any) => {
+            unlinkTwinToAgentService(selectedAgent.id, twinId, selectedAgent.info.namespace).then((res: any) => {
                 appEvents.publish({
                     type: AppEvents.alertSuccess.name,
                     payload: ["Twin unlinked from the agent successfully"]
@@ -186,7 +186,7 @@ export function ListAgents({ path, meta, twinId }: Parameters) {
 
     const handleOnClickLink = () => {
         if (selectedAgent && selectedTwins.length > 0) {
-            let ps: Array<Promise<any>> = selectedTwins.map((v) => (v.value) ? linkTwinToAgentService(context, selectedAgent.id, v.value, selectedAgent.info.namespace) : new Promise(() => { }))
+            let ps: Array<Promise<any>> = selectedTwins.map((v) => (v.value) ? linkTwinToAgentService(selectedAgent.id, v.value, selectedAgent.info.namespace) : new Promise(() => { }))
             Promise.all(ps).then((res: any) => {
                 appEvents.publish({
                     type: AppEvents.alertSuccess.name,
@@ -212,7 +212,7 @@ export function ListAgents({ path, meta, twinId }: Parameters) {
 
     const handleOnClickPausePlay = (item: ListAgent) => {
         if (item.status === AgentState.ACTIVE) {
-            pauseAgentByIdService(context, item.id, item.namespace).then((res: any) => {
+            pauseAgentByIdService(item.id, item.namespace).then((res: any) => {
                 updateAgents()
             }).catch((e) => {
                 console.log("error", e)
@@ -222,7 +222,7 @@ export function ListAgents({ path, meta, twinId }: Parameters) {
                 });
             })
         } else {
-            resumeAgentByIdService(context, item.id, item.namespace).then((res: any) => {
+            resumeAgentByIdService(item.id, item.namespace).then((res: any) => {
                 updateAgents()
             }).catch((e) => {
                 appEvents.publish({
@@ -234,7 +234,7 @@ export function ListAgents({ path, meta, twinId }: Parameters) {
     }
 
     const handleOnConfirmDelete = (item: ListAgent) => {
-        deleteAgentByIdService(context, item.id, item.namespace).then((res: any) => {
+        deleteAgentByIdService(item.id, item.namespace).then((res: any) => {
             updateAgents()
             setIsOpenDelete(undefined)
             appEvents.publish({

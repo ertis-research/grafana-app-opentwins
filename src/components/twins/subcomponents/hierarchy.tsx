@@ -1,12 +1,11 @@
-import React, { useContext, useEffect } from 'react'
+import React, { useEffect } from 'react'
 import { AppPluginMeta, KeyValue } from "@grafana/data"
 import { useTheme2 } from '@grafana/ui'
 import { ListLabels, ListThingNum } from 'components/auxiliary/dittoThing/list/listThingNum'
-import { Context, StaticContext } from 'utils/context/staticContext'
 import { IDittoThing, LinkData } from 'utils/interfaces/dittoThing'
 import { getChildrenOfTypeService } from 'services/TypesCompositionService'
 import { getAllRootTwinsService } from 'services/TwinsService'
-import { createOrUpdateTwinToBeChildService } from 'services/TwinsCompositionService'
+import { createOrUpdateTwinToBeChildService, unlinkParentTwinService } from 'services/TwinsCompositionService'
 
 interface Parameters {
     path: string
@@ -17,7 +16,6 @@ interface Parameters {
 export function HierarchyType({ path, id, meta }: Parameters) {
 
     const bgcolor = useTheme2().colors.background.secondary
-    const context = useContext(StaticContext)
 
     const childrenLabels: ListLabels = {
         id: "Child",
@@ -26,7 +24,7 @@ export function HierarchyType({ path, id, meta }: Parameters) {
     }
 
     const getChildren = async (): Promise<LinkData[]> => {
-        return getChildrenOfTypeService(context, id).then((res: IDittoThing[]|undefined) => {
+        return getChildrenOfTypeService(id).then((res: IDittoThing[]|undefined) => {
             return (res === undefined) ? [] : res.map((t: IDittoThing) => { 
                 return {
                     "id": t.thingId, 
@@ -48,7 +46,7 @@ export function HierarchyType({ path, id, meta }: Parameters) {
     }*/
 
     const getTypes = async (): Promise<string[]> => {
-        return getAllRootTwinsService(context).then((res: IDittoThing[]) => {
+        return getAllRootTwinsService().then((res: IDittoThing[]) => {
             return res.map((t: IDittoThing) => { 
                 return t.thingId
             })
@@ -57,11 +55,11 @@ export function HierarchyType({ path, id, meta }: Parameters) {
 
     const updateChild = async (elemToUpdate: string): Promise<any> => {
         console.log("elemToUpdate", elemToUpdate)
-        return createOrUpdateTwinToBeChildService(context, id, elemToUpdate)
+        return await createOrUpdateTwinToBeChildService(id, elemToUpdate)
     }
 
     const unlinkChild = async (elemToUnlink: string): Promise<any> => {
-        return unlinkChildrenTwinById(context, id, elemToUnlink)
+        return await unlinkParentTwinService(elemToUnlink)
     }
     
     useEffect(() => {
@@ -85,8 +83,5 @@ export function HierarchyType({ path, id, meta }: Parameters) {
 
 //<ListChildrenType path={path} meta={meta} id={id} />
 
-}
-function unlinkChildrenTwinById(context: Context, id: string, elemToUnlink: string): any {
-    throw new Error('Function not implemented.')
 }
 

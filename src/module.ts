@@ -6,9 +6,9 @@ import './css/bootstrap-basics.css';
 import './css/main.css';
 import { AppPlugin } from '@grafana/data';
 import { AppConfig } from 'config/AppConfig';
-import { ExampleRootPage } from 'ExampleRootPage';
+import { RootPage } from 'RootPage';
 
-export const plugin = new AppPlugin<{}>().setRootPage(ExampleRootPage).addConfigPage({
+export const plugin = new AppPlugin<{}>().setRootPage(RootPage).addConfigPage({
   title: 'Configuration',
   icon: 'cog',
   body: AppConfig,

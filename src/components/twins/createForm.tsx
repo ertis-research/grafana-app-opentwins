@@ -1,10 +1,9 @@
 import { AppPluginMeta, KeyValue } from '@grafana/data'
 import { ThingForm } from 'components/auxiliary/dittoThing/form/main'
-import React, { useContext, useEffect } from 'react'
+import React, { useEffect } from 'react'
 import { createOrUpdateTwinToBeChildService } from 'services/TwinsCompositionService'
 import { createOrUpdateTwinService } from 'services/TwinsService'
 import { createTwinFromTypeService } from 'services/TypesService'
-import { StaticContext } from 'utils/context/staticContext'
 import { IDittoThingData } from 'utils/interfaces/dittoThing'
 
 interface Parameters {
@@ -17,27 +16,24 @@ export const CreateFormTwin = ({ path, meta, id }: Parameters) => {
 
     useEffect(() => {
     }, [id])
-    
-
-    const context = useContext(StaticContext)
 
     if (id !== undefined) {
         const handleCreateChildren = (thingId: string, data?: IDittoThingData) => {
-            return createOrUpdateTwinToBeChildService(context, id, thingId, data)
+            return createOrUpdateTwinToBeChildService(id, thingId, data)
         }
         const handleCreateChildrenByType = (thingId: string, typeId: string, data?: IDittoThingData) => {
-            return createTwinFromTypeService(context, thingId, typeId, data).then(() => 
-                createOrUpdateTwinToBeChildService(context, id, thingId)
+            return createTwinFromTypeService(thingId, typeId, data).then(() => 
+                createOrUpdateTwinToBeChildService(id, thingId)
             )
         }
         return <ThingForm path={path} meta={meta} parentId={id} isType={false} funcFromZero={handleCreateChildren} funcFromType={handleCreateChildrenByType}/>
     
     } else {
         const handleCreateNew = (thingId: string, data: IDittoThingData ) => {
-            return createOrUpdateTwinService(context, thingId, data)
+            return createOrUpdateTwinService(thingId, data)
         }
         const handleCreateNewByType = (thingId: string, typeId: string, data?: IDittoThingData) => {
-            return createTwinFromTypeService(context, thingId, typeId, data)
+            return createTwinFromTypeService(thingId, typeId, data)
         }
         return <ThingForm path={path} meta={meta} isType={false} funcFromZero={handleCreateNew} funcFromType={handleCreateNewByType}/>
     
