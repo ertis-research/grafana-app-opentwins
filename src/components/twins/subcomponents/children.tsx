@@ -13,7 +13,7 @@ interface Parameters {
 export function ListChildrenTwin({ path, id, meta }: Parameters) {
 
     useEffect(() => {
-    }, [id])
+    }, [id, path])
 
     return <MainList 
             path={path} 

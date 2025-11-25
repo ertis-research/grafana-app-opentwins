@@ -172,7 +172,7 @@ export function ListThingNum({ path, id, meta, isType, labels, funcGet, funcUpda
                         <div className="col-12 col-xl-4 mt-1" style={{ display: 'flex', justifyContent: 'flex-end' }}>
                             <Button type='submit' variant='secondary' style={{ marginRight: '5px', width: '100%', justifyContent: 'center' }} disabled={showNotification === enumNotification.LOADING}>Update</Button>
                             <Button type='button' variant='destructive' style={{ marginRight: '5px' }} onClick={() => handleUnlink(thing.id)} disabled={showNotification === enumNotification.LOADING}>Unlink</Button>
-                            <LinkButton type='button' variant='secondary' icon='external-link-alt' href={path + "&mode=check&id=" + thing.id} disabled={showNotification === enumNotification.LOADING}></LinkButton>
+                            <LinkButton type='button' variant='secondary' icon='external-link-alt' href={path + "&mode=check&section=information&id=" + thing.id} disabled={showNotification === enumNotification.LOADING}></LinkButton>
                         </div>
                     </div>
                 )

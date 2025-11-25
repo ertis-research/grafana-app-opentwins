@@ -163,7 +163,7 @@ const ThingCard: React.FC<ThingCardProps> = ({ thing, path, isEditor, isCompact,
     ? thing.attributes._parents[parentId]
     : null;
 
-  const linkUrl = `${path}&mode=check&id=${thing.thingId}`;
+  const linkUrl = `${path}&mode=check&id=${thing.thingId}&section=information`;
 
   // --- Modo Compacto (Solo texto, más pequeño) ---
   if (isCompact) {
