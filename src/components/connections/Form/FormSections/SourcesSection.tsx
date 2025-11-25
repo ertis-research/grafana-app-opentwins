@@ -24,9 +24,6 @@ export const SourcesSection: React.FC<Props> = ({ sources, qosOptions, pmOptions
                     <Field label="Adresses" required={true} description="Topics to subscribe to. If more than one, separate them with commas.">
                         <Input name='addresses' required={true} type="text" value={s.addresses} onChange={(e) => onInputChange(e, keys.sources, idx)} />
                     </Field>
-                    <Field label="Authorization context" required={true} description="An authorizationContext needs to be a subject known to Ditto’s authentication. If more than one, separate them with commas.">
-                        <Input name='authorizationContext' required={true} type="text" value={s.authorizationContext} onChange={(e) => onInputChange(e, keys.sources, idx)} />
-                    </Field>
                     <Field label="QoS" required={true} description="Messages are consumed more or less strictly depending on the configured qos (Quality of Service) value of the source">
                         <Select options={qosOptions} value={s.qos} onChange={(e) => onSelectChange(e, keys.sources, keys.qos, idx)} />
                     </Field>

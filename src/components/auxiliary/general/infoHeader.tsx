@@ -2,7 +2,7 @@ import { FilterPill, useTheme2 } from '@grafana/ui'
 import React, { Fragment } from 'react'
 import { capitalize, defaultIfNoExist } from 'utils/auxFunctions/general'
 import { IDittoThing } from 'utils/interfaces/dittoThing'
-import { ButtonsInfo } from '../dittoThing/form/subcomponents/buttonsInfo'
+import { ButtonsInfo } from '../dittoThing/form/components/buttonsInfo'
 
 interface Parameters {
     path: string

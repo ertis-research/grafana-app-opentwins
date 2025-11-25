@@ -29,9 +29,6 @@ export const TargetsSection: React.FC<Props> = ({ targets, protocol, qosOptions,
                     <Field label="Topics" required={true} description="List of strings, each list entry representing a subscription of Ditto protocol topics">
                         <Input name='topics' required={true} type="text" value={s.topics} onChange={(e) => onInputChange(e, keys.targets, idx)} />
                     </Field>
-                    <Field label="Authorization context" required={true} description="An authorizationContext needs to be a subject known to Ditto’s authentication. If more than one, separate them with commas.">
-                        <Input name='authorizationContext' required={true} type="text" value={s.authorizationContext} onChange={(e) => onInputChange(e, keys.targets, idx)} />
-                    </Field>
                     <Field label="QoS" hidden={protocol !== Protocols.MQTT5} required={protocol === Protocols.MQTT5} description="Messages are consumed more or less strictly depending on the configured qos (Quality of Service) value of the source">
                         <Select options={qosOptions} value={s.qos} onChange={(e) => onSelectChange(e, keys.targets, keys.qos, idx)} />
                     </Field>

@@ -53,10 +53,9 @@ export const patchTypeService = async (typeId: string, type: IDittoThingData) =>
 /**
  * (DELETE) Deletes a type definition.
  */
-export const deleteTypeService = async (typeId: string, type: IDittoThingData) => {
+export const deleteTypeService = async (typeId: string) => {
     return await fetchFromGrafanaProxy(`${PROXY_EXTENDED_URL}/types/${typeId}`, {
-        method: 'DELETE',
-        data: type
+        method: 'DELETE'
     });
 }
 

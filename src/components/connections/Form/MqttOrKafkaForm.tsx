@@ -66,12 +66,54 @@ export const MqttOrKafkaForm: React.FC<Props> = ({ connectionData, handlers, pro
                     </div>
                 </Field>
 
-                <Field label="URI" required={true} description="URI of the messaging broker">
+                {/* --- MODIFICADO: URI Field --- */}
+                <Field label="Host URI" required={true} description="Host address and port of the broker">
                     <div style={{ display: 'flex', alignItems: 'center' }}>
                         <InlineLabel width={4}>{(connectionData.ssl) ? 'ssl://' : 'tcp://'}</InlineLabel>
-                        <Input id='uri' name="uri" required={true} type="text" value={connectionData.uri} onChange={handlers.handleOnChangeInput} />
+                        <Input 
+                            id='uri' 
+                            name="uri" 
+                            required={true} 
+                            type="text" 
+                            value={connectionData.uri} // Ahora esto solo tiene el host
+                            onChange={handlers.handleOnChangeInput} 
+                        />
                     </div>
                 </Field>
+
+                <Field label="Authentication" description="Enable username and password authentication">
+                    <div style={{ display: 'flex', alignItems: 'center' }}>
+                        <InlineLabel width={7}>{(connectionData.hasAuth) ? 'Enabled' : 'Disabled'}</InlineLabel>
+                        <Switch 
+                            value={connectionData.hasAuth} 
+                            // Asumiendo que has actualizado 'keys' o pasas el string directo
+                            onClick={(e: MouseEvent<HTMLInputElement>) => handlers.handleOnChangeSwitch(e, 'hasAuth')} 
+                        />
+                    </div>
+                </Field>
+
+                {/* --- NUEVO: Username & Password Inputs --- */}
+                {connectionData.hasAuth && (
+                    <div style={{ display: 'flex', gap: '10px', marginBottom: '10px' }}>
+                        <Field label="Username" style={{ flex: 1 }}>
+                            <Input 
+                                id='username' 
+                                name="username" 
+                                value={connectionData.username || ''} 
+                                onChange={handlers.handleOnChangeInput}
+                            />
+                        </Field>
+                        <Field label="Password" style={{ flex: 1 }}>
+                            <Input 
+                                id='password' 
+                                name="password" 
+                                type="password" 
+                                value={connectionData.password || ''} 
+                                onChange={handlers.handleOnChangeInput} 
+                            />
+                        </Field>
+                    </div>
+                )}
 
                 {protocol === Protocols.KAFKA && (
                     <SpecificKafka

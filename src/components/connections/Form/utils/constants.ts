@@ -27,7 +27,7 @@ export const initSource: SourceData = { addresses: '', authorizationContext: 'ng
 export const initTarget: TargetData = { address: '', topics: "_/_/things/twin/events,_/_/things/live/messages", authorizationContext: 'nginx:ditto', qos: initQoS, payloadMapping: initMapping, others: '' }
 export const initKafkaData: KafkaData = { bootstrapServers: '', saslMechanism: { label: 'plain', value: 0 } }
 export const initSSLData: SSLData = { ca: '', cert: '', key: '' }
-export const initConnectionData: ConnectionData = { id: '', uri: '', ssl: false, initStatus: true, payloadMapping: [], sources: [], targets: [], kafkaData: initKafkaData, sslData: initSSLData }
+export const initConnectionData: ConnectionData = { id: '', uri: '', ssl: false, hasAuth: false, initStatus: true, payloadMapping: [], sources: [], targets: [], kafkaData: initKafkaData, sslData: initSSLData }
 
 // Claves de estado
 export const keys = {

@@ -4,6 +4,9 @@ export interface ConnectionData {
     id: string,
     initStatus: boolean
     uri: string
+    hasAuth: boolean
+    username?: string
+    password?: string
     ssl: boolean
     sslData: SSLData
     payloadMapping: PayloadMapping[]

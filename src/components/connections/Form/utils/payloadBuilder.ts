@@ -8,12 +8,25 @@ const strToList = (s: string) => {
 }
 
 export const buildConnectionPayload = (connection: ConnectionData, protocol: Protocols) => {
+    const scheme = (connection.ssl) ? 'ssl://' : 'tcp://';
+    let fullUri = connection.uri; // Por defecto es solo el host
+
+    if (connection.hasAuth && connection.username) {
+        // Si hay auth, insertamos user:pass@
+        const creds = connection.password 
+            ? `${connection.username}:${connection.password}` 
+            : connection.username;
+        fullUri = `${creds}@${connection.uri}`;
+    }
+    
+    const finalUri = scheme + fullUri;
+
     let data: any = {
         name: connection.id,
         connectionType: (protocol === Protocols.KAFKA) ? 'kafka' : 'mqtt-5',
         connectionStatus: (connection.initStatus) ? 'open' : 'closed',
         failoverEnabled: true,
-        uri: ((connection.ssl) ? 'ssl://' : 'tcp://') + connection.uri,
+        uri: finalUri, // Usamos la URI reconstruida
         sources: [],
         targets: []
     }

@@ -29,6 +29,30 @@ const extractOthers = (obj: any, keysToExclude: string[]): string => {
     return Object.keys(others).length > 0 ? JSON.stringify(others, null, 2) : '';
 }
 
+const parseUri = (fullUri: string) => {
+    // Quitamos el protocolo
+    let raw = fullUri.replace('tcp://', '').replace('ssl://', '');
+    let username = '';
+    let password = '';
+    let hasAuth = false;
+    let host = raw;
+
+    // Buscamos el @ que separa credenciales del host
+    if (raw.includes('@')) {
+        const parts = raw.split('@');
+        // Tomamos la última parte como host (por si la contraseña tiene @, aunque no es recomendado sin encodear)
+        host = parts.pop() || ''; 
+        const credentials = parts.join('@'); // El resto es user:pass
+        
+        const credParts = credentials.split(':');
+        username = credParts[0] || '';
+        password = credParts.slice(1).join(':') || ''; // Por si la pass tiene :
+        hasAuth = true;
+    }
+
+    return { host, username, password, hasAuth };
+}
+
 export const transformApiDataToFormState = (apiData: any): ConnectionData => {
     if (!apiData) { return initConnectionData; }
 
@@ -52,7 +76,7 @@ export const transformApiDataToFormState = (apiData: any): ConnectionData => {
         authorizationContext: listToStr(s.authorizationContext),
         qos: findQoS(s.qos),
         payloadMapping: findMapping(s.payloadMapping ? s.payloadMapping[0] : undefined),
-        others: extractOthers(s, ['addresses', 'authorizationContext', 'qos', 'payloadMapping'])
+        others: extractOthers(s, ['addresses', 'qos', 'payloadMapping'])
     }));
 
     const targets: TargetData[] = (apiData.targets || []).map((t: any) => ({
@@ -61,7 +85,7 @@ export const transformApiDataToFormState = (apiData: any): ConnectionData => {
         authorizationContext: listToStr(t.authorizationContext),
         qos: findQoS(t.qos),
         payloadMapping: findMapping(t.payloadMapping ? t.payloadMapping[0] : undefined),
-        others: extractOthers(t, ['address', 'topics', 'authorizationContext', 'qos', 'payloadMapping'])
+        others: extractOthers(t, ['address', 'topics', 'qos', 'payloadMapping'])
     }));
 
     const kafkaData: KafkaData = apiData.specificConfig ? {
@@ -75,9 +99,14 @@ export const transformApiDataToFormState = (apiData: any): ConnectionData => {
         key: apiData.credentials?.key || ''
     };
 
+    const uriData = parseUri(apiData.uri || '');
+
     return {
         id: apiData.name || '',
-        uri: (apiData.uri || '').replace('tcp://', '').replace('ssl://', ''),
+        uri: uriData.host, // Aquí solo guardamos "mqtt.ertis.uma.es:8883"
+        username: uriData.username, // Nuevo
+        password: uriData.password, // Nuevo
+        hasAuth: uriData.hasAuth,
         ssl: (apiData.uri || '').startsWith('ssl://'),
         initStatus: (apiData.connectionStatus || 'open') === 'open',
         payloadMapping,
