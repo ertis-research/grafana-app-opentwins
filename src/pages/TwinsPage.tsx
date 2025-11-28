@@ -1,76 +1,135 @@
-import React, { FC } from 'react'
-import { AppRootProps } from '@grafana/data'
-//import { TwinForm } from 'components/twins/form/main';
-import { ListTwins } from 'components/twins/list'
-import { Context, StaticContext } from 'utils/context/staticContext'
-import { fromMetaToValues } from 'utils/auxFunctions/dittoThing'
-import { TwinInfo } from 'components/twins/twinInfo'
-import { CreateFormTwin } from 'components/twins/createForm'
-import { SimulationForm } from 'components/twins/subcomponents/simulationForm'
-import { EditFormTwin } from 'components/twins/editForm'
+import React, { useMemo } from 'react';
+import { css } from '@emotion/css';
+import { useParams } from 'react-router-dom';
+import { GrafanaTheme2, AppPluginMeta, PageLayoutType } from '@grafana/data';
+import { useStyles2, Alert } from '@grafana/ui';
+import { PluginPage } from '@grafana/runtime';
 
-// ... imports
+// Context & Utils
+import { Context, StaticContext } from 'utils/context/staticContext';
+import { fromMetaToValues } from 'utils/auxFunctions/dittoThing';
 
-export const TwinsPage: FC<AppRootProps> = ({ query, path, meta }) => {
+// Components
+import { ListTwins } from 'components/twins/list';
+import { TwinInfo } from 'components/twins/twinInfo';
+import { CreateFormTwin } from 'components/twins/createForm';
+import { SimulationForm } from 'components/twins/subcomponents/simulationForm';
+import { EditFormTwin } from 'components/twins/editForm';
 
-  const id = query["id"]
-  let valueMeta: Context = fromMetaToValues(meta)
-  path = path + "?tab=twins"
+// --- Types & Enums ---
 
-  let component = <ListTwins path={path} meta={meta} /> //default
+export enum TwinsPageMode {
+  List = 'list',
+  Check = 'check',
+  Create = 'create',
+  Edit = 'edit',
+}
 
-  switch (query["mode"]) {
-    case "check":
-      const section = query["section"]
-      if (id !== undefined) {
-        component = (
-          <TwinInfo
-            path={path}
+export enum TwinsElementType {
+  Twin = 'twin',
+  Simulation = 'simulation',
+}
+
+interface RouteParams {
+  id?: string;           // ID del Twin principal
+  section?: string;      // Para modo Check (ej: 'dashboard', 'details')
+  simulationId?: string; // Para modo Edit Simulation
+}
+
+interface TwinsPageProps {
+  meta: AppPluginMeta;
+  pageMode?: TwinsPageMode;
+  elementType?: TwinsElementType;
+}
+
+// --- Component ---
+
+export const TwinsPage = ({
+  meta,
+  pageMode = TwinsPageMode.List,
+  elementType = TwinsElementType.Twin
+}: TwinsPageProps) => {
+
+  const styles = useStyles2(getStyles);
+  const BASE_PATH = "twins";
+  const { id, section, simulationId } = useParams<RouteParams>();
+
+  const valueMeta: Context = useMemo(() => fromMetaToValues(meta), [meta]);
+
+  const renderContent = () => {
+    // ------------------------------------------------
+    // 1. Modo CHECK (Ver detalles)
+    // ------------------------------------------------
+    if (pageMode === TwinsPageMode.Check) {
+      if (!id) return <Alert title="Error">Missing Twin ID for check mode.</Alert>;
+
+      return (
+        <TwinInfo
+          path={BASE_PATH}
+          id={id}
+          meta={meta}
+          section={section}
+        />
+      );
+    }
+
+    // ------------------------------------------------
+    // 2. Modo CREATE
+    // ------------------------------------------------
+    if (pageMode === TwinsPageMode.Create) {
+      if (elementType === TwinsElementType.Simulation) {
+        if (!id) return <Alert title="Error">Twin ID required to create simulation.</Alert>;
+        return <SimulationForm path={BASE_PATH} id={id} meta={meta} />;
+      }
+      return <CreateFormTwin path={BASE_PATH} meta={meta} id={id} />;
+    }
+
+    // ------------------------------------------------
+    // 3. Modo EDIT
+    // ------------------------------------------------
+    if (pageMode === TwinsPageMode.Edit) {
+      if (!id) return <ListTwins path={BASE_PATH} meta={meta} />; // Fallback seguro
+
+      if (elementType === TwinsElementType.Simulation) {
+        return (
+          <SimulationForm
+            path={BASE_PATH}
             id={id}
             meta={meta}
-            section={section}
+            simulationId={simulationId}
           />
-        )
+        );
       }
-      break;
 
-    case "create":
-      switch (query["element"]) {
-        case "simulation":
-          component = <SimulationForm path={path} id={id} meta={meta} />
-          break
+      // Default: Editar Twin
+      return <EditFormTwin path={BASE_PATH} meta={meta} id={id} />;
+    }
 
-        default:
-          component = <CreateFormTwin path={path} meta={meta} id={id} />
-      }
-      break
-
-    case "edit":
-      switch (query["element"]) {
-        case "simulation":
-          const simulationId = query["simulationId"]
-          component = (
-            <SimulationForm
-              path={path}
-              id={id}
-              meta={meta}
-              simulationId={simulationId}
-            />
-          )
-          break
-
-        case "twin":
-          if (id !== undefined) {
-            component = <EditFormTwin path={path} meta={meta} id={id} />
-          }
-          break
-      }
-      break
-  }
+    // ------------------------------------------------
+    // 4. Default: LISTADO
+    // ------------------------------------------------
+    return <ListTwins path={BASE_PATH} meta={meta} />;
+  };
 
   return (
-    <StaticContext.Provider value={valueMeta}>
-      {component}
-    </StaticContext.Provider>
-  )
+    <PluginPage layout={PageLayoutType.Canvas}>
+      <div className={styles.container}>
+        <StaticContext.Provider value={valueMeta}>
+          {renderContent()}
+        </StaticContext.Provider>
+      </div>
+    </PluginPage>
+  );
 };
+
+// --- Styles ---
+
+const getStyles = (theme: GrafanaTheme2) => ({
+  container: css`
+    display: flex;
+    flex-direction: column;
+    gap: ${theme.spacing(2)};
+    width: 100%;
+    min-height: 100%;
+  `,
+});

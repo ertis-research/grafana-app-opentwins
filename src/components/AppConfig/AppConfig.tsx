@@ -33,7 +33,7 @@ interface MyPluginMeta extends AppPluginMeta<JsonData> {
     secureJsonData?: MySecureJsonDataFlags;
 }
 
-interface Props extends PluginConfigPageProps<MyPluginMeta> { }
+export interface Props extends PluginConfigPageProps<MyPluginMeta> { }
 
 // --- Styles ---
 const getStyles = (theme: GrafanaTheme2) => ({
@@ -76,7 +76,7 @@ const getStyles = (theme: GrafanaTheme2) => ({
 
 // --- Component ---
 
-export const AppConfig = ({ plugin }: Props) => {
+const AppConfig = ({ plugin }: Props) => {
     const { enabled, pinned, jsonData, secureJsonFields } = plugin.meta;
     const theme = useTheme2();
     const styles = getStyles(theme);
@@ -305,6 +305,8 @@ export const AppConfig = ({ plugin }: Props) => {
         </div>
     );
 };
+
+export default AppConfig;
 
 // --- Helpers ---
 

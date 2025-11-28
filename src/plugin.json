@@ -35,7 +35,7 @@
       "type": "page",
       "name": "Twins",
       "addToNav": true,
-      "path": "/a/ertis-opentwins-app/?tab=twins",
+      "path": "/a/ertis-opentwins-app/twins",
       "role": "Viewer",
       "icon": "file-alt"
     },
@@ -43,7 +43,7 @@
       "type": "page",
       "name": "Types",
       "addToNav": true,
-      "path": "/a/ertis-opentwins-app/?tab=types",
+      "path": "/a/ertis-opentwins-app/types",
       "role": "Viewer",
       "icon": "folder-plus"
     },
@@ -51,7 +51,7 @@
       "type": "page",
       "name": "Connections",
       "addToNav": true,
-      "path": "/a/ertis-opentwins-app/?tab=connections",
+      "path": "/a/ertis-opentwins-app/connections",
       "role": "Editor",
       "icon": "plug"
     },
@@ -59,14 +59,14 @@
       "type": "page",
       "name": "Policies",
       "addToNav": true,
-      "path": "/a/ertis-opentwins-app/?tab=policies",
+      "path": "/a/ertis-opentwins-app/policies",
       "role": "Editor",
       "icon": "shield"
     },
     {
       "type": "page",
       "name": "Config",
-      "path": "/plugins/ertis-opentwins-app/?page=config",
+      "path": "/plugins/ertis-opentwins-app/?page=configuration",
       "role": "Admin",
       "addToNav": true,
       "icon" : "sliders-v-alt"

@@ -2,7 +2,7 @@ import { SelectableValue } from '@grafana/data'
 import { Label, TextArea, useTheme2 } from '@grafana/ui'
 import React from 'react'
 import { DebugInfoPanel } from './DebugInfoPanel'
-import { DebugInfo } from './ListConnection.types';
+import { DebugInfo } from '../ListConnection.types';
 
 
 

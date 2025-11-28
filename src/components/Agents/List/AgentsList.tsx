@@ -12,6 +12,7 @@ import { getCurrentUserRole, isEditor, Roles } from 'utils/auxFunctions/auth'
 import { DynamicInfo } from 'utils/interfaces/others'
 import { getAllTwinsIdsService } from 'services/TwinsService'
 import { deleteAgentByIdService, getAgentByIdService, getAllAgentsService, getLogByPodService, linkTwinToAgentService, pauseAgentByIdService, resumeAgentByIdService, unlinkTwinToAgentService } from 'services/AgentsService'
+import { useHistory, useLocation } from 'react-router-dom'
 
 interface Parameters {
     path: string
@@ -25,15 +26,16 @@ interface AgentInfo {
     data: any
 }
 
-export function ListAgents({ path, meta, twinId }: Parameters) {
+export function AgentsList({ path, meta, twinId }: Parameters) {
 
     const context = useContext(StaticContext)
     const appEvents = getAppEvents()
     const bgcolor = useTheme2().colors.background.secondary
+    const history = useHistory()
+    const location = useLocation();
 
     const [agents, setAgents] = useState<ListAgent[]>([])
     const [selectedAgent, setSelectedAgent] = useState<AgentInfo | undefined>(undefined)
-    //const [values, setValues] = useState<SelectData[]>([])
     const [value, setValue] = useState<string>()
     const [type, setType] = useState<SelectableValue<string>>(Types_values[0])
     const [filteredAgents, setFilteredAgents] = useState<ListAgent[]>([])
@@ -44,6 +46,23 @@ export function ListAgents({ path, meta, twinId }: Parameters) {
     const [userRole, setUserRole] = useState<string>(Roles.VIEWER)
     const [latestLogs, setLatestLogs] = useState<DynamicInfo[]>([])
     const [chargingLog, setChargingLog] = useState<boolean>(false)
+
+    const pluginBase = location.pathname.split('/agents')[0].split('/twins')[0];
+
+
+    const handleNavigateToCreate = () => {
+        if (twinId) {
+            history.push(`${pluginBase}/twins/${twinId}/agents/new`)
+        } else {
+            history.push(`${pluginBase}/agents/new`)
+        }
+    }
+
+    const handleNavigateToTwin = (twinIdTarget: string) => {
+        history.push(`${pluginBase}/twins/${twinIdTarget}`)
+    }
+    
+    // ---------------------------------------
 
     const stringDateToLocal = (dt: string) => {
         return new Date(dt).toLocaleString()
@@ -289,8 +308,8 @@ export function ListAgents({ path, meta, twinId }: Parameters) {
 
     const showLog = (log: DynamicInfo) => {
         const date = new Date(log.timestamp)
-        return <div style={{ width: '100%', marginTop: '10px'}}>
-            <p style={{ width: '100%', textAlign: 'end', marginBottom: '0px'}}>Last update at {date.toLocaleDateString() + " " + date.toLocaleTimeString()}</p>
+        return <div style={{ width: '100%', marginTop: '10px' }}>
+            <p style={{ width: '100%', textAlign: 'end', marginBottom: '0px' }}>Last update at {date.toLocaleDateString() + " " + date.toLocaleTimeString()}</p>
             <TextArea style={{ resize: 'none' }} rows={15} value={log.text} readOnly />
         </div>
     }
@@ -299,12 +318,12 @@ export function ListAgents({ path, meta, twinId }: Parameters) {
         return <div>
             {
                 item.info.pods.map((pod: Pod, idx: number) => {
-                    return <div style={{ width: '100%'}}>
+                    return <div style={{ width: '100%' }}>
                         <p><b>{pod.id}</b> - {(pod.phase === PodState.RUNNING && !pod.status) ? 'Crashed' : pod.phase}
-                        <br/>Creation at {stringDateToLocal(pod.creation_timestamp)}</p>
-                        <Button style={{ width: '100%'}} fullWidth variant='secondary' disabled={chargingLog} icon={(chargingLog) ? "spinner" : "history"} onClick={() => getLog(pod.podId, idx)}>Load logs</Button>
+                            <br />Creation at {stringDateToLocal(pod.creation_timestamp)}</p>
+                        <Button style={{ width: '100%' }} fullWidth variant='secondary' disabled={chargingLog} icon={(chargingLog) ? "spinner" : "history"} onClick={() => getLog(pod.podId, idx)}>Load logs</Button>
                         {(latestLogs[idx]) ? showLog(latestLogs[idx]) : <div></div>}
-                        <Divider/>
+                        <Divider />
                     </div>
                 })
             }
@@ -335,7 +354,7 @@ export function ListAgents({ path, meta, twinId }: Parameters) {
             <div className={(selectedAgent !== undefined && selectedAgent.id === item.id) ? 'listSelected' : ''} style={{ display: "block", width: "100%", height: '95px', backgroundColor: useTheme2().colors.background.canvas }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', height: '100%' }}>
                     <div style={{ width: 'calc(100% - 120px)' }}>
-                        <a onClick={(e) => handleOnClickCard(e, item)} style={{ margin: '0px', padding: '0px', display: 'block', height: '100%' }}>
+                        <a onClick={(e) => handleOnClickCard(e, item)} style={{ margin: '0px', padding: '0px', display: 'block', height: '100%', cursor: 'pointer' }}>
                             <div style={{ display: 'flex', height: '100%' }}>
                                 <div className='px-3' style={{ height: '100%', width: 'fit-content', justifyContent: 'center', alignContent: 'center', backgroundColor: useTheme2().colors.text.primary }}>
                                     {(item.type === "deployment") ? DeployIcon(useTheme2().colors.background.primary) : CronJobIcon(useTheme2().colors.background.primary)}
@@ -409,7 +428,18 @@ export function ListAgents({ path, meta, twinId }: Parameters) {
             <div style={{ width: '100%' }}>
                 {selectedAgent?.info.twins.map((twin: string) => {
                     return <div style={{ display: 'flex', width: '100%', alignItems: 'center', marginBottom: '5px' }}>
-                        <LinkButton type='button' id={twin} style={{ backgroundColor: useTheme2().colors.text.disabled, width: '100%', color: 'white', marginRight: '5px', height: '36px' }} variant='secondary' fill='text' icon='external-link-alt' href={path + "?tab=twins&mode=check&id=" + twin} disabled={showNotification === enumNotification.LOADING}>{twin}</LinkButton>
+                        <LinkButton 
+                            type='button' 
+                            id={twin} 
+                            style={{ backgroundColor: useTheme2().colors.text.disabled, width: '100%', color: 'white', marginRight: '5px', height: '36px' }} 
+                            variant='secondary' 
+                            fill='text' 
+                            icon='external-link-alt' 
+                            onClick={() => handleNavigateToTwin(twin)}
+                            disabled={showNotification === enumNotification.LOADING}
+                        >
+                            {twin}
+                        </LinkButton>
                         <Button style={{ width: '90px', height: '36px', justifyContent: 'center' }} hidden={!isEditor(userRole)} variant='destructive' onClick={() => handleOnClickUnlink(twin)}>Unlink</Button>
                     </div>
                 }
@@ -428,8 +458,8 @@ export function ListAgents({ path, meta, twinId }: Parameters) {
         </ControlledCollapse>
     </div>
 
-
-    const buttonAdd = <LinkButton icon="plus" variant="primary" href={path + '?tab=agents&mode=create' + ((twinId) ? ("&id=" + twinId) : "")} hidden={!isEditor(userRole)}>
+    // Actualizado: Llama a la función que decide la ruta
+    const buttonAdd = <LinkButton icon="plus" variant="primary" onClick={handleNavigateToCreate} hidden={!isEditor(userRole)}>
         Create new agent
     </LinkButton>
 

@@ -9,17 +9,20 @@ import { defaultIfNoExist, enumNotification, removeEmptyEntries } from 'utils/au
 import { TypesOfField } from 'utils/data/consts'
 import { IDittoThing } from 'utils/interfaces/dittoThing'
 import { SimulationAttributes, SimulationContent } from 'utils/interfaces/simulation'
+// 1. Importaciones de router
+import { useHistory, useRouteMatch } from 'react-router-dom'
 
 interface Parameters {
-    path: string
     meta: AppPluginMeta<KeyValue<any>>
     id: string
     twinInfo: IDittoThing
 }
 
-export const SimulationList = ({ path, meta, id, twinInfo }: Parameters) => {
+export const SimulationList = ({ meta, id, twinInfo }: Parameters) => {
 
     const appEvents = getAppEvents()
+    const history = useHistory()
+    const { url } = useRouteMatch();
 
     const [selectedSimulation, setselectedSimulation] = useState<SimulationAttributes | undefined>()
     const [simulations, setSimulations] = useState<SimulationAttributes[]>([])
@@ -34,6 +37,27 @@ export const SimulationList = ({ path, meta, id, twinInfo }: Parameters) => {
             simulationOf: id
         }
     }
+
+    // --- Funciones de Navegación limpias ---
+
+    const handleNavigateToCreate = () => {
+        history.push(`${url}/new`)
+    }
+
+    const handleNavigateToEdit = () => {
+        if (selectedSimulation) {
+            history.push(`${url}/${selectedSimulation.id}/edit`)
+        }
+    }
+
+    const handleNavigateToOriginalTwin = () => {
+        if (twinInfo.attributes && twinInfo.attributes.simulationOf) {
+            const basePath = url.split('/twins')[0];
+            history.push(`${basePath}/twins/${twinInfo.attributes.simulationOf}`)
+        }
+    }
+
+    // ---------------------------------------
 
     const sendSimulation = async (data: any) => {
         if (selectedSimulation !== undefined) {
@@ -166,7 +190,7 @@ export const SimulationList = ({ path, meta, id, twinInfo }: Parameters) => {
                     return (
                         <Field label={item.name} description={item.type} required={item.required}>
                             <InputControl
-                                render={({ field }) =>
+                                render={({ field }: any) =>
                                     <FileUpload {...field}
                                         onFileUpload={({ currentTarget }) => {
                                             console.log('file', currentTarget?.files && currentTarget.files[0])
@@ -248,7 +272,7 @@ export const SimulationList = ({ path, meta, id, twinInfo }: Parameters) => {
                         <LinkButton
                             icon="pen"
                             variant="secondary"
-                            href={path + '&id=' + id + '&mode=edit' + "&element=simulation&simulationId=" + selectedSimulation.id}
+                            onClick={handleNavigateToEdit}
                             className="m-3"
                             disabled={showNotification !== enumNotification.HIDE}
                         >Edit</LinkButton>
@@ -261,7 +285,7 @@ export const SimulationList = ({ path, meta, id, twinInfo }: Parameters) => {
         }
     }
 
-    const buttonAdd = <LinkButton hidden={!isEditor(userRole)} icon="plus" variant="primary" href={path + '&mode=create&id=' + id + "&element=simulation"}>
+    const buttonAdd = <LinkButton hidden={!isEditor(userRole)} icon="plus" variant="primary" onClick={handleNavigateToCreate}>
         Add simulation
     </LinkButton>
 
@@ -274,10 +298,10 @@ export const SimulationList = ({ path, meta, id, twinInfo }: Parameters) => {
     const twinSimulated =
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
             <h5>This twin has been created from a simulation. Access the original twin to perform simulations.</h5>
-            {(twinInfo.attributes !== undefined && twinInfo.attributes.hasOwnProperty("simulationOf")) ? 
-                <LinkButton icon="external-link-alt" variant="primary" href={path + '&mode=check&id=' + twinInfo.attributes.simulationOf + "&element=simulation"}>
-                Go to {twinInfo.attributes.simulationOf}
-            </LinkButton> : <div></div>
+            {(twinInfo.attributes !== undefined && twinInfo.attributes.hasOwnProperty("simulationOf")) ?
+                <LinkButton icon="external-link-alt" variant="primary" onClick={handleNavigateToOriginalTwin}>
+                    Go to {twinInfo.attributes.simulationOf}
+                </LinkButton> : <div></div>
             }
         </div>
 

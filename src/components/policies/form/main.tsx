@@ -174,7 +174,6 @@ export const FormPolicy = ({path, id}: Parameters ) => {
         try {
             setShowNotification({state: enumNotification.LOADING, title: ""})
             createOrUpdatePolicyService(currentPolicy).then(() => {
-                //window.location.replace(path + "?tab=policies")
                 console.log("Listo")
                 setShowNotification(notificationSuccess)
             }).catch(() => {

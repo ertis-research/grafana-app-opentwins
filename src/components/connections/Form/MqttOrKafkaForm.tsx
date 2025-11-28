@@ -1,18 +1,18 @@
 // src/components/ConnectionForm/components/MqttOrKafkaForm.tsx
 import React, { MouseEvent } from 'react'
-import { Field, Input, Switch, InlineLabel, Button, useTheme2 } from '@grafana/ui'
-import { MappersSection } from './FormSections/MappersSection'
-import { SourcesSection } from './FormSections/SourcesSection'
-import { TargetsSection } from './FormSections/TargetsSection'
-import { SpecificKafka } from './FormSections/SpecificKafka'
-import { SslSection } from './FormSections/SslSection'
+import { Field, Input, Switch, InlineLabel, Button } from '@grafana/ui'
+import { MappersSection } from './subcomponents/MappersSection'
+import { SourcesSection } from './subcomponents/SourcesSection'
+import { TargetsSection } from './subcomponents/TargetsSection'
+import { SpecificKafka } from './subcomponents/SpecificKafka'
+import { SslSection } from './subcomponents/SslSection'
 import { ConnectionData } from 'utils/interfaces/connections'
 import { Protocols } from './ConnectionForm.types'
 import { initMapping, InvalidMsg, keys } from './utils/constants'
 
 interface Props {
     connectionData: ConnectionData
-    handlers: any // Tipo del valor de retorno de `useConnectionForm['handlers']`
+    handlers: any 
     protocol: Protocols
     isEditMode: boolean
 }
@@ -22,10 +22,7 @@ const isInvalid = (value: string) => {
 }
 
 export const MqttOrKafkaForm: React.FC<Props> = ({ connectionData, handlers, protocol, isEditMode }) => {
-    const bgcolor = useTheme2().colors.background.secondary
 
-    // --- Lógica de opciones de Select ---
-    // Estas funciones ahora viven aquí, ya que dependen del estado
     const getPMOptions = () => {
         return [initMapping].concat(connectionData.payloadMapping.map((pm: any) => {
             return { label: pm.id, value: pm.id }
@@ -42,11 +39,14 @@ export const MqttOrKafkaForm: React.FC<Props> = ({ connectionData, handlers, pro
     const qosOptions = getQoSOptions()
 
     return (
-        <div style={{ minHeight: '100%' }}>
+        <div style={{ minHeight: '100%', width: '100%' }}>
+            
             {/* --- SECCIÓN: GENERAL --- */}
-            <div style={{ backgroundColor: bgcolor, padding: '30px', marginBottom: '10px' }}>
+            {/* 2. LIMPIEZA: Quitamos backgroundColor y padding. Solo margin abajo. */}
+            <div style={{ marginBottom: '40px' }}>
                 <h4> General information </h4>
-                <hr />
+                <hr style={{ marginBottom: '20px' }} />
+                
                 <Field label="Identifier" required={true} description="A unique identifier for the connection"
                     invalid={isInvalid(connectionData.id)} error={isInvalid(connectionData.id) ? InvalidMsg : ''}>
                     <Input
@@ -55,27 +55,26 @@ export const MqttOrKafkaForm: React.FC<Props> = ({ connectionData, handlers, pro
                         required={true}
                         value={connectionData.id}
                         onChange={handlers.handleOnChangeInput}
-                        disabled={isEditMode} // No se puede editar el ID
+                        disabled={isEditMode} 
                     />
                 </Field>
 
                 <Field label="Status" description="Initial connection status">
                     <div style={{ display: 'flex', alignItems: 'center' }}>
-                        <InlineLabel width={5.1}>{(connectionData.initStatus) ? 'Open' : 'Close'}</InlineLabel>
+                        <InlineLabel width={5.1} transparent style={{ marginRight: '10px'}}>{(connectionData.initStatus) ? 'Open' : 'Close'}</InlineLabel>
                         <Switch value={connectionData.initStatus} name='initStatus' onClick={(e: MouseEvent<HTMLInputElement>) => handlers.handleOnChangeSwitch(e, keys.initStatus)} />
                     </div>
                 </Field>
 
-                {/* --- MODIFICADO: URI Field --- */}
                 <Field label="Host URI" required={true} description="Host address and port of the broker">
                     <div style={{ display: 'flex', alignItems: 'center' }}>
-                        <InlineLabel width={4}>{(connectionData.ssl) ? 'ssl://' : 'tcp://'}</InlineLabel>
+                        <InlineLabel transparent width={4} style={{ marginRight: '10px'}}>{(connectionData.ssl) ? 'ssl://' : 'tcp://'}</InlineLabel>
                         <Input 
                             id='uri' 
                             name="uri" 
                             required={true} 
                             type="text" 
-                            value={connectionData.uri} // Ahora esto solo tiene el host
+                            value={connectionData.uri} 
                             onChange={handlers.handleOnChangeInput} 
                         />
                     </div>
@@ -83,16 +82,14 @@ export const MqttOrKafkaForm: React.FC<Props> = ({ connectionData, handlers, pro
 
                 <Field label="Authentication" description="Enable username and password authentication">
                     <div style={{ display: 'flex', alignItems: 'center' }}>
-                        <InlineLabel width={7}>{(connectionData.hasAuth) ? 'Enabled' : 'Disabled'}</InlineLabel>
+                        <InlineLabel transparent width={7} style={{ marginRight: '10px'}}>{(connectionData.hasAuth) ? 'Enabled' : 'Disabled'}</InlineLabel>
                         <Switch 
                             value={connectionData.hasAuth} 
-                            // Asumiendo que has actualizado 'keys' o pasas el string directo
                             onClick={(e: MouseEvent<HTMLInputElement>) => handlers.handleOnChangeSwitch(e, 'hasAuth')} 
                         />
                     </div>
                 </Field>
 
-                {/* --- NUEVO: Username & Password Inputs --- */}
                 {connectionData.hasAuth && (
                     <div style={{ display: 'flex', gap: '10px', marginBottom: '10px' }}>
                         <Field label="Username" style={{ flex: 1 }}>
@@ -125,7 +122,7 @@ export const MqttOrKafkaForm: React.FC<Props> = ({ connectionData, handlers, pro
 
                 <Field label="SSL" description="SSL required or not">
                     <div style={{ display: 'flex', alignItems: 'center' }}>
-                        <InlineLabel width={7}>{(connectionData.ssl) ? 'Enabled' : 'Disabled'}</InlineLabel>
+                        <InlineLabel transparent width={7} style={{ marginRight: '10px'}}>{(connectionData.ssl) ? 'Enabled' : 'Disabled'}</InlineLabel>
                         <Switch value={connectionData.ssl} onClick={(e: MouseEvent<HTMLInputElement>) => handlers.handleOnChangeSwitch(e, keys.ssl)} />
                     </div>
                 </Field>
@@ -140,10 +137,10 @@ export const MqttOrKafkaForm: React.FC<Props> = ({ connectionData, handlers, pro
             </div>
 
             {/* --- SECCIÓN: MAPPERS --- */}
-            <div style={{ backgroundColor: bgcolor, padding: '30px', marginBottom: '10px' }}>
+            <div style={{ marginBottom: '40px' }}>
                 <h4>Message mapping</h4>
-                <hr />
-                <div style={{ display: 'flex', justifyContent: 'center' }}>
+                <hr style={{ marginBottom: '20px' }} />
+                <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '15px' }}>
                     <Button variant='secondary' onClick={handlers.handleAddMapper}>Add JavaScript mapping</Button>
                 </div>
                 <MappersSection
@@ -157,10 +154,10 @@ export const MqttOrKafkaForm: React.FC<Props> = ({ connectionData, handlers, pro
             </div>
 
             {/* --- SECCIÓN: SOURCES --- */}
-            <div style={{ backgroundColor: bgcolor, padding: '30px', marginBottom: '10px' }}>
+            <div style={{ marginBottom: '40px' }}>
                 <h4>Sources</h4>
-                <hr />
-                <div style={{ display: 'flex', justifyContent: 'center' }}>
+                <hr style={{ marginBottom: '20px' }} />
+                <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '15px' }}>
                     <Button variant='secondary' onClick={handlers.handleAddSource}>Add source</Button>
                 </div>
                 <SourcesSection
@@ -175,10 +172,10 @@ export const MqttOrKafkaForm: React.FC<Props> = ({ connectionData, handlers, pro
             </div>
 
             {/* --- SECCIÓN: TARGETS --- */}
-            <div style={{ backgroundColor: bgcolor, padding: '30px' }}>
+            <div style={{ marginBottom: '10px' }}>
                 <h4>Targets</h4>
-                <hr />
-                <div style={{ display: 'flex', justifyContent: 'center' }}>
+                <hr style={{ marginBottom: '20px' }} />
+                <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '15px' }}>
                     <Button variant='secondary' onClick={handlers.handleAddTarget}>Add target</Button>
                 </div>
                 <TargetsSection

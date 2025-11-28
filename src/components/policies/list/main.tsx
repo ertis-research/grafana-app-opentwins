@@ -39,7 +39,6 @@ export const ListPolicies = ({path}: Parameters) => {
             getByIdFunc={getPolicy}
             getAllFunc={updatePolicy}
             deleteFunc={deletePolicy}
-            disableCreate={true}
             minRole={Roles.EDITOR}
         />
     )

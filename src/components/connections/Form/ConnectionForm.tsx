@@ -1,7 +1,8 @@
 // src/components/ConnectionForm/ConnectionForm.tsx
-import { AppEvents, AppPluginMeta, KeyValue, SelectableValue } from '@grafana/data'
+import { AppEvents, SelectableValue, GrafanaTheme2 } from '@grafana/data'
 import { getAppEvents } from '@grafana/runtime'
-import { Button, Form, FormAPI, RadioButtonGroup, Spinner } from '@grafana/ui'
+import { css } from '@emotion/css'
+import { Button, Form, FormAPI, RadioButtonGroup, Spinner, useStyles2 } from '@grafana/ui'
 import React, { Fragment, useEffect, useState } from 'react'
 import { checkIsEditor } from 'utils/auxFunctions/auth'
 import { useConnectionForm } from './hooks/useConnectionForm'
@@ -13,54 +14,57 @@ import { MqttOrKafkaForm } from './MqttOrKafkaForm'
 import { OtherConnectionForm } from './OtherConnectionForm'
 import logger from 'utils/logger'
 import { transformApiDataToFormState } from './utils/transformApiToForm'
-import { useHistory } from 'react-router-dom'
+// 1. Importamos useRouteMatch para saber dónde estamos
+import { useHistory, useRouteMatch } from 'react-router-dom'
 
 interface Parameters {
     path: string
-    meta: AppPluginMeta<KeyValue<any>>
     existingConnectionId?: string
 }
 
-// Renombrado de 'CreateFormConnection' a 'ConnectionForm'
-export function ConnectionForm({ path, meta, existingConnectionId }: Parameters) {
+export function ConnectionForm({ path, existingConnectionId }: Parameters) {
+    const styles = useStyles2(getStyles);
     const appEvents = getAppEvents()
+    const history = useHistory()
+    const { url } = useRouteMatch();
 
     const [isSaving, setIsSaving] = useState(false)
     const [selectedProtocol, setSelectedProtocol] = useState<SelectableValue<Protocols>>(ProtocolOptions[0])
     const [jsonOtherConnection, setJsonOtherConnection] = useState<any>(defaultOtherConnection)
     const [isLoading, setIsLoading] = useState(false)
     const [isEditMode, setIsEditMode] = useState(!!existingConnectionId)
-    const history = useHistory()
 
-
-    // 1. Usamos el hook personalizado para el estado del formulario
     const { currentConnection, setCurrentConnection, handlers } = useConnectionForm(initConnectionData)
 
-    // 2. Efecto para comprobar autorización (sin cambios)
+    const goBackToList = () => {
+        const listPath = url.split('/connections')[0] + '/connections';
+        history.push(listPath);
+    }
+
     useEffect(() => {
         checkIsEditor().then((res) => {
             if (!res) {
                 logger.warn("[Auth] User lacks permissions. Redirecting.");
-                window.location.replace(path)
+                history.replace('/');
             }
         })
-    }, [path])
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [])
 
-    // 3. ¡NUEVO! Efecto para cargar datos en modo EDICIÓN
+    // Carga de datos en Edición
     useEffect(() => {
         if (existingConnectionId) {
-            logger.info(`[ConnectionForm] Edit mode enabled. Loading connection data for ID: ${existingConnectionId}`)
+            logger.info(`[ConnectionForm] Edit mode enabled. Loading ID: ${existingConnectionId}`)
 
             setIsLoading(true)
             setIsEditMode(true)
-
 
             getConnectionByIdService(existingConnectionId)
                 .then(apiData => {
                     const protocol = apiData.connectionType === 'kafka' ? Protocols.KAFKA : apiData.connectionType === 'mqtt-5' ? Protocols.MQTT5 : Protocols.OTHERS;
                     if (protocol === Protocols.OTHERS) {
-                        setCurrentConnection({...initConnectionData, id: existingConnectionId});
-                        setJsonOtherConnection({...apiData, id: undefined})
+                        setCurrentConnection({ ...initConnectionData, id: existingConnectionId });
+                        setJsonOtherConnection({ ...apiData, id: undefined })
                     } else {
                         const formData = transformApiDataToFormState(apiData);
                         setCurrentConnection(formData);
@@ -70,87 +74,59 @@ export function ConnectionForm({ path, meta, existingConnectionId }: Parameters)
                 .catch(e => {
                     appEvents.publish({ type: AppEvents.alertError.name, payload: ["Failed to load connection data: " + e.message] });
                 })
-                .finally(() => setIsLoading(false))
-
-
-            // Simulación (elimina esto cuando implementes la llamada real)
-            console.log("Modo Edición: Cargando datos para", existingConnectionId)
-            setIsLoading(false) // Quita esto
-
+                .finally(() => setIsLoading(false)) // <-- El lugar correcto para apagar el loading
         }
-    }, [existingConnectionId])
+    }, [existingConnectionId]) // eslint-disable-line react-hooks/exhaustive-deps
 
 
-    // 4. Lógica de Submit, ahora maneja "Crear" y "Actualizar"
     const handleOnSubmitFinal = () => {
         logger.info("[ConnectionForm] Submitting connection form...");
-        logger.debug("[ConnectionForm] Protocol:", selectedProtocol.value);
-        logger.debug("[ConnectionForm] Edit mode:", isEditMode);
         setIsSaving(true);
 
+        // Promesa genérica para manejar ambos casos
+        let submitPromise: Promise<any>;
+
         if (selectedProtocol.value === Protocols.OTHERS) {
-            logger.info("[ConnectionForm] Processing 'Other' connection type.");
             if (isEditMode) {
-                setJsonOtherConnection({...jsonOtherConnection, id: existingConnectionId})
+                // Actualizamos el objeto local antes de enviarlo (por seguridad de closures)
+                const payload = { ...jsonOtherConnection, id: existingConnectionId };
+                // NOTA: Asumo que createConnectionWithoutIdService maneja updates si el ID va dentro, 
+                // si tienes un updateService específico, úsalo aquí.
+                submitPromise = createConnectionWithoutIdService(payload);
+            } else {
+                submitPromise = createConnectionWithoutIdService(jsonOtherConnection);
             }
-
-            logger.debug("[ConnectionForm] Creating 'Other' connection with payload:", jsonOtherConnection);
-            createConnectionWithoutIdService(jsonOtherConnection)
-                .then(() => {
-                    logger.info(`[ConnectionForm] 'Other' connection ${isEditMode ? 'updated' : 'created'} successfully.`);
-                    appEvents.publish({ type: AppEvents.alertSuccess.name, payload: [`Connection ${isEditMode ? 'updated' : 'created'}`] });
-                    history.push(`?tab=connections`);
-                })
-                .catch((e: Error) => {
-                    logger.error("[ConnectionForm] Failed to create 'Other' connection:", e);
-                    let msg = ""
-                    try {
-                        const response = JSON.parse(e.message)
-                        msg = response.message + ". " + response.description
-                    } catch (e) { }
-                    appEvents.publish({
-                        type: AppEvents.alertError.name,
-                        payload: [`Connection has not been ${isEditMode ? 'updated' : 'created'}. ` + msg]
-                    });
-                })
-                .finally(() => {
-                    setIsSaving(false); 
-                });
-
-        } else if (selectedProtocol.value) {
-            logger.info("[ConnectionForm] Processing MQTT/Kafka connection submission.")
-            const payload = buildConnectionPayload(currentConnection, selectedProtocol.value);
-            logger.debug("[ConnectionForm] Payload generated:", payload);
-            const serviceCall = () => createConnectionWithIdService(currentConnection.id, payload);
-
-            serviceCall()
-                .then(() => {
-                    logger.info(`[ConnectionForm] Connection ${isEditMode ? "updated" : "created"} successfully.`);
-                    appEvents.publish({
-                        type: AppEvents.alertSuccess.name,
-                        payload: [`Connection ${isEditMode ? 'updated' : 'created'} successfully`]
-                    });
-                    history.push(`?tab=connections`);
-                })
-                .catch((e: Error) => {
-                    logger.error("[ConnectionForm] API request failed:", e);
-                    let msg = ""
-                    try {
-                        const response = JSON.parse(e.message)
-                        msg = response.message + ". " + response.description
-                    } catch (e) { }
-                    appEvents.publish({
-                        type: AppEvents.alertError.name,
-                        payload: [`Connection has not been ${isEditMode ? 'updated' : 'created'}. ` + msg]
-                    });
-                })
-                .finally(() => {
-                    setIsSaving(false); 
-                });
+        } else {
+            const payload = buildConnectionPayload(currentConnection, selectedProtocol.value!);
+            // Aquí igual: createConnectionWithIdService suele hacer PUT si existe, o POST si no.
+            submitPromise = createConnectionWithIdService(currentConnection.id, payload);
         }
+
+        submitPromise
+            .then(() => {
+                logger.info(`[ConnectionForm] Connection ${isEditMode ? 'updated' : 'created'} successfully.`);
+                appEvents.publish({ type: AppEvents.alertSuccess.name, payload: [`Connection ${isEditMode ? 'updated' : 'created'}`] });
+
+                // 3. NAVEGACIÓN RESTFUL: Volver al listado
+                goBackToList();
+            })
+            .catch((e: Error) => {
+                logger.error("[ConnectionForm] Request failed:", e);
+                let msg = ""
+                try {
+                    const response = JSON.parse(e.message)
+                    msg = response.message + ". " + response.description
+                } catch (e) { }
+                appEvents.publish({
+                    type: AppEvents.alertError.name,
+                    payload: [`Connection has not been ${isEditMode ? 'updated' : 'created'}. ` + msg]
+                });
+            })
+            .finally(() => {
+                setIsSaving(false);
+            });
     }
 
-    // 5. Renderizado condicional de sub-formularios
     const renderFormByProtocol = () => {
         switch (selectedProtocol.value) {
             case Protocols.KAFKA:
@@ -170,40 +146,81 @@ export function ConnectionForm({ path, meta, existingConnectionId }: Parameters)
     }
 
     if (isLoading) {
-        return <Spinner size={30} />
+        return <div style={{ display: 'flex', justifyContent: 'center', padding: 50 }}><Spinner size={30} /></div>
     }
 
-    const buttonText = isSaving 
-        ? (isEditMode ? 'Updating...' : 'Creating...') 
+    const buttonText = isSaving
+        ? (isEditMode ? 'Updating...' : 'Creating...')
         : (isEditMode ? 'Update Connection' : 'Create Connection');
-        
+
     const buttonIcon = isSaving ? "spinner" : undefined;
 
     return (
         <Fragment>
-            <h2 style={{ textAlign: 'center', marginBottom: '20px' }}>
-                {isEditMode ? `Edit Connection: ${currentConnection.id}` : 'New Connection'}
-            </h2>
-
-            <div style={{ width: '100%', display: 'flex', justifyContent: 'center', marginBottom: '10px' }}>
-                <RadioButtonGroup
-                    options={ProtocolOptions}
-                    value={selectedProtocol.value}
-                    onChange={(v) => setSelectedProtocol({ label: v, value: v })}
-                    disabled={isEditMode} // No puedes cambiar el protocolo al editar
-                />
-            </div>
-
-            <div style={{ width: '100%', display: 'flex', alignItems: 'center', flexDirection: 'column' }}>
-                <Form id="finalForm" onSubmit={handleOnSubmitFinal} maxWidth={800} style={{ marginTop: '0px', paddingTop: '0px' }}>
-                    {({ register, errors, control }: FormAPI<any>) => {
-                        return renderFormByProtocol()
-                    }}
-                </Form>
-                <Button style={{ marginTop: '10px' }} variant="primary" type="submit" form="finalForm" disabled={isSaving} icon={buttonIcon}>
-                    {buttonText}
+            {/* Botón sutil para cancelar/volver */}
+            <div style={{ marginBottom: 20 }}>
+                <Button variant="secondary" fill="outline" icon="arrow-left" onClick={goBackToList}>
+                    Back to list
                 </Button>
+            </div>
+            <div className={styles.centeredWrapper}>
+                <div className={styles.formPanel}>
+                    <h2 style={{ textAlign: 'center', marginBottom: '20px' }}>
+                        {isEditMode ? `Edit Connection: ${currentConnection.id}` : 'New Connection'}
+                    </h2>
+
+                    <div style={{ width: '100%', display: 'flex', justifyContent: 'center', marginBottom: '10px' }}>
+                        <RadioButtonGroup
+                            options={ProtocolOptions}
+                            value={selectedProtocol.value}
+                            onChange={(v) => setSelectedProtocol({ label: v, value: v })}
+                            disabled={isEditMode}
+                        />
+                    </div>
+
+                    <div style={{ width: '100%', display: 'flex', alignItems: 'center', flexDirection: 'column' }}>
+                        <Form id="finalForm" onSubmit={handleOnSubmitFinal} maxWidth={800} style={{ marginTop: '0px', paddingTop: '0px' }}>
+                            {({ register, errors, control }: FormAPI<any>) => {
+                                return renderFormByProtocol()
+                            }}
+                        </Form>
+                        <div style={{ marginTop: 20, display: 'flex', gap: 10 }}>
+                            <Button variant="secondary" onClick={goBackToList} disabled={isSaving}>
+                                Cancel
+                            </Button>
+                            <Button variant="primary" type="submit" form="finalForm" disabled={isSaving} icon={buttonIcon}>
+                                {buttonText}
+                            </Button>
+                        </div>
+                    </div>
+                </div>
             </div>
         </Fragment>
     )
 }
+
+const getStyles = (theme: GrafanaTheme2) => ({
+    centeredWrapper: css`
+        display: flex;
+        justify-content: center; // Centra la tarjeta horizontalmente
+        width: 100%;
+        padding-bottom: ${theme.spacing(4)}; // Un poco de aire abajo
+    `,
+
+    formPanel: css`
+        background-color: ${theme.colors.background.primary};
+        border: 1px solid ${theme.colors.border.weak};
+        border-radius: ${theme.shape.borderRadius()};
+        padding: ${theme.spacing(4)};
+        box-shadow: ${theme.shadows.z1};
+        
+        // Centrado y ancho máximo para que no se estire demasiado en pantallas grandes
+        width: 100%;           // Intenta ocupar todo el ancho...
+        max-width: 900px;      // ...pero detente en 900px.
+        
+        // Esto asegura que el contenido interno también se alinee bien
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    `,
+});

@@ -15,6 +15,7 @@ import { Notification } from 'utils/interfaces/notification'
 import { checkIsEditor } from 'utils/auxFunctions/auth'
 import { getAllTypesService } from 'services/TypesService'
 import { getAllPoliciesService } from 'services/PoliciesService'
+import { useHistory, useRouteMatch } from 'react-router-dom'
 
 interface Parameters {
     path: string
@@ -27,6 +28,14 @@ interface Parameters {
 }
 
 export const ThingForm = ({ path, parentId, thingToEdit, isType, funcFromType, funcFromZero }: Parameters) => {
+    const history = useHistory();
+    const { url } = useRouteMatch();
+
+    // Cálculo de ruta base para redirecciones (ej: /a/mi-plugin/twins)
+    const resourceSegment = isType ? 'types' : 'twins';
+    const pluginBase = url.split(`/${resourceSegment}`)[0];
+    const resourceRoot = `${pluginBase}/${resourceSegment}`;
+    
     const [lastCurrentThing, setLastCurrentThing] = useState<IDittoThing>({ thingId: "", policyId: "", attributes: {}})
     const [currentThing, setCurrentThing] = useState<IDittoThing>(lastCurrentThing)
     const [thingIdField, setThingIdField] = useState<IThingId>({id: "", namespace: ""})
@@ -75,6 +84,10 @@ export const ThingForm = ({ path, parentId, thingToEdit, isType, funcFromType, f
             ...thingIdField,
             id : ""
         })
+    }
+
+    const goBackToList = () => {
+        history.push(resourceRoot);
     }
 
     const notificationError: Notification = {
@@ -303,7 +316,7 @@ export const ThingForm = ({ path, parentId, thingToEdit, isType, funcFromType, f
     useEffect(() => {
         checkIsEditor().then((res) => {
             if(!res){
-                window.location.replace(path)
+                history.replace(resourceRoot)
             } 
         })
         if (!allowFromType) {
@@ -345,11 +358,11 @@ export const ThingForm = ({ path, parentId, thingToEdit, isType, funcFromType, f
             <Fragment>
                 <Field className="mt-3" label="Type of twin" required={true}>
                     <InputControl
-                        render={({field}) => 
+                        render={({field}: any) => 
                         <Select {...field} 
                             options={types}
                             value={type}
-                            onChange={v => setType(v)}
+                            onChange={( v: any )=> setType(v)}
                             prefix={<Icon name="arrow-down"/>} 
                         />
                     }
@@ -390,6 +403,12 @@ export const ThingForm = ({ path, parentId, thingToEdit, isType, funcFromType, f
     return (
         <Fragment>
             <CustomNotification notification={showNotification} setNotificationFunc={setShowNotification}/>
+            <div style={{ marginBottom: 20 }}>
+                <Button variant="secondary" fill="outline" icon="arrow-left" onClick={goBackToList}>
+                    Back to list
+                </Button>
+            </div>
+            
             {titleIfMode}
             {headerIfIsChild}
             <div className="row">
@@ -414,11 +433,11 @@ export const ThingForm = ({ path, parentId, thingToEdit, isType, funcFromType, f
                                 
                                 <Field label="Policy" disabled={!customizeType && selected === enumOptions.FROM_TYPE} required={true}>
                                     <InputControl
-                                        render={({field}) => 
+                                        render={({field}: any) => 
                                             <Select {...field}
                                                 options={policies}
                                                 value={selectedPolicy}
-                                                onChange={v => setSelectedPolicy(v)}
+                                                onChange={(v:any) => setSelectedPolicy(v)}
                                                 prefix={<Icon name="arrow-down"/>} 
                                                 disabled={!customizeType && selected === enumOptions.FROM_TYPE}
                                             />
@@ -450,6 +469,7 @@ export const ThingForm = ({ path, parentId, thingToEdit, isType, funcFromType, f
                     <FormFeatures features={features} setFeatures={setFeatures} disabled={!customizeType && selected === enumOptions.FROM_TYPE}/>
                     <hr/>
                     <div style={{display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
+                        <Button variant="secondary" onClick={goBackToList}>Cancel</Button>
                         <Button variant="primary" type="submit" form="finalForm">{(thingToEdit) ? "Edit" : "Create"} {title}</Button>
                     </div>
                 </div>

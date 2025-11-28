@@ -92,6 +92,7 @@ const getStyles = (theme: GrafanaTheme2) => ({
         border-radius: ${theme.shape.radius.default};
         gap: ${theme.spacing(2)};
         margin-bottom: ${theme.spacing(2)};
+        margin-top: -${theme.spacing(2)};
     `,
     identityGroup: css`
         display: flex;

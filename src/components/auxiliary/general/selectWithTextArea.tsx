@@ -1,5 +1,5 @@
 import React, { useState, Fragment, useEffect } from 'react'
-import { Select, TextArea, Button, Icon, LinkButton } from '@grafana/ui'
+import { Select, TextArea, Button, Icon } from '@grafana/ui'
 import { AppEvents, SelectableValue } from '@grafana/data'
 import { SelectData } from 'utils/interfaces/select'
 import { capitalize, enumNotification } from 'utils/auxFunctions/general'
@@ -22,11 +22,10 @@ interface Parameters {
     getAllFunc: any
     deleteFunc: any
     ExtraButtonComponent?: React.FC<ParametersExtraButtons>
-    disableCreate?: boolean
     minRole?: Roles
 }
 
-export const SelectWithTextArea = ({ path, name, getByIdFunc, getAllFunc, deleteFunc, ExtraButtonComponent, disableCreate = false, minRole = Roles.VIEWER }: Parameters) => {
+export const SelectWithTextArea = ({ path, name, getByIdFunc, getAllFunc, deleteFunc, ExtraButtonComponent, minRole = Roles.VIEWER }: Parameters) => {
 
     const appEvents = getAppEvents()
 
@@ -127,16 +126,6 @@ export const SelectWithTextArea = ({ path, name, getByIdFunc, getAllFunc, delete
             <Button variant="destructive" icon="trash-alt" disabled={isDisabled} onClick={handleOnClickDelete}>Delete</Button>
         </div>
         : <div></div>
-    //            <LinkButton variant="secondary" href={path + "&id=" + value.value + "&mode=edit"} icon="pen" disabled={showNotification.state !== enumNotification.READY}>Edit</LinkButton>
-
-
-    const createButton = (!disableCreate) ?
-        <div style={{ display: 'flex', alignItems: 'center' }}>
-            <LinkButton variant="primary" href={path + "&mode=create"} icon="plus" disabled={showNotification.state !== enumNotification.READY}>
-                Create new {name}
-            </LinkButton>
-        </div>
-        : <div></div>
 
     const component =
         <Fragment>
@@ -151,11 +140,8 @@ export const SelectWithTextArea = ({ path, name, getByIdFunc, getAllFunc, delete
                         disabled={showNotification.state !== enumNotification.READY}
                     />
                 </div>
-                <div className={(disableCreate) ? 'col-12 col-sm-12 col-md-7 col-lg-7' : 'col-12 col-sm-12 col-md-4 col-lg-4'} >
+                <div className={'col-12 col-sm-12 col-md-7 col-lg-7'} >
                     {buttons}
-                </div>
-                <div className={(disableCreate) ? 'col-0' : 'col-12 col-sm-12 col-md-3 col-lg-3'} style={{ display: 'flex', justifyContent: 'flex-end' }}>
-                    {createButton}
                 </div>
             </div>
             <CustomNotification notification={showNotification} setNotificationFunc={setShowNotification} />

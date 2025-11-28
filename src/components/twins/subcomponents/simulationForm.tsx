@@ -179,11 +179,11 @@ export const SimulationForm = ({path, meta, id, simulationId}: Parameters) => {
         <Fragment>
             <Field label="Content-type" required={hasContent}>
                 <InputControl
-                    render={({field}) => 
+                    render={({field} : any) => 
                     <Select {...field}
                         options={contentTypeList}
                         value={contentType}
-                        onChange={(v) => { setContentType(v); }}
+                        onChange={(v: any) => { setContentType(v); }}
                     />
                     }
                     control={control}
@@ -210,11 +210,11 @@ export const SimulationForm = ({path, meta, id, simulationId}: Parameters) => {
                                     </Field>
                                     <Field label="Type of field" required={true}>
                                     <InputControl
-                                        render={({field}) => 
+                                        render={({field} : any) => 
                                             <Select {...field}
                                                 options={typesOfFieldList}
                                                 value={typeOfField}
-                                                onChange={(v) => { setTypeOfField(v); }}
+                                                onChange={(v : any) => { setTypeOfField(v); }}
                                                 disabled={showNotification !== enumNotification.HIDE}
                                             />
                                         }
@@ -269,12 +269,12 @@ export const SimulationForm = ({path, meta, id, simulationId}: Parameters) => {
                                     </Field>
                                     <Field label="Method" required={true}>
                                         <InputControl
-                                            render={({field}) => 
+                                            render={({field} : any) => 
                                                 <Select {...field}
                                                     options={methodList}
                                                     value={method}
                                                     defaultValue={{label: actualSimulation.method, value: actualSimulation.method}}
-                                                    onChange={(v) => { setMethod(v); }}
+                                                    onChange={(v: any) => { setMethod(v); }}
                                                     disabled={showNotification !== enumNotification.HIDE}
                                                 />
                                             }

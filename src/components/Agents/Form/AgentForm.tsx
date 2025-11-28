@@ -9,6 +9,8 @@ import { SelectData } from 'utils/interfaces/select'
 import { checkIsEditor } from 'utils/auxFunctions/auth'
 import { getAllTwinsIdsService } from 'services/TwinsService'
 import { createAgentService } from 'services/AgentsService'
+import { useHistory, useRouteMatch } from 'react-router-dom'
+import logger from 'utils/logger'
 
 interface Parameters {
     path: string
@@ -34,7 +36,7 @@ const FormatsOptions = [
     { label: Formats.yaml, value: Formats.yaml }
 ]
 
-export function CreateFormAgent({ path, meta, id }: Parameters) {
+export function AgentForm({ path, meta, id }: Parameters) {
 
     const InvalidMsg = "Blank spaces, uppercase letters and underscores are not allowed"
 
@@ -42,11 +44,18 @@ export function CreateFormAgent({ path, meta, id }: Parameters) {
     const hasSetContext: boolean = context.agent_context !== undefined && context.agent_context.trim() !== ''
 
     const appEvents = getAppEvents()
+    const history = useHistory()
+    const { url } = useRouteMatch();
 
     const [currentAgent, setCurrentAgent] = useState<FormData>({ id: '', namespace: '', data: '', twins: [], name: '' })
     const [selectedFormat, setSelectedFormat] = useState<SelectableValue<Formats>>(FormatsOptions[0])
     const [value, setValue] = useState<Array<SelectableValue<string>>>([]);
     const [twins, setTwins] = useState<SelectData[]>([])
+
+    const goBackToList = () => {
+        const listPath = url.split('/agents')[0] + '/agents';
+        history.push(listPath);
+    }
 
     const isInvalid = (value: string) => {
         return value.includes(" ") || value.toLowerCase() !== value || value.includes("_")
@@ -107,9 +116,10 @@ export function CreateFormAgent({ path, meta, id }: Parameters) {
 
     useEffect(() => {
         checkIsEditor().then((res) => {
-            if(!res){
-                window.location.replace(path + "?tab=agents")
-            } 
+            if (!res) {
+                logger.warn("[Auth] User lacks permissions. Redirecting.");
+                history.replace('/');
+            }
         })
         getTwins()
     }, [])
@@ -122,10 +132,10 @@ export function CreateFormAgent({ path, meta, id }: Parameters) {
     }, [context])
 
     useEffect(() => {
-        if(!value.some((s) => s.value === id)){
+        if (!value.some((s) => s.value === id)) {
             setValue([
                 ...value,
-                {label: id, value: id}
+                { label: id, value: id }
             ])
         }
     }, [id])
@@ -146,6 +156,11 @@ export function CreateFormAgent({ path, meta, id }: Parameters) {
     }
 
     return <Fragment>
+        <div style={{ marginBottom: 20 }}>
+            <Button variant="secondary" fill="outline" icon="arrow-left" onClick={goBackToList}>
+                Back to list
+            </Button>
+        </div>
         <div style={{ width: '100%', display: 'flex', justifyContent: 'center' }}>
             <Form id="finalForm" onSubmit={handleOnSubmitFinal} maxWidth={800} style={{ marginTop: '0px', paddingTop: '0px' }}>
                 {({ register, errors, control }: FormAPI<FormData>) => {
@@ -179,6 +194,9 @@ export function CreateFormAgent({ path, meta, id }: Parameters) {
                             <TextArea style={{ resize: 'none', minHeight: '500px', flex: 1, overflow: "auto", boxSizing: 'border-box' }} {...register("data", { required: true })} cols={25} type="text" value={currentAgent.data} onChange={handleOnChangeTextArea} />
 
                             <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', marginTop: '10px' }}>
+                                <Button variant="secondary" onClick={goBackToList}>
+                                    Cancel
+                                </Button>
                                 <Button variant="primary" type="submit" form="finalForm">Create agent</Button>
                             </div>
                         </div>

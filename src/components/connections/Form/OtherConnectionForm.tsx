@@ -1,6 +1,6 @@
 // src/components/ConnectionForm/components/OtherConnectionForm.tsx
 import React from 'react'
-import { CodeEditor, useTheme2 } from '@grafana/ui'
+import { CodeEditor } from '@grafana/ui'
 
 interface Props {
     jsonOtherConnection: any
@@ -8,14 +8,25 @@ interface Props {
 }
 
 export const OtherConnectionForm: React.FC<Props> = ({ jsonOtherConnection, setJsonOtherConnection }) => {
-    const bgcolor = useTheme2().colors.background.secondary
+    // Eliminado: useTheme2 y bgcolor
 
     return (
-        <div style={{ backgroundColor: bgcolor, padding: '30px', marginBottom: '10px' }}>
+        <div style={{ width: '100%', marginBottom: '10px' }}>
             <h4> Connection definition </h4>
-            <hr />
-            <CodeEditor value={JSON.stringify(jsonOtherConnection, null, '\t')} language='json' height={600}
-                onBlur={(c) => setJsonOtherConnection(JSON.parse(c))}
+            <hr style={{ marginBottom: '20px' }} />
+            
+            <CodeEditor 
+                value={JSON.stringify(jsonOtherConnection, null, '\t')} 
+                language='json' 
+                height={600}
+                width="100%" // Asegura que ocupe todo el ancho del panel padre
+                onBlur={(c) => {
+                    try {
+                        setJsonOtherConnection(JSON.parse(c))
+                    } catch (error) {
+                        console.error("Invalid JSON entered", error);
+                    }
+                }}
                 showLineNumbers={true}
                 showMiniMap={false}
                 monacoOptions={{ formatOnPaste: true, formatOnType: true }}

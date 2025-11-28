@@ -5,9 +5,9 @@ import React, { Fragment, useEffect, useState } from 'react'
 import { getCurrentUserRole, hasAuth, Roles } from 'utils/auxFunctions/auth'
 import { SelectData } from 'utils/interfaces/select'
 import { DebugInfo, DebugInfoKey } from './ListConnection.types'
-import { ConnectionActions } from './ConnectionActions'
-import { ConnectionDetails } from './ConnectionDetails'
-import { useHistory } from 'react-router-dom';
+import { ConnectionActions } from './subcomponents/ConnectionActions'
+import { ConnectionDetails } from './subcomponents/ConnectionDetails'
+import { useHistory, useRouteMatch } from 'react-router-dom';
 import { closeConnectionService, deleteConnectionByIdService, enableConnectionLogsService, getAllConnectionIdsService, getLogsByConnectionIdService, getMetricsByConnectionIdService, getStatusByConnectionIdService, openConnectionService, refreshLogsByConnectionIdService, refreshMetricsByConnectionIdService } from 'services/ConnectionsService'
 
 interface Parameters {
@@ -24,6 +24,8 @@ export const ListConnections = ({ path }: Parameters) => {
     const [isTogglingStatus, setIsTogglingStatus] = useState(false);
     const appEvents = getAppEvents()
     const history = useHistory()
+    
+    const { url } = useRouteMatch();
 
     useEffect(() => {
         updateConnections()
@@ -196,7 +198,7 @@ export const ListConnections = ({ path }: Parameters) => {
 
     const handleOnClickEdit = () => {
         if (selected !== undefined && selected.value && selected.value.id) {
-            history.push(`?tab=connections&mode=edit&id=${selected.value.id}`);
+            history.push(`${url}/${selected.value.id}/edit`);
         }
     }
 
@@ -259,7 +261,7 @@ export const ListConnections = ({ path }: Parameters) => {
                     )}
                 </div>
                 <div className='col-12 col-sm-12 col-md-12 col-lg-3' style={{ display: 'flex', justifyContent: 'flex-end' }}>
-                    <LinkButton variant="primary" href={path + "&mode=create"} icon="plus">
+                    <LinkButton variant="primary" onClick={() => history.push(`${url}/new`)} icon="plus">
                         Create new connection
                     </LinkButton>
                 </div>

@@ -1,7 +1,7 @@
 import { IThingId } from './../interfaces/dittoThing';
 import { AppPluginMeta, KeyValue } from "@grafana/data"
 import { IDittoThing } from "../interfaces/dittoThing"
-import { JsonData } from 'config/AppConfig';
+import { JsonData } from 'components/AppConfig/AppConfig';
 
 export const splitThingId = (thingId: string): IThingId => {
     const split = thingId.split(":")

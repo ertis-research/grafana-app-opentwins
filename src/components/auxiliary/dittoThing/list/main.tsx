@@ -6,6 +6,7 @@ import {
   useStyles2, Input
 } from '@grafana/ui';
 import { getAppEvents } from '@grafana/runtime';
+import { useHistory, useRouteMatch } from 'react-router-dom';
 
 import { IDittoThing } from 'utils/interfaces/dittoThing';
 import { defaultIfNoExist, imageIsUndefined } from 'utils/auxFunctions/general';
@@ -34,12 +35,13 @@ interface ThingCardProps {
   parentId?: string;
   onDelete: (id: string) => void;
   isType: boolean;
+  resourceRoot: string;
 }
 
 // --- Styles (NUEVO DISEÑO MÁS PROFESIONAL) ---
 const getStyles = (theme: GrafanaTheme2) => {
   const cardBorder = `1px solid ${theme.colors.border.weak}`;
-  const cardBackground = theme.colors.background.secondary;
+  const cardBackground = theme.colors.background.elevated;
 
   return {
     container: css`
@@ -154,7 +156,7 @@ const getStyles = (theme: GrafanaTheme2) => {
 
 // --- Sub-component: The Professional Card ---
 
-const ThingCard: React.FC<ThingCardProps> = ({ thing, path, isEditor, isCompact, styles, parentId, onDelete, isType }) => {
+const ThingCard: React.FC<ThingCardProps> = ({ thing, path, isEditor, isCompact, styles, parentId, onDelete, isType, resourceRoot }) => {
   const name = defaultIfNoExist(thing.attributes, "name", thing.thingId || '').trim();
   const description = defaultIfNoExist(thing.attributes, "description", "");
   const imageUrl = imageIsUndefined(defaultIfNoExist(thing.attributes, "image", undefined));
@@ -163,24 +165,35 @@ const ThingCard: React.FC<ThingCardProps> = ({ thing, path, isEditor, isCompact,
     ? thing.attributes._parents[parentId]
     : null;
 
-  const linkUrl = `${path}&mode=check&id=${thing.thingId}&section=information`;
+  const history = useHistory();
 
+  const detailsUrl = `${resourceRoot}/${thing.thingId}`; 
+  const editUrl = `${resourceRoot}/${thing.thingId}/edit`;
+
+  const handleCardClick = (e: React.MouseEvent) => {
+      e.preventDefault();
+      history.push(detailsUrl);
+  }
+
+  const handleEditClick = (e: React.MouseEvent) => {
+      e.preventDefault();
+      history.push(editUrl);
+  }
   // --- Modo Compacto (Solo texto, más pequeño) ---
   if (isCompact) {
     return (
       // Usamos col-md-4 col-lg-3 col-xl-2 para que sean PEQUEÑAS
       <div className="col-6 col-sm-4 col-md-3 col-lg-2 mb-3">
         <div className={styles.compactCard}>
-          <a href={linkUrl} className={styles.linkReset}>
+          <div onClick={handleCardClick} className={styles.linkReset}>
             <div>
               <h6 className={styles.cardTitle} style={{ fontSize: '0.9rem' }}>{name}</h6>
               <p className={styles.cardId} style={{ fontSize: '0.75rem' }}>{thing.thingId}</p>
             </div>
-          </a>
+          </div>
           {isEditor && (
             <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '4px' }}>
-              {/* Usamos IconButtons más pequeños para el modo compacto */}
-              <LinkButton fill='text' variant='secondary' size="sm" icon="pen" tooltip="Edit" href={`${path}&mode=edit&element=${isType ? 'type' : 'twin'}&id=${thing.thingId}`} />
+              <LinkButton fill='text' variant='secondary' size="sm" icon="pen" tooltip="Edit" onClick={handleEditClick} />
               <LinkButton fill='text' variant='destructive' size="sm" icon="trash-alt" tooltip="Delete" onClick={(e) => { e.preventDefault(); onDelete(thing.thingId); }} />
             </div>
           )}
@@ -189,7 +202,7 @@ const ThingCard: React.FC<ThingCardProps> = ({ thing, path, isEditor, isCompact,
     );
   }
 
-  // --- Modo Estándar (Diseño Apilado Profesional) ---
+  // --- Modo Estandar ---
   return (
     // Usamos col-sm-6 col-md-4 col-lg-3 col-xl-2 para que quepan muchas y sean pequeñas
     <div className="col-12 col-sm-6 col-md-4 col-lg-3 col-xl-2 mb-4">
@@ -197,25 +210,24 @@ const ThingCard: React.FC<ThingCardProps> = ({ thing, path, isEditor, isCompact,
         {/* 1. Imagen Superior */}
         <div className={styles.imageContainer}>
           {parentCount && <div className={styles.parentBadge}>x{parentCount} children</div>}
-          <a href={linkUrl} className={styles.linkReset}>
+          <div onClick={handleCardClick} className={styles.linkReset}>
             <img src={imageUrl} className={styles.image} alt={name} loading="lazy" />
-          </a>
+          </div>
         </div>
 
         {/* 2. Contenido Central */}
         <div className={styles.contentContainer}>
-          <a href={linkUrl} className={styles.linkReset}>
+          <div onClick={handleCardClick} className={styles.linkReset}>
             <h5 className={styles.cardTitle}>{name}</h5>
             <p className={styles.cardId} title={thing.thingId}>{thing.thingId}</p>
             <p className={styles.cardDescription}>{description}</p>
-          </a>
+          </div>
         </div>
 
         {/* 3. Pie de acciones (Solo si es editor) */}
         {isEditor && (
           <div className={styles.cardActions}>
-            {/* Usamos LinkButton variante 'secondary' para que sea sutil hasta hacer hover */}
-            <LinkButton fill='text' variant='secondary' size="sm" icon="pen" tooltip="Edit" href={`${path}&mode=edit&element=${isType ? 'type' : 'twin'}&id=${thing.thingId}`} />
+            <LinkButton fill='text' variant='secondary' size="sm" icon="pen" tooltip="Edit" onClick={handleEditClick} />
             <LinkButton fill='text' variant='destructive' size="sm" icon="trash-alt" tooltip="Delete" onClick={(e) => { e.preventDefault(); onDelete(thing.thingId); }} />
           </div>
         )}
@@ -224,7 +236,7 @@ const ThingCard: React.FC<ThingCardProps> = ({ thing, path, isEditor, isCompact,
   );
 };
 
-// --- Main Component (Sin cambios mayores en lógica, solo en estructura de renderizado) ---
+// --- Main Component ---
 
 export function MainList({
   path, isType, funcThings, funcDelete, funcDeleteChildren,
@@ -233,6 +245,12 @@ export function MainList({
 
   const styles = useStyles2(getStyles);
   const appEvents = getAppEvents();
+
+  const history = useHistory();
+  const { url } = useRouteMatch();
+  const resourceSegment = isType ? 'types' : 'twins';
+  const pluginBase = url.split(`/${resourceSegment}`)[0];
+  const resourceRoot = `${pluginBase}/${resourceSegment}`;
 
   const [things, setThings] = useState<IDittoThing[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
@@ -297,8 +315,16 @@ export function MainList({
     }
   };
 
+  const handleCreate = () => {
+      if (parentId) {
+          history.push(`${resourceRoot}/${parentId}/new`);
+      } else {
+          history.push(`${resourceRoot}/new`);
+      }
+  }
+
   const renderAddButton = () => (
-    <LinkButton icon="plus" hidden={!userIsEditor} variant="primary" href={`${path}&mode=create${parentId ? `&id=${parentId}` : ""}`}>
+    <LinkButton icon="plus" hidden={!userIsEditor} variant="primary" onClick={handleCreate}>
       Create new {title}
     </LinkButton>
   );
@@ -344,7 +370,7 @@ export function MainList({
             <ThingCard
               key={item.thingId} thing={item} path={path} isEditor={userIsEditor}
               isCompact={compactMode} styles={styles} parentId={parentId} isType={isType}
-              onDelete={(id) => setDeleteModalId(id)}
+              onDelete={(id) => setDeleteModalId(id)} resourceRoot={resourceRoot}
             />
           ))
         ) : (

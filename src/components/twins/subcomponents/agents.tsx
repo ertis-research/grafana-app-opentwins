@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react'
 import { AppPluginMeta, KeyValue } from "@grafana/data"
-import { ListAgents } from 'components/agents/list'
+import { AgentsList } from 'components/Agents/List/AgentsList'
 
 interface Parameters {
     path: string
@@ -15,6 +15,6 @@ export function ListAgentsTwin({ path, id, meta }: Parameters) {
     useEffect(() => {
     }, [id])
 
-    return <ListAgents path={path} meta={meta} twinId={id}/>
+    return <AgentsList path={path} meta={meta} twinId={id}/>
 
 }

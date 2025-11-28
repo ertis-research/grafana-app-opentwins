@@ -1,17 +1,21 @@
 import { Button, ConfirmModal, Modal, Spinner } from "@grafana/ui"
 import React, { useState, Fragment, useEffect } from "react"
+// 1. Importamos el hook de historial
+import { useHistory } from "react-router-dom"
 import { getCurrentUserRole, isEditor, Roles } from "utils/auxFunctions/auth"
 import { enumNotification } from "utils/auxFunctions/general"
 
 interface Parameters {
-    path: string
+    path: string       // Esperamos la ruta base del recurso (ej: /a/plugin/twins)
     thingId: string
     isType: boolean
-    funcDelete: any
-    funcDeleteChildren?: any
+    funcDelete: (id: string) => Promise<any>
+    funcDeleteChildren?: (id: string) => Promise<any>
 }
 
 export const ButtonsInfo = ({ path, thingId, isType, funcDelete, funcDeleteChildren }: Parameters) => {
+    const history = useHistory();
+    
     const title = (isType) ? "type" : "twin"
     const messageDelete = `Delete ${title}`
     const descriptionDelete = `Are you sure you want to remove the ${title} with id `
@@ -31,16 +35,17 @@ export const ButtonsInfo = ({ path, thingId, isType, funcDelete, funcDeleteChild
     const hideNotification = (success: boolean) => {
         setShowDeleteModal(undefined)
         setShowNotification(enumNotification.HIDE)
+        
         if (success) {
-            window.location.replace(path + "?tab=" + title + "s")
+            history.push(path) 
         }
     }
 
-    const deleteThing = (funcToExecute: any, thingId: string) => {
+    const deleteThing = (funcToExecute: any, id: string) => {
         setShowDeleteModal(undefined)
         setShowNotification(enumNotification.LOADING)
         try {
-            funcToExecute(thingId).then(() => {
+            funcToExecute(id).then(() => {
                 console.log("OK")
                 setShowNotification(enumNotification.SUCCESS)
             }).catch(() => {
@@ -51,18 +56,41 @@ export const ButtonsInfo = ({ path, thingId, isType, funcDelete, funcDeleteChild
             console.log("error")
             setShowNotification(enumNotification.ERROR)
         }
-
     }
 
     const notification = () => {
         if (showDeleteModal !== undefined) {
-            const thingId = showDeleteModal
+            const idToDelete = showDeleteModal
             if (!isType && funcDeleteChildren !== undefined) {
-                return <ConfirmModal isOpen={true} title={messageDelete} body={descriptionDelete + `${thingId}?`} description={descriptionDeleteChildren} confirmationText={thingId} confirmText={"With children"} alternativeText={"Without children"} dismissText={"Cancel"} onAlternative={() => deleteThing(funcDelete, thingId)} onDismiss={() => hideNotification(false)} onConfirm={() => deleteThing(funcDeleteChildren, thingId)} />
+                return (
+                    <ConfirmModal 
+                        isOpen={true} 
+                        title={messageDelete} 
+                        body={descriptionDelete + `${idToDelete}?`} 
+                        description={descriptionDeleteChildren} 
+                        confirmationText={idToDelete} 
+                        confirmText={"With children"} 
+                        alternativeText={"Without children"} 
+                        dismissText={"Cancel"} 
+                        onAlternative={() => deleteThing(funcDelete, idToDelete)} 
+                        onDismiss={() => hideNotification(false)} 
+                        onConfirm={() => deleteThing(funcDeleteChildren, idToDelete)} 
+                    />
+                )
             } else {
-                return <ConfirmModal isOpen={true} title={messageDelete} body={descriptionDelete + `${thingId}?`} confirmText={"Delete"} onConfirm={() => deleteThing(funcDelete, thingId)} onDismiss={() => hideNotification(false)} />
+                return (
+                    <ConfirmModal 
+                        isOpen={true} 
+                        title={messageDelete} 
+                        body={descriptionDelete + `${idToDelete}?`} 
+                        confirmText={"Delete"} 
+                        onConfirm={() => deleteThing(funcDelete, idToDelete)} 
+                        onDismiss={() => hideNotification(false)} 
+                    />
+                )
             }
         }
+        
         switch (showNotification) {
             case enumNotification.SUCCESS:
                 return <Modal title={messageSuccess} icon='check' isOpen={true} onDismiss={() => hideNotification(true)} />
@@ -75,20 +103,51 @@ export const ButtonsInfo = ({ path, thingId, isType, funcDelete, funcDeleteChild
                     </div>
                 )
             default:
-                return <div></div>
+                return null
         }
     }
 
-    const handleOnDelete = (e: any, thingId: string) => {
+    const handleOnDelete = (e: any) => {
         e.preventDefault()
         setShowDeleteModal(thingId)
     }
 
-    return <Fragment>
-        {notification()}
-            <a href={path + '&mode=edit&element=' + title + '&id=' + thingId} style={{ all: 'unset', marginRight: "10px"}} >
-                <Button icon="pen" tooltip="Edit" variant="secondary" hidden={!isEditor(userRole)}>Edit</Button>
-            </a>
-            <Button icon="trash-alt"  tooltip="Delete" variant="destructive" hidden={!isEditor(userRole)} onClick={(e) => handleOnDelete(e, thingId)}>Delete</Button>
-    </Fragment>
+    // 3. NAVEGACIÓN EDICIÓN
+    const handleOnEdit = () => {
+        // Ruta: /a/plugin/twins/123/edit
+        history.push(`${path}/${thingId}/edit`);
+    }
+
+    // Si no es editor, no mostramos nada (o podrías retornar null)
+    if (!isEditor(userRole)) {
+        return null; 
+    }
+
+    return (
+        <Fragment>
+            {notification()}
+            
+            <div style={{ display: 'flex', gap: '10px' }}>
+                {/* 4. BOTÓN EDITAR */}
+                <Button 
+                    icon="pen" 
+                    tooltip="Edit" 
+                    variant="secondary" 
+                    onClick={handleOnEdit}
+                >
+                    Edit
+                </Button>
+
+                {/* 5. BOTÓN ELIMINAR */}
+                <Button 
+                    icon="trash-alt" 
+                    tooltip="Delete" 
+                    variant="destructive" 
+                    onClick={handleOnDelete}
+                >
+                    Delete
+                </Button>
+            </div>
+        </Fragment>
+    )
 }
