@@ -10,11 +10,11 @@ import { Context, StaticContext } from 'utils/context/staticContext';
 import { fromMetaToValues } from 'utils/auxFunctions/dittoThing';
 
 // Components
-import { ListTwins } from 'components/twins/list';
-import { TwinInfo } from 'components/twins/twinInfo';
-import { CreateFormTwin } from 'components/twins/createForm';
-import { SimulationForm } from 'components/twins/subcomponents/simulationForm';
-import { EditFormTwin } from 'components/twins/editForm';
+import { SimulationForm } from 'components/Simulations/Form/SimulationForm';
+import { EditFormTwin } from 'components/Twins/Form/editForm';
+import { TwinInfo } from 'components/Twins/Info/TwinInfo';
+import { CreateFormTwin } from 'components/Twins/Form/createForm';
+import { TwinsList } from 'components/Twins/List/TwinsList';
 
 // --- Types & Enums ---
 
@@ -88,7 +88,7 @@ export const TwinsPage = ({
     // 3. Modo EDIT
     // ------------------------------------------------
     if (pageMode === TwinsPageMode.Edit) {
-      if (!id) return <ListTwins path={BASE_PATH} meta={meta} />; // Fallback seguro
+      if (!id) return <TwinsList />; // Fallback seguro
 
       if (elementType === TwinsElementType.Simulation) {
         return (
@@ -108,7 +108,7 @@ export const TwinsPage = ({
     // ------------------------------------------------
     // 4. Default: LISTADO
     // ------------------------------------------------
-    return <ListTwins path={BASE_PATH} meta={meta} />;
+    return <TwinsList />;
   };
 
   return (

@@ -9,11 +9,11 @@ interface Parameters {
     meta: AppPluginMeta<KeyValue<any>>
 }
 
-export function InformationType ({path, twinInfo, meta}: Parameters) {
+export function InformationTwin ({path, twinInfo, meta}: Parameters) {
     return <ThingInfo
         path = {path}
         meta = {meta}
         thingInfo = {twinInfo}
-        isType = {true}
+        isType = {false}
     />
 }

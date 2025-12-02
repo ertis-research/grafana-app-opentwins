@@ -90,6 +90,9 @@ const getStyles = (theme: GrafanaTheme2) => ({
     width: 100%;
     box-sizing: border-box;
     overflow-x: hidden;
+    position: sticky; /* Hace que se pegue al hacer scroll */
+    top: 40px;           /* Indica que se pegue al borde superior */
+    z-index: 1000;    /* Asegura que flote sobre tablas o gráficos */
   `,
   logoSection: css`
     display: flex;

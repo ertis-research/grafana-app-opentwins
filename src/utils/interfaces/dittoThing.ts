@@ -11,7 +11,6 @@ export interface IThingId {
 export interface IDittoThing {
     thingId: string,
     policyId: string,
-    definition?: string,
     attributes?: any,
     features?: any
 }
@@ -37,8 +36,8 @@ export interface IDittoThingForm {
 export interface IFeature {
     name: string
     definition?: string[]
-    properties?: JSON
-    desiredProperties?: JSON
+    properties?: any
+    desiredProperties?: any
 }
 
 export interface IAttribute {

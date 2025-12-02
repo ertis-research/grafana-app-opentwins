@@ -6,10 +6,10 @@ import { useStyles2, Alert } from '@grafana/ui';
 import { PluginPage } from '@grafana/runtime';
 
 // Components
-import { ListTypes } from 'components/Types/list';
-import { CreateFormType } from 'components/Types/createForm';
-import { EditFormType } from 'components/Types/editForm';
-import { InfoType } from 'components/Types/Info/InfoType';
+import { TypesList } from 'components/Types/List/TypesList';
+import { CreateFormType } from 'components/Types/Form/createForm';
+import { EditFormType } from 'components/Types/Form/editForm';
+import { TypeInfo } from 'components/Types/Info/TypeInfo';
 
 // --- Types & Enums ---
 
@@ -47,7 +47,7 @@ export const TypesPage = ({ meta, pageMode = TypesPageMode.List }: TypesPageProp
         return <Alert title="Error">Type ID is required for check mode.</Alert>;
       }
       return (
-        <InfoType 
+        <TypeInfo 
           path={BASE_PATH} 
           id={id} 
           meta={meta} 
@@ -59,7 +59,7 @@ export const TypesPage = ({ meta, pageMode = TypesPageMode.List }: TypesPageProp
     // 2. Modo CREATE
     if (pageMode === TypesPageMode.Create) {
       // Pasamos 'id' si existe (por si es clonar)
-      return <CreateFormType path={BASE_PATH} meta={meta} id={id} />;
+      return <CreateFormType meta={meta} id={id} />;
     }
 
     // 3. Modo EDIT
@@ -67,11 +67,11 @@ export const TypesPage = ({ meta, pageMode = TypesPageMode.List }: TypesPageProp
       if (!id) {
         return <Alert title="Error">Type ID is required for editing.</Alert>;
       }
-      return <EditFormType path={BASE_PATH} meta={meta} id={id} />;
+      return <EditFormType meta={meta} id={id} />;
     }
 
     // 4. Default: Listado
-    return <ListTypes path={BASE_PATH} meta={meta} />;
+    return <TypesList path={BASE_PATH} meta={meta} />;
   };
 
   return (

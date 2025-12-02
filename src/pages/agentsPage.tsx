@@ -15,14 +15,13 @@ import { AgentsList } from 'components/Agents/List/AgentsList';
 
 // --- Types & Enums ---
 
-// Exportamos el Enum para usarlo en App.tsx
 export enum AgentsPageMode {
     List = 'list',
     Create = 'create',
 }
 
 interface RouteParams {
-    id?: string; // Solo leemos ID de la URL
+    id?: string;
 }
 
 interface AgentsPageProps {
@@ -37,15 +36,13 @@ export const AgentsPage = ({ meta, pageMode = AgentsPageMode.List }: AgentsPageP
 
     const { id } = useParams<RouteParams>();
 
-    const BASE_PATH = "agents";
-
     const valueMeta: Context = useMemo(() => fromMetaToValues(meta), [meta]);
 
     const renderContent = () => {
         if (pageMode === AgentsPageMode.Create) {
-            return <AgentForm path={BASE_PATH} meta={meta} id={id} />;
+            return <AgentForm id={id} />;
         }
-        return <AgentsList path={BASE_PATH} meta={meta} />;
+        return <AgentsList />;
     };
 
     return (

@@ -262,7 +262,7 @@ export const ListConnections = ({ path }: Parameters) => {
                 </div>
                 <div className='col-12 col-sm-12 col-md-12 col-lg-3' style={{ display: 'flex', justifyContent: 'flex-end' }}>
                     <LinkButton variant="primary" onClick={() => history.push(`${url}/new`)} icon="plus">
-                        Create new connection
+                        New connection
                     </LinkButton>
                 </div>
             </div>
