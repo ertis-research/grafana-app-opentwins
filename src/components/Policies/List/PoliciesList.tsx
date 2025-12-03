@@ -46,7 +46,7 @@ export const PoliciesList = ({ path }: PoliciesListProps) => {
                 {/* --- LEFT PANEL: VIEW & MANAGE --- */}
                 <div className={styles.panel}>
                     <div className={styles.panelHeader}>
-                        <span className={styles.panelTitle}>Policies List</span>
+                        <span className={styles.panelTitle}>Policies</span>
                         {isLoading && <Spinner size={14} />}
                     </div>
                     

@@ -7,7 +7,7 @@ import { PluginPage } from '@grafana/runtime';
 
 // Components
 import { ConnectionForm } from 'components/Connections/Form/ConnectionForm';
-import { ListConnections } from 'components/Connections/List/ListConnections';
+import { ConnectionsList } from 'components/Connections/List/ConnectionsList';
 
 // --- Types & Enums ---
 
@@ -54,7 +54,7 @@ export const ConnectionsPage = ({ meta, pageMode = ConnectionPageMode.List }: Co
     }
 
     // 3. Default: Listado
-    return <ListConnections path={BASE_PATH} />;
+    return <ConnectionsList path={BASE_PATH} />;
   };
 
   return (

@@ -67,3 +67,4 @@ export const attributeSimulationOf = "simulationOf"
 export const staticAttributesConst = [attributeSimulationOf, "_simulations"]
 export const basicAttributesConst = ['name', 'description', 'image']
 export const restrictedAttributesConst = ["_isType", "_parents", "type", "copyOf"]
+export const linkAttributes = [attributeSimulationOf, "_parents", "copyOf"]

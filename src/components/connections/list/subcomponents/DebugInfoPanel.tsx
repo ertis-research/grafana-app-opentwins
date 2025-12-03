@@ -8,34 +8,39 @@ interface DebugInfoPanelProps {
     isLoading: boolean;
     onLoad: () => void;
     onRefresh?: () => void;
-    showRefresh?: boolean; // Para mostrar el botón de refresh
+    showRefresh?: boolean;
 }
 
-/**
- * @name DebugInfoPanel
- * @description Muestra un panel de información (Logs, Metrics, o Status) con sus botones de carga.
- */
 export const DebugInfoPanel: React.FC<DebugInfoPanelProps> = ({ title, data, isLoading, onLoad, onRefresh, showRefresh = false }) => {
     const buttonIcon = isLoading ? "spinner" : "history";
     const refreshIcon = isLoading ? "spinner" : "sync";
     const timestamp = data?.timestamp ? new Date(data.timestamp).toLocaleString() : null;
-    const content = data?.text ? JSON.stringify(data.text, undefined, 4) : "";
+    const content = data?.text ? JSON.stringify(data.text, undefined, 2) : "";
 
     return (
-        <div className="col-12 col-sm-12 col-md-12 col-lg-4">
-            <div style={{ display: 'flex', gap: '8px', marginBottom: '16px', alignItems: 'stretch' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+                <h6 style={{ margin: 0, fontWeight: 500 }}>{title}</h6>
+                {timestamp && (
+                     <span style={{ fontSize: '10px', color: '#888' }}>{timestamp}</span>
+                )}
+            </div>
+
+            <div style={{ display: 'flex', gap: '8px', marginBottom: '8px' }}>
                 <Button
-                    style={{ flexGrow: 1 }} // Botón de carga más grande
+                    style={{ flexGrow: 1 }}
                     variant='secondary'
+                    size="sm"
                     disabled={isLoading}
                     icon={buttonIcon}
                     onClick={onLoad}
                 >
-                    Load {title}
+                    Load
                 </Button>
                 {showRefresh && (
                     <Button
                         variant='secondary'
+                        size="sm"
                         disabled={isLoading}
                         icon={refreshIcon}
                         onClick={onRefresh}
@@ -45,15 +50,12 @@ export const DebugInfoPanel: React.FC<DebugInfoPanelProps> = ({ title, data, isL
                 )}
             </div>
 
-            {timestamp ? (
-                <p style={{ width: '100%', textAlign: 'end', marginBottom: '0px' }}>
-                    Last update at {timestamp}
-                </p>
-            ) : (
-                // Espacio reservado para alinear los TextAreas
-                <p style={{ marginBottom: '0px', height: '1.25em' }}>&nbsp;</p>
-            )}
-            <TextArea rows={22} value={content} readOnly />
+            <TextArea 
+                rows={15} 
+                value={content} 
+                readOnly 
+                style={{ flexGrow: 1, fontFamily: 'monospace', fontSize: '11px', minHeight: '550px' }} 
+            />
         </div>
     );
 }

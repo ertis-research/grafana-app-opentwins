@@ -61,11 +61,12 @@ export const getStyles = (theme: GrafanaTheme2) => ({
         background: ${theme.colors.background.elevated};
         cursor: pointer;
         border-radius: ${theme.shape.borderRadius()};
-        transition: all 0.1s ease-in-out;
-        
+        transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
         &:hover {
             border-color: ${theme.colors.primary.border};
-            background: ${theme.colors.background.secondary};
+            background-color: ${theme.colors.background.primary};
+            transform: translateY(-2px);
+            box-shadow: ${theme.shadows.z1};
         }
     `,
     cardRowSelected: css`

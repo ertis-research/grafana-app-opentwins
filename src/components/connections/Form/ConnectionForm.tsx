@@ -139,7 +139,7 @@ export function ConnectionForm({ path, existingConnectionId }: Parameters) {
     }
 
     if (isLoading) {
-        return <div style={{ display: 'flex', justifyContent: 'center', padding: 50 }}><Spinner size={30} /></div>
+        return <div style={{ display: 'flex', justifyContent: 'center', padding: 50 }}><Spinner size={20} /></div>
     }
 
     const buttonText = isSaving

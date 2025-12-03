@@ -11,10 +11,10 @@ import { fromMetaToValues } from 'utils/auxFunctions/dittoThing';
 
 // Components
 import { SimulationForm } from 'components/Simulations/Form/SimulationForm';
-import { EditFormTwin } from 'components/Twins/Form/editForm';
 import { TwinInfo } from 'components/Twins/Info/TwinInfo';
-import { CreateFormTwin } from 'components/Twins/Form/createForm';
 import { TwinsList } from 'components/Twins/List/TwinsList';
+import { TwinForm } from 'components/Twins/Form/TwinForm';
+import { TwinCopy } from 'components/Twins/Info/subcomponents/TwinCopy';
 
 // --- Types & Enums ---
 
@@ -23,6 +23,7 @@ export enum TwinsPageMode {
   Check = 'check',
   Create = 'create',
   Edit = 'edit',
+  Copy = 'copy'
 }
 
 export enum TwinsElementType {
@@ -81,7 +82,7 @@ export const TwinsPage = ({
         if (!id) return <Alert title="Error">Twin ID required to create simulation.</Alert>;
         return <SimulationForm path={BASE_PATH} id={id} meta={meta} />;
       }
-      return <CreateFormTwin path={BASE_PATH} meta={meta} id={id} />;
+      return <TwinForm meta={meta} parentId={id} />;
     }
 
     // ------------------------------------------------
@@ -102,7 +103,15 @@ export const TwinsPage = ({
       }
 
       // Default: Editar Twin
-      return <EditFormTwin path={BASE_PATH} meta={meta} id={id} />;
+      return <TwinForm meta={meta} twinId={id} />;
+    }
+
+    if (pageMode === TwinsPageMode.Copy) {
+      if (!id) return <Alert title="Error">Missing Twin ID for copy mode.</Alert>;
+
+      return (
+        <TwinCopy id={id} />
+      );
     }
 
     // ------------------------------------------------

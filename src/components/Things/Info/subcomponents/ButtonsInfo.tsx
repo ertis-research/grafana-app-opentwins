@@ -8,11 +8,12 @@ import { enumNotification } from "utils/auxFunctions/general"
 interface Parameters {
     thingId: string
     isType: boolean
+    enableCopy: boolean
     funcDelete: (id: string) => Promise<any>
     funcDeleteChildren?: (id: string) => Promise<any>
 }
 
-export const ButtonsInfo = ({ thingId, isType, funcDelete, funcDeleteChildren }: Parameters) => {
+export const ButtonsInfo = ({ thingId, isType, funcDelete, funcDeleteChildren, enableCopy }: Parameters) => {
     const history = useHistory();
 
     const { url } = useRouteMatch();
@@ -121,6 +122,11 @@ export const ButtonsInfo = ({ thingId, isType, funcDelete, funcDeleteChildren }:
         history.push(`${resourceRoot}/${thingId}/edit`);
     }
 
+    const handleOnCopy = () => {
+        // Ruta: /a/plugin/twins/123/edit
+        history.push(`${resourceRoot}/${thingId}/copy`);
+    }
+
     // Si no es editor, no mostramos nada (o podrías retornar null)
     if (!isEditor(userRole)) {
         return null; 
@@ -131,6 +137,16 @@ export const ButtonsInfo = ({ thingId, isType, funcDelete, funcDeleteChildren }:
             {notification()}
             
             <div style={{ display: 'flex', gap: '10px' }}>
+                {/* 4. BOTÓN EDITAR */}
+                <Button 
+                    icon="copy" 
+                    tooltip="Copy" 
+                    variant="secondary" 
+                    onClick={handleOnCopy}
+                >
+                    Copy
+                </Button>
+
                 {/* 4. BOTÓN EDITAR */}
                 <Button 
                     icon="pen" 

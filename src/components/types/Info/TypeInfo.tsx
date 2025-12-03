@@ -1,12 +1,17 @@
 import React, { useState, useEffect, Fragment } from 'react'
 import { AppPluginMeta, KeyValue } from '@grafana/data'
-// 1. Importamos hooks de React Router
 import { useHistory, useLocation } from 'react-router-dom' 
+
+// Interfaces & Services
 import { IDittoThing } from 'utils/interfaces/dittoThing'
-import { InformationType } from './subcomponents/information'
-import { HierarchyType } from './subcomponents/hierarchy'
 import { deleteTypeService, getTypeService } from 'services/TypesService'
-import { InfoHeader } from 'components/Things/Info/InfoHeader'
+
+// UI Components
+import { ThingHeader } from 'components/Things/Info/subcomponents/ThingHeader'
+import { ThingInfo } from 'components/Things/Info/ThingInfo'
+
+// External Components (Asumimos que este archivo existe y contiene lógica compleja)
+import { TypeHierarchy } from './subcomponents/TypeHierarchy'
 
 interface Parameters {
     path: string
@@ -24,42 +29,35 @@ export function TypeInfo({ path, id, meta, section }: Parameters) {
     const history = useHistory();
     const location = useLocation();
 
+    // Estado
     const [selected, setSelectedState] = useState<string>(section || Sections.information);
     const [typeInfo, setTypeInfo] = useState<IDittoThing>({ thingId: "", policyId: "" })
 
+    // Rutas
+    // Calculamos la base una vez para usarla en navegación
+    const pluginBase = location.pathname.split('/types')[0];
 
-    const handleTabChange = (newSection: string) => {
-        setSelectedState(newSection);
+    // --- Funciones ---
 
-        const pluginBase = location.pathname.split('/types')[0];
-        history.push(`${pluginBase}/types/${id}/${newSection}`);
-    };
-
-    const getComponent = () => {
-        switch (selected) {
-            case Sections.hierarchy:
-                return <HierarchyType id={id} />
-            
-            case Sections.information:
-            default:
-                return <InformationType path={path} twinInfo={typeInfo} meta={meta} />
-        }
-    }
-
-    const getTypeInfo = () => {
+    const getTypeInfoData = () => {
         getTypeService(id)
             .then(res => setTypeInfo(res))
             .catch(err => console.error("Error fetching type:", err))
     }
 
-    // 1. Sincronizar prop 'section' con estado interno
-    // Esto maneja cuando el usuario usa las flechas Atrás/Adelante del navegador
+    const handleTabChange = (newSection: string) => {
+        setSelectedState(newSection);
+        history.push(`${pluginBase}/types/${id}/${newSection}`);
+    };
+
+    // --- Efectos ---
+
+    // 1. Sincronizar prop 'section' con estado interno (Navegación del browser)
     useEffect(() => {
-        // Si la URL cambia (section cambia), actualizamos el tab seleccionado
         if (section && section !== selected) {
             setSelectedState(section)
         } else if (!section && selected !== Sections.information) {
-             // Si no hay section en la URL (ej: /types/123), volvemos a info por defecto
+             // Si la URL es /types/123 (sin sección), volver a info por defecto
             setSelectedState(Sections.information);
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -67,18 +65,33 @@ export function TypeInfo({ path, id, meta, section }: Parameters) {
 
     // 2. Cargar datos SOLO cuando cambia el ID
     useEffect(() => {
-        getTypeInfo()
+        getTypeInfoData()
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [id])
 
+    // --- Renderizado ---
+
+    const getComponent = () => {
+        switch (selected) {
+            case Sections.hierarchy:
+                return <TypeHierarchy id={id} />
+            
+            case Sections.information:
+            default:
+                return (
+                    <ThingInfo thingInfo={typeInfo} isType={true}/>
+                );
+        }
+    }
+
     return (
         <Fragment>
-            <InfoHeader 
+            <ThingHeader 
                 thing={typeInfo} 
                 isType={true} 
                 sections={Object.values(Sections)} 
                 selected={selected} 
-                setSelected={handleTabChange} // Usamos la nueva función
+                setSelected={handleTabChange} 
                 funcDelete={deleteTypeService}
             />
             {getComponent()}

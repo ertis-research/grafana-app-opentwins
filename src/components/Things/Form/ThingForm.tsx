@@ -72,7 +72,7 @@ export const ThingForm = ({ thingToEdit, isType, funcFromType, funcFromZero, par
                         (<div style={{ opacity: 0.7, fontSize: '0.9em' }}>Parent: {parentId}</div>)}
                     </div>
                     <Button variant="secondary" fill="outline" icon="arrow-left" onClick={goBackToList}>
-                        Back to list
+                        Back
                     </Button>
                 </div>
 

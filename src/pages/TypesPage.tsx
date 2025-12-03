@@ -7,9 +7,8 @@ import { PluginPage } from '@grafana/runtime';
 
 // Components
 import { TypesList } from 'components/Types/List/TypesList';
-import { CreateFormType } from 'components/Types/Form/createForm';
-import { EditFormType } from 'components/Types/Form/editForm';
 import { TypeInfo } from 'components/Types/Info/TypeInfo';
+import { TypeForm } from 'components/Types/Form/TypeForm';
 
 // --- Types & Enums ---
 
@@ -59,7 +58,7 @@ export const TypesPage = ({ meta, pageMode = TypesPageMode.List }: TypesPageProp
     // 2. Modo CREATE
     if (pageMode === TypesPageMode.Create) {
       // Pasamos 'id' si existe (por si es clonar)
-      return <CreateFormType meta={meta} id={id} />;
+      return <TypeForm meta={meta} parentId={id} />;
     }
 
     // 3. Modo EDIT
@@ -67,7 +66,7 @@ export const TypesPage = ({ meta, pageMode = TypesPageMode.List }: TypesPageProp
       if (!id) {
         return <Alert title="Error">Type ID is required for editing.</Alert>;
       }
-      return <EditFormType meta={meta} id={id} />;
+      return <TypeForm meta={meta} typeId={id} />;
     }
 
     // 4. Default: Listado

@@ -86,7 +86,7 @@ export const SimulationList = ({ id, twinInfo }: SimulationListProps) => {
                 <p>There are no simulations configured for this twin yet.</p>
                 {isEditor(userRole) && (
                     <LinkButton icon="plus" variant="primary" onClick={handleNavigateToCreate}>
-                        Add Simulation
+                        New Simulation
                     </LinkButton>
                 )}
             </div>

@@ -43,6 +43,7 @@ export const App = ({ meta }: AppRootProps) => {
 
         <Route path={`${basePath}/twins/:id/new`} render={() => <TwinsPage meta={meta} pageMode={TwinsPageMode.Create} elementType={TwinsElementType.Twin} />} />
         <Route path={`${basePath}/twins/:id/edit`} render={() => <TwinsPage meta={meta} pageMode={TwinsPageMode.Edit} elementType={TwinsElementType.Twin} />} />
+        <Route path={`${basePath}/twins/:id/copy`} render={() => <TwinsPage meta={meta} pageMode={TwinsPageMode.Copy} elementType={TwinsElementType.Twin} />} />
         <Route path={`${basePath}/twins/:id/:section`} render={() => <TwinsPage meta={meta} pageMode={TwinsPageMode.Check} elementType={TwinsElementType.Twin} />} />
         <Route path={`${basePath}/twins/:id`} render={() => <TwinsPage meta={meta} pageMode={TwinsPageMode.Check} elementType={TwinsElementType.Twin} />} />
         <Route path={`${basePath}/twins`} render={() => <TwinsPage meta={meta} pageMode={TwinsPageMode.List} />} />

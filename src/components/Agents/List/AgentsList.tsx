@@ -42,7 +42,7 @@ export function AgentsList({ twinId }: AgentsListProps) {
     // --- RENDERIZADO CONDICIONAL DE ESTADOS DE CARGA/VACÍO ---
 
     if (loadingState !== enumNotification.READY && !hasAgents) {
-        return <div className={styles.loadingContainer}><Spinner size={30} /></div>;
+        return <div className={styles.loadingContainer}><Spinner size={20} /></div>;
     }
 
     if (!hasAgents && loadingState === enumNotification.READY) {

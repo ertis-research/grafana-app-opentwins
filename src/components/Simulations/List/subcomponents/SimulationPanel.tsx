@@ -176,7 +176,7 @@ export const SimulationPanel = ({ simulation, twinId, onSuccess, isEditor }: Sim
                         </FieldSet>
 
                         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginTop: '20px' }}>
-                            {notificationState === enumNotification.LOADING && <Spinner size={24} />}
+                            {notificationState === enumNotification.LOADING && <Spinner size={20} />}
                             <Button
                                 type="submit"
                                 icon="play"

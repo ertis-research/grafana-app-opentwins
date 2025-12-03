@@ -1,21 +1,24 @@
 import { AppEvents, SelectableValue } from '@grafana/data'
 import { getAppEvents } from '@grafana/runtime'
-import { Icon, LinkButton, Select } from '@grafana/ui'
-import React, { Fragment, useEffect, useState } from 'react'
+import { Icon, LinkButton, Select, TextArea, useStyles2 } from '@grafana/ui'
+import React, { useEffect, useState } from 'react'
+import { useHistory, useRouteMatch } from 'react-router-dom';
+
 import { getCurrentUserRole, hasAuth, Roles } from 'utils/auxFunctions/auth'
 import { SelectData } from 'utils/interfaces/select'
-import { DebugInfo, DebugInfoKey } from './ListConnection.types'
-import { ConnectionActions } from './subcomponents/ConnectionActions'
-import { ConnectionDetails } from './subcomponents/ConnectionDetails'
-import { useHistory, useRouteMatch } from 'react-router-dom';
 import { closeConnectionService, deleteConnectionByIdService, enableConnectionLogsService, getAllConnectionIdsService, getLogsByConnectionIdService, getMetricsByConnectionIdService, getStatusByConnectionIdService, openConnectionService, refreshLogsByConnectionIdService, refreshMetricsByConnectionIdService } from 'services/ConnectionsService'
+
+import { DebugInfo, DebugInfoKey } from './ConnectionsList.types'
+import { getStyles } from './ConnectionsList.styles'
+import { ConnectionActions } from './subcomponents/ConnectionActions'
+import { DebugInfoPanel } from './subcomponents/DebugInfoPanel'
 
 interface Parameters {
     path: string
 }
 
-export const ListConnections = ({ path }: Parameters) => {
-
+export const ConnectionsList = ({ path }: Parameters) => {
+    const styles = useStyles2(getStyles);
     const [userRole, setUserRole] = useState<string>(Roles.VIEWER)
     const [connections, setConnections] = useState<SelectData[]>([])
     const [selected, setSelected] = useState<SelectableValue<any>>()
@@ -24,7 +27,7 @@ export const ListConnections = ({ path }: Parameters) => {
     const [isTogglingStatus, setIsTogglingStatus] = useState(false);
     const appEvents = getAppEvents()
     const history = useHistory()
-    
+
     const { url } = useRouteMatch();
 
     useEffect(() => {
@@ -78,7 +81,7 @@ export const ListConnections = ({ path }: Parameters) => {
             if (typeof res === 'string') {
                 try { dataToSet = JSON.parse(res); } catch (e) { dataToSet = res; }
             } else {
-                dataToSet = res; // Ya es un objeto
+                dataToSet = res;
             }
 
             setDebugInfo((prev) => ({
@@ -111,7 +114,6 @@ export const ListConnections = ({ path }: Parameters) => {
         setCharging((prev) => ({ ...prev, logs: true }));
 
         try {
-            // 1. Primer intento de obtener logs
             const res: any = await getLogsByConnectionIdService(id);
             let logData: any;
 
@@ -132,7 +134,6 @@ export const ListConnections = ({ path }: Parameters) => {
                     payload: ["Logs not enabled. Attempting to enable automatically..."],
                 });
 
-                // 4. Llamamos al servicio para activar logs
                 await enableConnectionLogsService(id);
 
                 appEvents.publish({
@@ -140,10 +141,7 @@ export const ListConnections = ({ path }: Parameters) => {
                     payload: ["Logs enabled for 24h. Fetching logs again..."],
                 });
 
-                // 5. Segundo intento
                 const secondRes: any = await getLogsByConnectionIdService(id);
-
-                // 6. Mostramos el resultado (con la misma lógica de parseo)
                 let secondLogData: any;
                 if (typeof secondRes === 'string') {
                     try { secondLogData = JSON.parse(secondRes); } catch (e) { secondLogData = secondRes; }
@@ -153,7 +151,7 @@ export const ListConnections = ({ path }: Parameters) => {
                 setLogState(secondLogData, Date.now());
 
             } else {
-                setLogState(logData, timestamp); // Pasamos el objeto 'logData'
+                setLogState(logData, timestamp);
             }
 
         } catch (err: any) {
@@ -217,13 +215,11 @@ export const ListConnections = ({ path }: Parameters) => {
 
         try {
             await serviceToCall(id);
-
             appEvents.publish({
                 type: AppEvents.alertSuccess.name,
                 payload: [`Connection ${id} ${actionText} correctly!`]
             });
             updateConnections();
-
         } catch (e: any) {
             console.log(e);
             appEvents.publish({
@@ -231,62 +227,118 @@ export const ListConnections = ({ path }: Parameters) => {
                 payload: [`Error ${actionTextGerund} connection ${id}: ${e.message}`]
             });
         } finally {
-            setIsTogglingStatus(false); // <-- ¡AQUÍ! Desactivamos al final
+            setIsTogglingStatus(false);
         }
     }
 
     // --- Renderizado ---
 
-    const renderAuthorizedContent = () => (
-        <Fragment>
-            <div className='row justify-content-between mb-4'>
-                <div className="col-12 col-sm-12 col-md-6 col-lg-5">
-                    <Select
-                        options={connections}
-                        value={selected}
-                        onChange={v => setSelected(v)}
-                        prefix={<Icon name="search" />}
-                        placeholder="Search"
-                    />
-                </div>
-                <div className='col-12 col-sm-12 col-md-6 col-lg-4' >
-                    {selected && (
-                        <ConnectionActions
-                            selected={selected}
-                            onEdit={handleOnClickEdit}
-                            onDelete={handleOnClickDelete}
-                            onToggleStatus={handleOnClickStatusConnection}
-                            isLoading={isTogglingStatus}
+    if (!hasAuth(userRole, Roles.EDITOR)) {
+        return (
+            <div className={styles.noPermission}>
+                <Icon name="lock" size="xxl" style={{ marginBottom: '10px' }} />
+                <h5>You do not have sufficient permissions to access this content</h5>
+            </div>
+        );
+    }
+
+    const definition = selected?.value ? JSON.stringify(selected.value, undefined, 2) : '';
+
+    return (
+        <div className={styles.container}>
+            <div className={styles.mainLayout}>
+
+                {/* --- LEFT PANEL: VIEW, DEFINITION & ACTIONS --- */}
+                <div className={styles.leftPanel}>
+                    <div className={styles.panelHeader}>
+                        <span className={styles.panelTitle}>Connections</span>
+                        <LinkButton variant="primary" onClick={() => history.push(`${url}/new`)} icon="plus" size="sm">
+                            New
+                        </LinkButton>
+                    </div>
+
+                    <div className={styles.toolbar}>
+                        {/* Selector */}
+                        <Select
+                            options={connections}
+                            value={selected}
+                            onChange={v => setSelected(v)}
+                            prefix={<Icon name="search" />}
+                            placeholder="Select connection..."
                         />
+
+                        {/* Action Buttons (Edit, Delete, Open/Close) */}
+                        {selected && (
+                            <ConnectionActions
+                                selected={selected}
+                                onEdit={handleOnClickEdit}
+                                onDelete={handleOnClickDelete}
+                                onToggleStatus={handleOnClickStatusConnection}
+                                isLoading={isTogglingStatus}
+                            />
+                        )}
+                    </div>
+
+                    {/* Definition Area */}
+                    <div className={styles.editorContainer}>
+                        <div className={styles.panelHeader} style={{ marginTop: '16px', fontSize: '14px' }}>
+                            <span>Definition</span>
+                        </div>
+                        <TextArea
+                            className={styles.definitionTextArea}
+                            value={definition}
+                            readOnly
+                            placeholder="// Select a connection to view its definition"
+                        />
+                    </div>
+                </div>
+
+                {/* --- RIGHT PANEL: DEBUG INFORMATION --- */}
+                <div className={styles.rightPanel}>
+                    <div className={styles.panelHeader}>
+                        <span className={styles.panelTitle}>Debug Information</span>
+                        {/* Podrías poner un indicador de carga global aquí si quisieras */}
+                    </div>
+
+                    {!selected ? (
+                        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%', color: '#888' }}>
+                            <p>Select a connection to view debug info</p>
+                        </div>
+                    ) : (
+                        <div className={styles.debugGrid}>
+                            <div className={styles.debugItem}>
+                                <DebugInfoPanel
+                                    title="Logs"
+                                    data={debugInfo?.logs}
+                                    isLoading={charging.logs}
+                                    onLoad={handleLoadLogs}
+                                    onRefresh={handleRefreshLogs}
+                                    showRefresh={true}
+                                />
+                            </div>
+                            <div className={styles.debugItem}>
+                                <DebugInfoPanel
+                                    title="Metrics"
+                                    data={debugInfo?.metrics}
+                                    isLoading={charging.metrics}
+                                    onLoad={handleLoadMetrics}
+                                    onRefresh={handleRefreshMetrics}
+                                    showRefresh={true}
+                                />
+                            </div>
+                            <div className={styles.debugItem}>
+                                <DebugInfoPanel
+                                    title="Status"
+                                    data={debugInfo?.status}
+                                    isLoading={charging.status}
+                                    onLoad={handleLoadStatus}
+                                    showRefresh={false}
+                                />
+                            </div>
+                        </div>
                     )}
                 </div>
-                <div className='col-12 col-sm-12 col-md-12 col-lg-3' style={{ display: 'flex', justifyContent: 'flex-end' }}>
-                    <LinkButton variant="primary" onClick={() => history.push(`${url}/new`)} icon="plus">
-                        New connection
-                    </LinkButton>
-                </div>
             </div>
-
-            {selected && selected.value && (
-                <ConnectionDetails
-                    selected={selected}
-                    debugInfo={debugInfo}
-                    charging={charging}
-                    onLoadLogs={handleLoadLogs}
-                    onLoadMetrics={handleLoadMetrics}
-                    onLoadStatus={handleLoadStatus}
-                    onRefreshLogs={handleRefreshLogs}
-                    onRefreshMetrics={handleRefreshMetrics}
-                />
-            )}
-        </Fragment>
-    );
-
-    const renderNoPermission = () => (
-        <div style={{ display: 'flex', justifyItems: 'center', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', alignContent: 'center' }}>
-            <h5>You do not have sufficient permissions to access this content</h5>
         </div>
     );
-
-    return (hasAuth(userRole, Roles.EDITOR)) ? renderAuthorizedContent() : renderNoPermission();
 }

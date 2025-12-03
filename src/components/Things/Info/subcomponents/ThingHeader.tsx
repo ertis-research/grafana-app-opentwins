@@ -4,7 +4,7 @@ import { GrafanaTheme2 } from '@grafana/data'
 import { FilterPill, useStyles2, Icon, useTheme2 } from '@grafana/ui'
 import { capitalize, defaultIfNoExist } from 'utils/auxFunctions/general'
 import { IDittoThing } from 'utils/interfaces/dittoThing'
-import { ButtonsInfo } from '../Form/subcomponents/buttonsInfo'
+import { ButtonsInfo } from './ButtonsInfo'
 
 interface Parameters {
     thing: IDittoThing
@@ -14,9 +14,10 @@ interface Parameters {
     setSelected: (section: string) => void
     funcDelete: any
     funcDeleteChildren?: any
+    enableCopy?: boolean
 }
 
-export const InfoHeader = ({ thing, isType, sections, selected, setSelected, funcDelete, funcDeleteChildren }: Parameters) => {
+export const ThingHeader = ({ thing, isType, sections, selected, setSelected, funcDelete, funcDeleteChildren, enableCopy = false }: Parameters) => {
     
     // 1. Hook de estilos 
     const styles = useStyles2(getStyles);
@@ -69,6 +70,7 @@ export const InfoHeader = ({ thing, isType, sections, selected, setSelected, fun
                 <ButtonsInfo  
                     thingId={thing.thingId} 
                     isType={isType} 
+                    enableCopy={enableCopy}
                     funcDelete={funcDelete} 
                     funcDeleteChildren={funcDeleteChildren} 
                 />
