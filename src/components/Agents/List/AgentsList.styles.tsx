@@ -107,12 +107,15 @@ export const getStyles = (theme: GrafanaTheme2) => ({
         display: flex;
         align-items: center;
         justify-content: center;
+        height: 100%;
         padding: ${theme.spacing(3)};
     `,
     placeholderContent: css`
         text-align: center;
         color: ${theme.colors.text.secondary};
         opacity: 0.6;
+        height: 100%;
+        align-content: center;
         max-width: 250px;
         
         h4 {

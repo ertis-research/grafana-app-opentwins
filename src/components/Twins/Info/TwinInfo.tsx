@@ -7,8 +7,8 @@ import { IDittoThing } from 'utils/interfaces/dittoThing'
 import { StaticContext } from 'utils/context/staticContext'
 
 // Services
-import { deleteTwinService, getTwinService } from 'services/TwinsService'
-import { deleteTwinWithChildrenService, getChildrenOfTwinService } from 'services/TwinsCompositionService'
+import { deleteTwinService, getTwinService, getTwinsPaginatedService } from 'services/TwinsService'
+import { deleteTwinWithChildrenService } from 'services/TwinsCompositionService'
 
 // UI Components
 import { ThingHeader } from 'components/Things/Info/subcomponents/ThingHeader'
@@ -92,7 +92,7 @@ export function TwinInfo({ path, id, meta, section }: Parameters) {
                 return (
                     <ThingsList 
                         isType={false} 
-                        funcThings={() => getChildrenOfTwinService(id)} 
+                        funcThings={getTwinsPaginatedService} 
                         funcDelete={deleteTwinService} 
                         funcDeleteChildren={deleteTwinWithChildrenService} 
                         parentId={id}

@@ -1,7 +1,7 @@
 import React from 'react'
 import { AppPluginMeta, KeyValue } from "@grafana/data"
 import { ThingsList } from 'components/Things/List/ThingsList'
-import { deleteTypeService, getAllTypesService } from 'services/TypesService'
+import { deleteTypeService, getTypesPaginatedService,} from 'services/TypesService'
 
 interface Parameters {
     path: string
@@ -12,7 +12,7 @@ export function TypesList({ path, meta }: Parameters) {
 
     return <ThingsList 
             isType={true} 
-            funcThings={() => getAllTypesService()} 
+            funcThings={getTypesPaginatedService} 
             funcDelete={deleteTypeService}
         />
 

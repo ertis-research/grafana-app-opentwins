@@ -12,13 +12,20 @@ export const getStyles = (theme: GrafanaTheme2) => {
     loadingContainer: css`
     display: flex; justify-content: center; width: 100%; margin: ${theme.spacing(4)} 0;
   `,
+  searchContainer: css`
+        flex-grow: 1;
+        max-width: 400px;
+    `,
     emptyContainer: css`
     display: flex; flex-direction: column; align-items: center; justify-content: center; margin-top: ${theme.spacing(4)};
   `,
     toolbar: css`
-    margin-bottom: ${theme.spacing(2)};
-    
+    border-bottom: 1px solid ${theme.colors.border.weak};
+    padding-bottom: ${theme.spacing(1)};
   `,
+  switchSpacing: css`
+      margin-right: ${theme.spacing(2)} !important;
+    `,
     // --- Estilos de Tarjeta Rediseñados ---
     cardWrapper: css`
     height: 100%;
@@ -129,6 +136,29 @@ export const getStyles = (theme: GrafanaTheme2) => {
         gap: ${theme.spacing(2)};
         padding: ${theme.spacing(4)};
         text-align: center;
+    `,
+    loadMoreContainer: css`
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 100%;
+        margin-top: ${theme.spacing(3)};
+        margin-bottom: ${theme.spacing(2)};
+    `,
+    paginationBar: css`
+        display: flex;
+        justify-content: center; // A la derecha o 'center' si prefieres centrado
+        align-items: center;
+        gap: ${theme.spacing(2)};
+        margin-bottom: ${theme.spacing(2)};
+        margin-top: ${theme.spacing(2)};
+        padding-bottom: ${theme.spacing(1)};
+    `,
+
+    pageInfo: css`
+        font-weight: 500;
+        color: ${theme.colors.text.secondary};
+        font-size: ${theme.typography.bodySmall.fontSize};
     `,
   }
 };

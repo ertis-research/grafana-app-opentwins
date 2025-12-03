@@ -11,7 +11,7 @@ import { fetchFromGrafanaProxy, PROXY_DITTO_URL, PROXY_EXTENDED_URL } from "./Fe
 export const createOrUpdateTwinService = async (twinId: string, twin: any) => {
     return await fetchFromGrafanaProxy(`${PROXY_EXTENDED_URL}/twins/${twinId}`, {
         method: 'PUT',
-        data: twin 
+        data: twin
     });
 }
 
@@ -24,6 +24,54 @@ export const getTwinService = async (twinId: string) => {
     });
 }
 
+export const getTwinsPaginatedService = async (
+    cursor?: string,
+    pageSize: number = 50,
+    searchQuery: string = '',
+    id?: string
+) => {
+
+    let optionParam = `size(${pageSize})`;
+    if (cursor) {
+        optionParam += `,cursor(${cursor})`;
+    }
+
+    const typeFilter = 'ne(attributes/_isType,true)';
+    const attParent = "_parents";
+    const parentFilter = (id) ? 
+        `eq(attributes/${attParent},"${id}")`
+        :`or(not(exists(attributes/${attParent})),eq(attributes/${attParent},null))`;
+    const andConditions = [typeFilter, parentFilter];
+
+    if (searchQuery) {
+        const q = searchQuery.replace(/"/g, '\\"');
+        const lower = q.toLowerCase();
+        const upper = q.toUpperCase();
+        const cap = q.charAt(0).toUpperCase() + q.slice(1).toLowerCase();
+        const filterSearch = `or(like(thingId,"*${q}*"),like(attributes/name,"*${q}*"),like(attributes/name,"*${lower}*"),like(attributes/name,"*${upper}*"),like(attributes/name,"*${cap}*"))`;
+
+        andConditions.push(filterSearch);
+    }
+
+    const filterParam = `and(${andConditions.join(',')})`;
+    const url = `${PROXY_DITTO_URL}/search/things?option=${optionParam}&filter=${filterParam}`;
+
+    const responseData = await fetchFromGrafanaProxy(url, {
+        method: 'GET'
+    });
+
+    if (responseData?.items) {
+        return {
+            items: responseData.items,
+            cursor: responseData.cursor
+        };
+    } else if (Array.isArray(responseData)) {
+        return { items: responseData, cursor: undefined };
+    }
+
+    return { items: [], cursor: undefined };
+}
+
 /**
  * (READ) Gets all root twins, handling pagination.
  */
@@ -34,7 +82,7 @@ export const getAllRootTwinsService = async () => {
 
     do {
         const url = cursor ? `${baseUrl},cursor(${cursor})` : baseUrl;
-        
+
         const responseData = await fetchFromGrafanaProxy(url, {
             method: 'GET'
         });
@@ -62,12 +110,12 @@ export const getAllRootTwinsService = async () => {
 export const getAllTwinsIdsService = async (): Promise<string[]> => {
     let allIds: string[] = [];
     let cursor: string | undefined = undefined;
-    
+
     const baseUrl = `${PROXY_DITTO_URL}/search/things?filter=ne(attributes/_isType,true)&fields=thingId&option=size(200)`;
 
     do {
         const url = cursor ? `${baseUrl},cursor(${cursor})` : baseUrl;
-        
+
         const responseData = await fetchFromGrafanaProxy(url, {
             method: 'GET'
         });
@@ -80,10 +128,10 @@ export const getAllTwinsIdsService = async (): Promise<string[]> => {
         }
         else if (Array.isArray(responseData)) {
             allIds = allIds.concat(mapItemsToIds(responseData));
-            cursor = undefined; 
+            cursor = undefined;
         }
         else {
-            cursor = undefined; 
+            cursor = undefined;
         }
 
     } while (cursor);

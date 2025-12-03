@@ -2,7 +2,7 @@ import { IDittoThing } from "utils/interfaces/dittoThing";
 
 export interface MainListProps {
     isType: boolean;
-    funcThings: () => Promise<any>;
+    funcThings: (cursor?: string, pageSize?: number) => Promise<{ items: IDittoThing[], cursor?: string }>;
     funcDelete: (id: string) => Promise<void>;
     funcDeleteChildren?: (id: string) => Promise<void>;
     parentId?: string;
