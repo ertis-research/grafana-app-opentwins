@@ -55,7 +55,7 @@ export const useAgentsList = (twinId?: string) => {
 
     // --- Data Fetching ---
     const fetchAgents = () => {
-        if (agents.length < 1) setLoadingState(enumNotification.LOADING);
+        if (agents.length < 1) { setLoadingState(enumNotification.LOADING); }
 
         getAllAgentsService(context, twinId).then((res: ListAgent[]) => {
             const sorted = res.sort((a, b) => (a.namespace + a.id).localeCompare(b.namespace + b.id));
@@ -65,7 +65,7 @@ export const useAgentsList = (twinId?: string) => {
             // Refresh selected agent if exists
             if (selectedAgent) {
                 const updated = res.find(a => a.id === selectedAgent.id);
-                if (updated) setSelectedAgent(prev => prev ? ({ ...prev, info: updated }) : undefined);
+                if (updated) { setSelectedAgent(prev => prev ? ({ ...prev, info: updated }) : undefined); }
             }
         }).catch((e) => {
             console.error(e);
@@ -75,7 +75,7 @@ export const useAgentsList = (twinId?: string) => {
 
     const fetchAgentDetails = (agent: ListAgent) => {
         getAgentByIdService(agent.id, agent.namespace).then((res: any) => {
-            if (res) setSelectedAgent({ id: agent.id, info: agent, data: JSON.parse(res) });
+            if (res) { setSelectedAgent({ id: agent.id, info: agent, data: JSON.parse(res) }); }
         }).catch((e) => {
             appEvents.publish({ type: AppEvents.alertError.name, payload: ["Error getting agent details"] });
         });
@@ -127,7 +127,7 @@ export const useAgentsList = (twinId?: string) => {
     // --- Effects ---
     useEffect(() => {
         fetchAgents();
-        getAllTwinsIdsService().then((res: any) => setTwins(res.map((id : any) => ({ value: id, label: id }))));
+        getAllTwinsIdsService().then((res: any) => setTwins(res.map((id: any) => ({ value: id, label: id }))));
         getCurrentUserRole().then(role => setUserRole(role));
 
         const interval = setInterval(fetchAgents, 10000);
@@ -171,9 +171,9 @@ export const useAgentsList = (twinId?: string) => {
         // Setters / Handlers
         setFilters,
         setSelectedAgent: (agent: ListAgent | undefined) => {
-            if (!agent) setSelectedAgent(undefined);
-            else if (selectedAgent?.id !== agent.id) fetchAgentDetails(agent);
-            else setSelectedAgent(undefined); // Toggle off
+            if (!agent) { setSelectedAgent(undefined); }
+            else if (selectedAgent?.id !== agent.id) { fetchAgentDetails(agent); }
+            else { setSelectedAgent(undefined); } // Toggle off
         },
         handleNavigateToCreate,
         handleNavigateToTwin,

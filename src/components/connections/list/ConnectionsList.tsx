@@ -40,7 +40,6 @@ export const ConnectionsList = ({ path }: Parameters) => {
             const refreshSelected = connections.find(v => v.label === selected.value.id)
             setSelected(refreshSelected)
         }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [connections])
 
     useEffect(() => {

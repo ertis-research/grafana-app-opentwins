@@ -62,7 +62,7 @@ export const TwinsPage = ({
     // 1. Modo CHECK (Ver detalles)
     // ------------------------------------------------
     if (pageMode === TwinsPageMode.Check) {
-      if (!id) return <Alert title="Error">Missing Twin ID for check mode.</Alert>;
+      if (!id) { return <Alert title="Error">Missing Twin ID for check mode.</Alert>; }
 
       return (
         <TwinInfo
@@ -79,7 +79,7 @@ export const TwinsPage = ({
     // ------------------------------------------------
     if (pageMode === TwinsPageMode.Create) {
       if (elementType === TwinsElementType.Simulation) {
-        if (!id) return <Alert title="Error">Twin ID required to create simulation.</Alert>;
+        if (!id) { return <Alert title="Error">Twin ID required to create simulation.</Alert>; }
         return <SimulationForm path={BASE_PATH} id={id} meta={meta} />;
       }
       return <TwinForm meta={meta} parentId={id} />;
@@ -89,7 +89,7 @@ export const TwinsPage = ({
     // 3. Modo EDIT
     // ------------------------------------------------
     if (pageMode === TwinsPageMode.Edit) {
-      if (!id) return <TwinsList />; // Fallback seguro
+      if (!id) { return <TwinsList />; } // Fallback seguro
 
       if (elementType === TwinsElementType.Simulation) {
         return (
@@ -107,7 +107,7 @@ export const TwinsPage = ({
     }
 
     if (pageMode === TwinsPageMode.Copy) {
-      if (!id) return <Alert title="Error">Missing Twin ID for copy mode.</Alert>;
+      if (!id) { return <Alert title="Error">Missing Twin ID for copy mode.</Alert>; }
 
       return (
         <TwinCopy id={id} />

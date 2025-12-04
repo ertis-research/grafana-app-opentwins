@@ -86,9 +86,9 @@ export const useAgentForm = (propId?: string) => {
     };
 
     const validateString = (val: string): string | null => {
-        if (val.includes(" ")) return "Blank spaces are not allowed";
-        if (val.toLowerCase() !== val) return "Uppercase letters are not allowed";
-        if (val.includes("_")) return "Underscores are not allowed";
+        if (val.includes(" ")) { return "Blank spaces are not allowed" };
+        if (val.toLowerCase() !== val) { return "Uppercase letters are not allowed" };
+        if (val.includes("_")) { return "Underscores are not allowed" };
         return null; // Valid
     };
 

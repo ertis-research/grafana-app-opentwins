@@ -38,7 +38,7 @@ export const SimulationList = ({ id, twinInfo }: SimulationListProps) => {
     }, [twinInfo]);
 
     const filteredSimulations = useMemo(() => {
-        if (!searchQuery) return simulations;
+        if (!searchQuery) { return simulations; }
         const query = searchQuery.toLowerCase();
         return simulations.filter(sim =>
             sim.id.toLowerCase().includes(query) ||
@@ -125,7 +125,7 @@ export const SimulationList = ({ id, twinInfo }: SimulationListProps) => {
                         ))
                     ) : (
                         <div className={styles.centerMessage} style={{ height: 'auto', marginTop: 40 }}>
-                            <p>No results match "{searchQuery}"</p>
+                            <p>No results match &quot;{searchQuery}&quot;</p>
                         </div>
                     )}
                 </div>

@@ -48,7 +48,6 @@ export function ConnectionForm({ path, existingConnectionId }: Parameters) {
                 history.replace('/');
             }
         })
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
     // Carga de datos en Edición
@@ -76,7 +75,7 @@ export function ConnectionForm({ path, existingConnectionId }: Parameters) {
                 })
                 .finally(() => setIsLoading(false))
         }
-    }, [existingConnectionId]) // eslint-disable-line react-hooks/exhaustive-deps
+    }, [existingConnectionId])
 
 
     const handleOnSubmitFinal = () => {

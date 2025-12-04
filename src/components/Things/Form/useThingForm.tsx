@@ -23,8 +23,8 @@ export const useThingForm = ({ thingToEdit, isType, funcFromType, funcFromZero, 
     const [isLoading, setIsLoading] = useState(false);
 
     // Listas
-    const [policies, setPolicies] = useState<SelectableValue<string>[]>([]);
-    const [types, setTypes] = useState<SelectableValue<IDittoThing>[]>([]);
+    const [policies, setPolicies] = useState<Array<SelectableValue<string>>>([]);
+    const [types, setTypes] = useState<Array<SelectableValue<IDittoThing>>>([]);
 
     // Modos
     const [creationMode, setCreationMode] = useState(thingToEdit ? enumOptions.FROM_ZERO : enumOptions.FROM_TYPE);
@@ -153,7 +153,7 @@ export const useThingForm = ({ thingToEdit, isType, funcFromType, funcFromZero, 
             ...hiddenAttributes,
             ...(attributes.reduce((acc, curr) => {
                 // CORRECCIÓN: Evitar enviar claves vacías
-                if (curr.key) acc[curr.key] = curr.value;
+                if (curr.key) { acc[curr.key] = curr.value };
                 return acc;
             }, {} as any))
         };
@@ -200,16 +200,6 @@ export const useThingForm = ({ thingToEdit, isType, funcFromType, funcFromZero, 
             features: finalObj.features
         };
 
-        // --- DEBUGGING CRÍTICO ---
-        // Mira esto en la consola del navegador
-        console.group("ThingForm Submit Payload");
-        console.log("Thing ID:", finalObj.thingId);
-        console.log("Payload Data:", JSON.stringify(finalData, null, 2));
-        console.log("Is Type Creation:", isType);
-        if (isType) console.log("Num Children:", numChildren, typeof numChildren);
-        console.groupEnd();
-        // ------------------------
-
         try {
             let promise;
             if (creationMode === enumOptions.FROM_TYPE && selectedType?.value && allowFromType) {
@@ -237,8 +227,8 @@ export const useThingForm = ({ thingToEdit, isType, funcFromType, funcFromZero, 
 
             // Intentamos mostrar detalles del error si la API devuelve mensaje
             let errorMsg = "Check console for details.";
-            if (e.data && e.data.message) errorMsg = e.data.message;
-            else if (e.message) errorMsg = e.message;
+            if (e.data && e.data.message) { errorMsg = e.data.message; }
+            else if (e.message) { errorMsg = e.message; }
 
             appEvents.publish({
                 type: AppEvents.alertError.name,

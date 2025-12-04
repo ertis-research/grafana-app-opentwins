@@ -26,8 +26,8 @@ export const getTwinService = async (twinId: string) => {
 
 export const getTwinsPaginatedService = async (
     cursor?: string,
-    pageSize: number = 50,
-    searchQuery: string = '',
+    pageSize = 50,
+    searchQuery = '',
     id?: string
 ) => {
 

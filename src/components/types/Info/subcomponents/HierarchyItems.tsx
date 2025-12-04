@@ -114,13 +114,11 @@ export function HierarchyItems({ id, labels, funcGet, funcUpdate, funcUnlink, fu
 
     useEffect(() => {
         getThings()
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
     useEffect(() => {
         updateFilteredThings()
         getOptions()
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [things, value])
 
     useEffect(() => {
@@ -132,7 +130,6 @@ export function HierarchyItems({ id, labels, funcGet, funcUpdate, funcUnlink, fu
                 id: (selected && selected.value) ? selected.value : ''
             })
         }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [selected])
 
     const childrenMapped = filteredThings.map((thing: LinkData) => {

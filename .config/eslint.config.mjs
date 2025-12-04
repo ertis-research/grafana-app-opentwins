@@ -6,7 +6,7 @@
  */
 
 import { defineConfig } from 'eslint/config';
-import * as grafanaConfig from '@grafana/eslint-config/flat.js';
+import grafanaConfig from '@grafana/eslint-config/flat.js';
 
 
 export default defineConfig([

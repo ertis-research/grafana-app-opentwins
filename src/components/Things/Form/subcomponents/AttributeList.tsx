@@ -15,7 +15,7 @@ export const AttributeList = ({ attributes, setAttributes, disabled }: Props) =>
     const [newItem, setNewItem] = useState<IAttribute>({ key: '', value: '' });
 
     const handleAdd = () => {
-        if (!newItem.key) return;
+        if (!newItem.key) { return; }
         // Upsert (update or insert)
         const existingIndex = attributes.findIndex(a => a.key === newItem.key);
         if (existingIndex >= 0) {

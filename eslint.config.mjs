@@ -1,4 +1,5 @@
 import { defineConfig } from 'eslint/config';
+import baseConfig from './.config/eslint.config.mjs';
 
 export default defineConfig([
   {
@@ -33,9 +34,9 @@ export default defineConfig([
       '**/.idea',
       '**/.eslintcache',
     ],
-    extends: [
-      './.config/eslint.config.mjs',
-    ],
+  },
+    ...baseConfig,
+  {
     rules: {
       'react/prop-types': 'off',
       'react-hooks/exhaustive-deps': 'off',

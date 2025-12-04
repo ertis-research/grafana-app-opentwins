@@ -109,7 +109,7 @@ export function AgentsList({ twinId }: AgentsListProps) {
                             ))
                         ) : (
                             <div className={styles.centerMessage} style={{ gridColumn: '1 / -1', marginTop: 40 }}>
-                                <p>No results match "{filters.search}"</p>
+                                <p>No results match &quot;{filters.search}&quot;</p>
                             </div>
                         )}
                     </div>

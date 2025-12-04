@@ -107,7 +107,7 @@ export const PoliciesList = ({ path }: PoliciesListProps) => {
                     <div className={styles.disclaimerBox}>
                         <Alert title="Important Configuration" severity="info" className={styles.disclaimerBox}>
                             Please ensure you include the <b>default user</b> (configured in Plugin Settings) 
-                            in the <code>entries</code> list. Otherwise, you won't be able to query this policy or its twins.
+                            in the <code>entries</code> list. Otherwise, you won&apos;t be able to query this policy or its twins.
                         </Alert>
                     </div>
 

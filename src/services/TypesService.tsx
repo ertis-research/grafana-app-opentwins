@@ -24,8 +24,8 @@ export const getTypeService = async (typeId: string) => {
 
 export const getTypesPaginatedService = async (
     cursor?: string,
-    pageSize: number = 50,
-    searchQuery: string = ''
+    pageSize = 50,
+    searchQuery = ''
 ) => {
 
     let optionParam = `size(${pageSize})`;

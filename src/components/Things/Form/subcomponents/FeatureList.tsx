@@ -15,8 +15,8 @@ export const FeatureList = ({ features, setFeatures, disabled }: Props) => {
     const [name, setName] = useState('');
 
     const handleAdd = () => {
-        if (!name) return;
-        if (features.some(f => f.name === name)) return; // Evitar duplicados
+        if (!name) { return; }
+        if (features.some(f => f.name === name)) { return; } // Evitar duplicados
         setFeatures([...features, { name, properties: { value: null } }]);
         setName('');
     };

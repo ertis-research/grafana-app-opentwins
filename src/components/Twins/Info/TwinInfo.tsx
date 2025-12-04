@@ -57,17 +57,9 @@ export function TwinInfo({ path, id, meta, section }: Parameters) {
             // Si la URL es /twins/123 (sin sección), volver a info
             setSelectedState(Sections.information);
         }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [section])
 
     // 3. Cargar datos del Twin (Solo al cambiar ID)
-    useEffect(() => {
-        getTwinInfoData()
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [id])
-
-
-    // --- Funciones ---
 
     const getTwinInfoData = () => {
         getTwinService(id)
@@ -83,7 +75,9 @@ export function TwinInfo({ path, id, meta, section }: Parameters) {
     const filterTabs = (sect: string) => 
         (sect !== Sections.agents || !!context.agent_endpoint?.trim())
 
-
+    useEffect(() => {
+        getTwinInfoData()
+    }, [id])
     // --- Renderizado de contenido ---
 
     const getComponent = () => {

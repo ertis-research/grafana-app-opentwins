@@ -73,7 +73,6 @@ export function TwinCopy({ id }: TwinCopyProps) {
                 goBackToList()
             }
         })
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
     return (

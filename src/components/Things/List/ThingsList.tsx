@@ -35,7 +35,7 @@ export function ThingsList({
   const [things, setThings] = useState<IDittoThing[]>([]);
 
   // --- ESTADOS DE PAGINACIÓN ---
-  const [cursorStack, setCursorStack] = useState<(string | undefined)[]>([undefined]);
+  const [cursorStack, setCursorStack] = useState<Array<(string | undefined)>>([undefined]);
   const [currentPageIndex, setCurrentPageIndex] = useState<number>(0);
   const [nextCursorFromApi, setNextCursorFromApi] = useState<string | undefined>(undefined);
   const [hasNextPage, setHasNextPage] = useState<boolean>(false);
@@ -91,7 +91,6 @@ export function ThingsList({
     const cursorToLoad = cursorStack[currentPageIndex];
     fetchPage(cursorToLoad, searchQuery);
     getCurrentUserRole().then(setUserRole);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentPageIndex, searchQuery, fetchPage]);
 
   // --- FILTROS CLIENTE ---
@@ -163,7 +162,7 @@ export function ThingsList({
 
   const renderPagination = () => {
     // Solo mostrar paginación si hay items o si estamos navegando (no en carga inicial vacía)
-    if (things.length === 0 && currentPageIndex === 0) return null;
+    if (things.length === 0 && currentPageIndex === 0) { return null };
 
     return (
       <div className={styles.paginationBar}>
@@ -292,7 +291,7 @@ export function ThingsList({
             ))
           ) : (
             <div className={styles.loadingContainer}>
-              <h5>No items found matching "{searchQuery}"</h5>
+              <h5>No items found matching &quot;{searchQuery}&quot;</h5>
             </div>
           )}
         </div>

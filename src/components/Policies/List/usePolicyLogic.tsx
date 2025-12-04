@@ -12,7 +12,7 @@ export const usePolicyLogic = () => {
     const appEvents = getAppEvents();
     
     // --- State: Reading/List ---
-    const [policies, setPolicies] = useState<SelectableValue<string>[]>([]);
+    const [policies, setPolicies] = useState<Array<SelectableValue<string>>>([]);
     const [selectedId, setSelectedId] = useState<SelectableValue<string> | undefined>();
     const [selectedPolicyContent, setSelectedPolicyContent] = useState<any>(undefined);
     
@@ -60,7 +60,7 @@ export const usePolicyLogic = () => {
 
     // DELETE Logic
     const onDeleteConfirm = async () => {
-        if (!selectedId?.value) return;
+        if (!selectedId?.value) { return; }
         setIsProcessing(true);
         try {
             await deletePolicyService(selectedId.value);
@@ -94,7 +94,7 @@ export const usePolicyLogic = () => {
 
     // SAVE Logic (Create or Update)
     const onSavePolicy = async () => {
-        if (!newPolicyJson.trim()) return;
+        if (!newPolicyJson.trim()) { return; }
 
         let parsedJson;
         try {

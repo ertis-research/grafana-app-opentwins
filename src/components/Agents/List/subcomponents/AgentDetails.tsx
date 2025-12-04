@@ -22,7 +22,7 @@ interface Props {
 export const AgentDetails = ({ agent, twins, latestLogs, isLoadingLog, canEdit, onLoadLog, onLinkTwins, onUnlinkTwin, onNavigateTwin, onClose }: Props) => {
     const styles = useStyles2(getStyles);
     const [activeTab, setActiveTab] = useState(0);
-    const [selectedTwinsToLink, setSelectedTwinsToLink] = useState<Array<any>>([]);
+    const [selectedTwinsToLink, setSelectedTwinsToLink] = useState<any[]>([]);
 
     const availableTwins = twins.filter(t => !agent.info.twins.includes(t.value));
     const isCron = agent.info.type === 'cronjob';

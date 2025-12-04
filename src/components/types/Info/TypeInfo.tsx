@@ -60,13 +60,11 @@ export function TypeInfo({ path, id, meta, section }: Parameters) {
              // Si la URL es /types/123 (sin sección), volver a info por defecto
             setSelectedState(Sections.information);
         }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [section])
 
     // 2. Cargar datos SOLO cuando cambia el ID
     useEffect(() => {
         getTypeInfoData()
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [id])
 
     // --- Renderizado ---

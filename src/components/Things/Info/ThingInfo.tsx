@@ -27,7 +27,7 @@ export function ThingInfo({ thingInfo, isType = false }: Parameters) {
     // --- RENDER VALUE ---
     // Aquí es donde comprobamos la "key" original para saber cómo pintar el dato
     const renderValue = (key: string, value: any) => {
-        if (value === null || value === undefined) return "-";
+        if (value === null || value === undefined) { return "-" };
 
         // Al usar 'renderKey' en el DataCell, ahora 'key' volverá a ser '_parents'
         if (linkAttributes.includes(key)) {
@@ -47,8 +47,8 @@ export function ThingInfo({ thingInfo, isType = false }: Parameters) {
             );
         }
 
-        if (typeof value === 'boolean') return value ? "True" : "False";
-        if (typeof value === 'object') return JSON.stringify(value);
+        if (typeof value === 'boolean') { return value ? "True" : "False" };
+        if (typeof value === 'object') { return JSON.stringify(value) };
         return String(value);
     };
 
@@ -67,12 +67,12 @@ export function ThingInfo({ thingInfo, isType = false }: Parameters) {
         const allFeatureKeys = Object.keys(features);
 
         const filteredKeys = allFeatureKeys.filter(featureId => {
-            if (!searchQuery) return true;
+            if (!searchQuery) { return true };
             const lowerQuery = searchQuery.toLowerCase();
             const featureData = features[featureId];
             const properties = featureData.properties || featureData;
 
-            if (featureId.toLowerCase().includes(lowerQuery)) return true;
+            if (featureId.toLowerCase().includes(lowerQuery)) { return true };
             if (properties) {
                 return Object.entries(properties).some(([key, value]) => {
                     const valStr = value !== null && value !== undefined ? String(value) : "";
@@ -153,7 +153,7 @@ export function ThingInfo({ thingInfo, isType = false }: Parameters) {
 
 
                 {Object.keys(thingAttributes).map(key => {
-                    if (['name', 'description', '_parents'].includes(key)) return null;
+                    if (['name', 'description', '_parents'].includes(key)) { return null };
                     return <DataCell key={key} label={key} value={thingAttributes[key]} />;
                 })}
             </div>

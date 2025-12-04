@@ -96,7 +96,7 @@ export const SimulationPanel = ({ simulation, twinId, onSuccess, isEditor }: Sim
     };
 
     const renderDynamicFields = (control: any, register: any) => {
-        if (!simulation.content) return null;
+        if (!simulation.content) { return null; }
 
         return simulation.content.map((item: SimulationContent, idx) => {
             if (item.type === TypesOfField.FILE) {
