@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { Route, Switch } from 'react-router-dom';
 import { AppRootProps } from '@grafana/data';
 import { PluginPage } from '@grafana/runtime';
@@ -15,6 +15,17 @@ export const App = ({ meta }: AppRootProps) => {
   // Hardcoded base path as requested
   const basePath = `/a/${meta.id}`;
 
+  const showAgentsRoutes = useMemo(() => {
+    const url = meta.jsonData?.agentsURL;
+    if (!url) { return false; }
+    try {
+      new URL(url);
+      return true;
+    } catch (_) {
+      return false;
+    }
+  }, [meta.jsonData]);
+
   // Debug logging
   // const location = useLocation();
   // console.log('Plugin BasePath:', basePath, '| Current URL:', location.pathname);
@@ -22,8 +33,7 @@ export const App = ({ meta }: AppRootProps) => {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100vh'}}>
 
-      {/* --- AQUI VA EL NUEVO HEADER --- */}
-      <AppHeader basePath={basePath}/>
+      <AppHeader basePath={basePath} meta={meta}/>
       <Switch>
         {/* =======================================================
           CONNECTIONS
@@ -39,7 +49,9 @@ export const App = ({ meta }: AppRootProps) => {
 
         <Route path={`${basePath}/twins/:id/simulations/new`} render={() => <TwinsPage meta={meta} pageMode={TwinsPageMode.Create} elementType={TwinsElementType.Simulation} />} />
         <Route path={`${basePath}/twins/:id/simulations/:simulationId/edit`} render={() => <TwinsPage meta={meta} pageMode={TwinsPageMode.Edit} elementType={TwinsElementType.Simulation} />} />
-        <Route path={`${basePath}/twins/:id/agents/new`} render={() => <AgentsPage meta={meta} pageMode={AgentsPageMode.Create} />} />
+        {showAgentsRoutes && (
+          <Route path={`${basePath}/twins/:id/agents/new`} render={() => <AgentsPage meta={meta} pageMode={AgentsPageMode.Create} />} />
+        )}
 
         <Route path={`${basePath}/twins/:id/new`} render={() => <TwinsPage meta={meta} pageMode={TwinsPageMode.Create} elementType={TwinsElementType.Twin} />} />
         <Route path={`${basePath}/twins/:id/edit`} render={() => <TwinsPage meta={meta} pageMode={TwinsPageMode.Edit} elementType={TwinsElementType.Twin} />} />
@@ -66,8 +78,12 @@ export const App = ({ meta }: AppRootProps) => {
         {/* =======================================================
           AGENTS
          ======================================================= */}
+        {showAgentsRoutes && (
         <Route path={`${basePath}/agents/new`} render={() => <AgentsPage meta={meta} pageMode={AgentsPageMode.Create} />} />
+        )}
+        {showAgentsRoutes && (
         <Route path={`${basePath}/agents`} render={() => <AgentsPage meta={meta} pageMode={AgentsPageMode.List} />} />
+        )}
 
         {/* =======================================================
           DEFAULTS & 404

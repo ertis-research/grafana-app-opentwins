@@ -72,8 +72,16 @@ export function TwinInfo({ path, id, meta, section }: Parameters) {
         history.push(`${absolutePath}/${id}/${newSection}`);
     };
 
-    const filterTabs = (sect: string) => 
-        (sect !== Sections.agents || !!context.agent_endpoint?.trim())
+    const filterTabs = (sect: string) => {
+    if (sect !== Sections.agents) { return true; }
+
+    try {
+        new URL(context.agent_endpoint?.trim() || '');
+        return true; 
+    } catch {
+        return false;
+    }
+};
 
     useEffect(() => {
         getTwinInfoData()

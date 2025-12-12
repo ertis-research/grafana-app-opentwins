@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { css } from '@emotion/css';
-import { GrafanaTheme2 } from '@grafana/data';
+import { AppPluginMeta, GrafanaTheme2, KeyValue } from '@grafana/data';
 import { useStyles2, TabsBar, Tab, IconName } from '@grafana/ui';
 import { useLocation, useHistory } from 'react-router-dom';
 import logoSrc from '../../img/logo.svg'; 
@@ -11,31 +11,46 @@ interface NavItem {
   icon: IconName; 
 }
 
+const AGENTS_NAV_ITEMS: NavItem = { label: 'Agents', id: 'agents', icon: 'users-alt' };
+
+const DEVOPS_NAV_ITEMS: NavItem[] = [
+  { label: 'Connections', id: 'connections', icon: 'plug' },
+  { label: 'Policies', id: 'policies', icon: 'shield' }
+]
+
 const NAV_ITEMS: NavItem[] = [
   { label: 'Twins', id: 'twins', icon: 'cube' },
   { label: 'Types', id: 'types', icon: 'sitemap' },
-  { label: 'Agents', id: 'agents', icon: 'users-alt' },
-  { label: 'Connections', id: 'connections', icon: 'plug' },
-  { label: 'Policies', id: 'policies', icon: 'shield' },
 ];
 
 // 1. Definimos la interfaz de las props
 interface AppHeaderProps {
   basePath: string; // Recibimos la ruta base segura desde el padre
+  meta: AppPluginMeta<KeyValue>;
 }
 
-export const AppHeader = ({ basePath }: AppHeaderProps) => {
+export const AppHeader = ({ basePath, meta }: AppHeaderProps) => {
   const styles = useStyles2(getStyles);
   const location = useLocation();
   const history = useHistory();
 
   const [activeTabId, setActiveTabId] = useState('twins');
 
+  let nav_items = [...NAV_ITEMS]
+
+  if (meta.jsonData && meta.jsonData.agentsURL && meta.jsonData.agentsURL.trim() !== "") {
+    try {
+      new URL(meta.jsonData.agentsURL);
+      nav_items.push(AGENTS_NAV_ITEMS)
+    } catch (_) {}
+  }
+  DEVOPS_NAV_ITEMS.forEach((i: NavItem) => nav_items.push(i))
+
   useEffect(() => {
     const relativePath = location.pathname.replace(basePath, '');
     const section = relativePath.split('/')[1];
 
-    const foundTab = NAV_ITEMS.find(item => item.id === section);
+    const foundTab = nav_items.find(item => item.id === section);
     
     if (foundTab) {
         setActiveTabId(foundTab.id);
@@ -61,7 +76,7 @@ export const AppHeader = ({ basePath }: AppHeaderProps) => {
 
       <div className={styles.navSection}>
         <TabsBar className={styles.tabsBar} hideBorder={true}>
-          {NAV_ITEMS.map((item) => (
+          {nav_items.map((item) => (
             <Tab
               key={item.id}
               label={item.label}
