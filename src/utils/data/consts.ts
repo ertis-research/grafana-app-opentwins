@@ -12,8 +12,8 @@ export const initResources = [
 export const initSubjects = [{subjectIssuer: "{{ request", subject: "subjectId }}", type:"The creator"}]
 
 export const enumOptions = {
-    FROM_TYPE: 0,
-    FROM_ZERO: 1
+    FROM_TYPE: 1,
+    FROM_ZERO: 0
 }
 
 export enum ContentType {
@@ -59,8 +59,8 @@ export const getPlaceHolderByType = (type: string) => {
 }
 
 export const options = [
-    {label: 'From existing type', value: enumOptions.FROM_TYPE},
-    {label: 'From scratch', value: enumOptions.FROM_ZERO}
+    {label: 'From scratch', value: enumOptions.FROM_ZERO},
+    {label: 'From existing type', value: enumOptions.FROM_TYPE}
 ]
 
 export const attributeSimulationOf = "simulationOf"

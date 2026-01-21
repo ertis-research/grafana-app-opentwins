@@ -27,13 +27,13 @@ export const useThingForm = ({ thingToEdit, isType, funcFromType, funcFromZero, 
     const [types, setTypes] = useState<Array<SelectableValue<IDittoThing>>>([]);
 
     // Modos
-    const [creationMode, setCreationMode] = useState(thingToEdit ? enumOptions.FROM_ZERO : enumOptions.FROM_TYPE);
+    const [creationMode, setCreationMode] = useState(enumOptions.FROM_ZERO);
     const [selectedType, setSelectedType] = useState<SelectableValue<IDittoThing>>();
     const [customizeType, setCustomizeType] = useState(false);
 
     // Estado del Objeto
     const [thingIdField, setThingIdField] = useState<IThingId>({ id: "", namespace: "" });
-    const [policyId, setPolicyId] = useState<string>("");
+    const [policyId, setPolicyId] = useState<string | undefined>("");
 
     // CORRECCIÓN 1: Estado para guardar la definición original
 
@@ -130,7 +130,7 @@ export const useThingForm = ({ thingToEdit, isType, funcFromType, funcFromZero, 
     useEffect(() => {
         if (creationMode === enumOptions.FROM_TYPE && selectedType?.value) {
             const typeThing = selectedType.value;
-            setPolicyId(typeThing.policyId);
+            setPolicyId(typeThing?.policyId);
             setFeatures(JSONtoIFeatures(typeThing.features));
 
             const { basic, hidden, custom } = processRawAttributes(typeThing.attributes);
@@ -162,7 +162,7 @@ export const useThingForm = ({ thingToEdit, isType, funcFromType, funcFromZero, 
         // (A veces Ditto rechaza atributos con valor string vacío "" si no son strings)
         // Por ahora lo dejamos tal cual asumiendo que son strings.
 
-        return {
+        let res = {
             thingId: `${thingIdField.namespace}:${thingIdField.id}`,
             policyId: policyId,
             attributes: finalAttributes,
@@ -176,12 +176,18 @@ export const useThingForm = ({ thingToEdit, isType, funcFromType, funcFromZero, 
                 return acc;
             }, {} as any)
         };
+
+        if(!res.policyId) {
+            delete res.policyId
+        }
+
+        return res
     };
 
     // --- GUARDAR ---
     const saveThing = async () => {
         // 1. Validación manual
-        if (!thingIdField.id || !thingIdField.namespace || !policyId) {
+        if (!thingIdField.id || !thingIdField.namespace) {
             appEvents.publish({
                 type: AppEvents.alertWarning.name,
                 payload: ['Validation Error', 'Namespace, ID and Policy are required.']
@@ -195,7 +201,7 @@ export const useThingForm = ({ thingToEdit, isType, funcFromType, funcFromZero, 
         const finalObj = getFinalThingObject();
 
         const finalData: IDittoThingData = {
-            policyId: finalObj.policyId,
+            policyId: finalObj?.policyId,
             attributes: finalObj.attributes,
             features: finalObj.features
         };

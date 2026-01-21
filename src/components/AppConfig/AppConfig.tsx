@@ -190,7 +190,7 @@ const AppConfig = ({ plugin }: Props) => {
                     <Input
                         width={60}
                         value={settings.dittoURL}
-                        placeholder="https://ditto.example.com/api/2"
+                        placeholder="https://ditto.example.com"
                         onChange={handleChange('dittoURL')}
                     />
                 </Field>
@@ -199,7 +199,7 @@ const AppConfig = ({ plugin }: Props) => {
                     <Input
                         width={60}
                         value={settings.extendedURL}
-                        placeholder="https://ditto.example.com/api/extended"
+                        placeholder="https://extended.example.com"
                         onChange={handleChange('extendedURL')}
                     />
                 </Field>

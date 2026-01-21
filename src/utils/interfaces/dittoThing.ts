@@ -10,13 +10,13 @@ export interface IThingId {
 
 export interface IDittoThing {
     thingId: string,
-    policyId: string,
+    policyId?: string,
     attributes?: any,
     features?: any
 }
 
 export interface IDittoThingData {
-    policyId: string,
+    policyId?: string,
     definition?: string,
     attributes?: any,
     features?: any

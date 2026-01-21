@@ -138,7 +138,7 @@ export const ThingForm = ({ thingToEdit, isType, funcFromType, funcFromZero, par
                                 <h4>General Details</h4>
                                 <p className={styles.sectionDesc}>General Details include essential information used to identify and describe the twin.</p>
                             
-                                <Field label="Policy ID" required>
+                                <Field label="Policy ID">
                                     <Select 
                                         options={policies} 
                                         value={policyId} 
