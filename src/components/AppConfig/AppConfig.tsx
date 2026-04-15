@@ -165,7 +165,7 @@ const AppConfig = ({ plugin }: Props) => {
                     severity={enabled ? "success" : "warning"}
                 >
                     {enabled 
-                        ? "The Ditto integration is active and ready to use." 
+                        ? "The OpenTwins plugin is active and ready to use." 
                         : "Enable this plugin to start interacting with your Eclipse Ditto instance."}
                     <div style={{ marginTop: theme.spacing(2) }}>
                         <Button

@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
 import { SelectableValue, AppEvents } from '@grafana/data';
-import { getAppEvents } from '@grafana/runtime';
+import { getAppEvents, locationService } from '@grafana/runtime';
 import { IDittoThing, IDittoThingData, IAttribute, IFeature, IThingId } from 'utils/interfaces/dittoThing';
 import { enumOptions, basicAttributesConst, staticAttributesConst, restrictedAttributesConst } from 'utils/data/consts';
 import { checkIsEditor } from 'utils/auxFunctions/auth';
@@ -88,16 +88,14 @@ export const useThingForm = ({ thingToEdit, isType, funcFromType, funcFromZero, 
                 history.replace(resourceRoot);
                 return;
             }
-
+            getAllPoliciesService()
+                .then((v) => setPolicies(v.map((p: any) => ({ label: p, value: p }))))
+                .catch((error) => console.error("Error loading initial data", error));
             try {
-                const policiesRes = await getAllPoliciesService();
-                setPolicies(policiesRes.map((p: any) => ({ label: p, value: p })));
-
                 if (allowFromType) {
                     const typesRes = await getAllTypesService();
                     setTypes(getSelectWithObjectsFromThingsArray(typesRes));
                 }
-
                 if (thingToEdit) {
                     loadThingData(thingToEdit);
                 } else {
@@ -138,9 +136,9 @@ export const useThingForm = ({ thingToEdit, isType, funcFromType, funcFromZero, 
             setHiddenAttributes(hidden);
 
             const customWithRef = [...custom];
-            if (!customWithRef.find(a => a.key === 'type')) {
-                customWithRef.push({ key: "type", value: typeThing.thingId });
-            }
+            //if (!customWithRef.find(a => a.key === 'type')) {
+            //    customWithRef.push({ key: "type", value: typeThing.thingId });
+            //}
             setAttributes(customWithRef);
         }
     }, [selectedType, creationMode]);
@@ -190,7 +188,7 @@ export const useThingForm = ({ thingToEdit, isType, funcFromType, funcFromZero, 
         if (!thingIdField.id || !thingIdField.namespace) {
             appEvents.publish({
                 type: AppEvents.alertWarning.name,
-                payload: ['Validation Error', 'Namespace, ID and Policy are required.']
+                payload: ['Validation Error', 'Namespace and ID are required.']
             });
             return;
         }
@@ -221,6 +219,8 @@ export const useThingForm = ({ thingToEdit, isType, funcFromType, funcFromZero, 
 
             await promise;
 
+            await new Promise(resolve => setTimeout(resolve, 3000));
+
             appEvents.publish({
                 type: AppEvents.alertSuccess.name,
                 payload: [`Success`, `${isType ? 'Type' : 'Twin'} saved successfully.`]
@@ -246,7 +246,7 @@ export const useThingForm = ({ thingToEdit, isType, funcFromType, funcFromZero, 
     };
 
     const goBackToList = () => {
-        history.push(resourceRoot);
+        locationService.push(resourceRoot);
     };
 
     return {

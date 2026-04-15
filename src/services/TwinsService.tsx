@@ -57,7 +57,12 @@ export const getTwinsPaginatedService = async (
     const url = `${PROXY_DITTO_URL}/search/things?option=${optionParam}&filter=${filterParam}`;
 
     const responseData = await fetchFromGrafanaProxy(url, {
-        method: 'GET'
+        method: 'GET',
+        headers: {
+            'Cache-Control': 'no-cache',
+            'Pragma': 'no-cache',
+            'X-Cache-Skip': 'true'
+        }
     });
 
     if (responseData?.items) {

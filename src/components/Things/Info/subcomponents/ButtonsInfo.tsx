@@ -143,6 +143,7 @@ export const ButtonsInfo = ({ thingId, isType, funcDelete, funcDeleteChildren, e
                     tooltip="Copy" 
                     variant="secondary" 
                     onClick={handleOnCopy}
+                    hidden={isType}
                 >
                     Copy
                 </Button>

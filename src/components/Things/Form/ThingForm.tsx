@@ -102,7 +102,7 @@ export const ThingForm = ({ thingToEdit, isType, funcFromType, funcFromZero, par
                                         />
                                     </Field>
                                 </div>
-                                {isType && !thingToEdit && (
+                                {isType && !thingToEdit && parentId !== undefined && (
                                     <Field label="Number of children" description="Instances to create based on this type.">
                                         <Input type="number" value={numChildren} onChange={e => setNumChildren(Number(e.currentTarget.value))}/>
                                     </Field>
@@ -111,7 +111,7 @@ export const ThingForm = ({ thingToEdit, isType, funcFromType, funcFromZero, par
 
                             {/* --- SECTION: STRATEGY (Only Create) --- */}
                             {allowFromType && (
-                                <FieldSet label="Creation Strategy" className="mt-3">
+                                <FieldSet label="Creation strategy" className="mt-3">
                                     <div className="mb-3">
                                         <RadioButtonGroup options={options} fullWidth value={creationMode} onChange={v => setCreationMode(v!)} />
                                     </div>
@@ -126,7 +126,7 @@ export const ThingForm = ({ thingToEdit, isType, funcFromType, funcFromZero, par
                                                 />
                                             </Field>
                                             <Field label="Customize properties" description="Override properties from the selected type">
-                                                <Switch value={customizeType} onChange={e => setCustomizeType(e.currentTarget.checked)} />
+                                                <Switch value={customizeType} onChange={e => setCustomizeType(!customizeType)} />
                                             </Field>
                                         </div>
                                     )}
@@ -135,7 +135,7 @@ export const ThingForm = ({ thingToEdit, isType, funcFromType, funcFromZero, par
 
                             {/* --- SECTION: BASIC INFO --- */}
                             <div className="mt-1">
-                                <h4>General Details</h4>
+                                <h4>General details</h4>
                                 <p className={styles.sectionDesc}>General Details include essential information used to identify and describe the twin.</p>
                             
                                 <Field label="Policy ID">
@@ -147,13 +147,13 @@ export const ThingForm = ({ thingToEdit, isType, funcFromType, funcFromZero, par
                                     />
                                 </Field>
                                 <Field label="Name">
-                                    <Input value={basicInfo.name} onChange={e => setBasicInfo({...basicInfo, name: e.currentTarget.value})}/>
+                                    <Input value={basicInfo.name} onChange={e => setBasicInfo({...basicInfo, name: e.currentTarget.value})} disabled={disableAdvancedFields}/>
                                 </Field>
                                 <Field label="Description">
-                                    <Input value={basicInfo.description} onChange={e => setBasicInfo({...basicInfo, description: e.currentTarget.value})}/>
+                                    <Input value={basicInfo.description} onChange={e => setBasicInfo({...basicInfo, description: e.currentTarget.value})} disabled={disableAdvancedFields}/>
                                 </Field>
                                 <Field label="Image URL">
-                                    <Input value={basicInfo.image} onChange={e => setBasicInfo({...basicInfo, image: e.currentTarget.value})}/>
+                                    <Input value={basicInfo.image} onChange={e => setBasicInfo({...basicInfo, image: e.currentTarget.value})} disabled={disableAdvancedFields}/>
                                 </Field>
                             </div>
 

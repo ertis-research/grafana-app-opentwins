@@ -98,7 +98,7 @@ export function TwinInfo({ path, id, meta, section }: Parameters) {
                         funcDelete={deleteTwinService} 
                         funcDeleteChildren={deleteTwinWithChildrenService} 
                         parentId={id}
-                        iniCompactMode={true}
+                        iniCompactMode={false}
                     />
                 );
             
